@@ -148,4 +148,5 @@ var CFA = ["length", [].unshift];
 // add basic critical functions
 CFADD({}.toString, "".charCodeAt);
 
-function CFEVAL1(cfunc, param1) { eval = CFGET(cfunc); return eval(param1) }
+// TODO: fix with self-encryption removal
+function CFEVAL1(cfunc, param1) { var f = CFGET(cfunc); return f(param1) }

@@ -331,7 +331,7 @@ _THUI.viewToDoc = function (uiObj) {
  * Append user interface object representation as a child to the given
  * parent element
  *
- * @param {?HTMLElement} parent
+ * @param {?Element} parent
  * @param {Object} uiObj
  * @param {string=} uiPrefix
  * @param {string=} uiName

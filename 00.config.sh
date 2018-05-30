@@ -1,5 +1,5 @@
 ## Path to Closure Compiler
-COMPILER=${HOME}/bin/compiler.jar
+COMPILER=${HOME}/bin/closure-compiler-v20180506.jar
 
 EXT_NAME=WV
 EXT_FILE_NAME="WME_Validator"

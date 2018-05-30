@@ -56,7 +56,6 @@ java -jar "${COMPILER}" \
 	--jscomp_warning=checkTypes \
 	--jscomp_warning=missingProperties \
 	--jscomp_off es5Strict \
-	--process_jquery_primitives \
 	${EXTRA_PARAMS}
 
 if [ $? != 0 ]; then

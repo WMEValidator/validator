@@ -544,6 +544,3 @@ var R = null;
 
 // critical functions in DATA
 CFADD(async, "onclick", document);
-
-/** @const */
-var CF_CALLEE = arguments.callee;

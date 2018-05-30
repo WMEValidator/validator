@@ -594,17 +594,6 @@ _WV.$functions[F_INIT] = function()
 		_gaq.push([WV_NAME_ + "._trackPageview"]);
 	}
 
-	// check critical functions calee
-	if(!DEF_DEBUG)
-	{
-		var critSum = CF_CALLEE.toString().length;
-		if(critSum != CF_SUMBLUE)
-		{
-			async(F_HAXBLUE, (critSum - CF_SUMBLUE), 1e3);
-			return;
-		}
-	}
-
 	_WV.$loggedIn = false;
 	// install login/logout handler
 	WLM.events.on({

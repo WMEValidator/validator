@@ -379,15 +379,3 @@ Error.prepareStackTrace = function (a, b) { };
 
 var WME_Validator_I18n = {};
 window.WME_Validator_I18n = {};
-
-window.AudioContext = {
-	createOscillator: function () { },
-	destination: null
-};
-
-window.webkitAudioContext = {
-};
-
-window.OscillatorNode = {
-	connect: function (dest) { }
-};
