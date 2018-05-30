@@ -1,0 +1,731 @@
+30.05.2018:
+- Initial public commit
+
+
+03.11.2016 v1.1.20:
+- Fixed #23 Unconfirmed road
+
+04.06.2016 v1.1.19:
+- Fixed WME Beta
+- Fixed icons in segment properties
+- The work is still in progress...
+
+02.06.2016 v1.1.18:
+- Fixed Firefox browser
+- Added Validator tab
+
+01.06.2016 v1.1.17:
+- Fixed (some) icons
+- Fixed (some) event handlers
+
+29.01.2016 v1.1.16:
+- Fixed Firefox browser (thanks to Glodenox)
+- Updated CZ localizations
+
+13.12.2015 v1.1.15:
+- Updated US and CZ localizations
+
+17.11.2015 v1.1.14:
+- Updated styles to match the latest WME
+- Updated for PL #171 and #52
+- Updated for US #171 'Incorrect abbreviation'
+
+16.11.2015 v1.1.13:
+- Updated for US #171 'Incorrect abbreviation'
+- Added 'At the bottom' option
+
+11.11.2015 v1.1.11:
+- Updated for US #171 'Incorrect abbreviation'
+- Minor update: latest WME compatibility
+- Removed 'Two-way segments by default' option
+
+07.05.2015 v1.1.8:
+- No changes, sorry :(.
+
+06.03.2015 v1.1.7:
+- Move the development to a new platform
+
+06.01.2015 v1.1.6:
+- Updated for PL #171 'Street name abbreviations'
+- Disabled for IL #109 'Too short segment'
+
+06.01.2015 v1.1.5:
+- Temporary disabled #36, 37 'Unneeded node A/B'
+- Fixed the crash on a new segment save
+
+07.11.2014 v1.1.4:
+- Maintenance release. No changes :(
+
+07.10.2014 v1.1.3:
+- Updated Polish translations thanks to Zniwek
+- Enabled for ES #130-133 'Custom lock levels'
+- Updated #114 and #115 'Non-drivable connected to
+  drivable': excluded Railroads
+
+01.10.2014 v1.1.2:
+- Disabled for IL #28 'Street name on two-way Ramp'
+- Updated Polish abbreviations
+- Fixed custom checks #135-139
+- Updated Spanish translations thanks to robindlc
+- Enabled for NL #150-154 'Lock levels'
+- Updated segment properties UI
+
+30.08.2014 v1.1.1:
+- Fixed 'Two-way segments by default' option
+
+29.08.2014 v1.1.0:
+- Compatibility with beta WME
+  Note: some checks are still disabled
+- Updated for BE #160 'Incorrect Freeway name'
+- Disabled for IL #91 'Two-way Ramp segment'
+- Removed 1 sec startup delay introduced in v0.6.2
+
+24.08.2014 v1.0.4:
+- Temporary disabled #44, #45 and #50.
+  Note: some other checks might not work as well.
+- Updated Polish translations
+- Increased number of custom checks (#130-139)
+
+04.08.2014 v1.0.3:
+- Disabled #200, #201, #300, #301 'Unconfirmed turn'
+  for dead-ends
+- Disabled #77 'Dead-end U-turn'
+- Fixed tabs for small fonts
+- Other minor bugfixes
+
+04.07.2014 v1.0.2:
+- Complete Hebrew translation thanks to gad_m
+- Minor UI changes for right-to-left languages
+- Changed keyboard shortcut to 'Alt+V'
+
+- Added 'for CMs only' note to the Updated by field
+
+25.06.2014 v1.0.1:
+- Disabled for IL #52 'Too long street name'
+- Disabled for IL #41, #42 'Reverse connectivity'
+- Fixed for IL WME Beta
+- Separated Mexico from Spain
+
+26.05.2014 v1.0.0:
+- Re-enabled #150 for AR and CL
+- Disabled for IL #115 'Non-drivable connected to drivable'
+- Temporarily disabled #74 'Multiple segments at r-about'
+  (the check will be updated in one of the next releases)
+- Updated #52 'Too long street name': 30 letters by default
+- Updated #171 for PL: polish abbreviations
+- Fixed wiki links for checks #114/115
+- Fixed #36/37 'Unneeded node A/B' for country names
+- Fixed leading spaces in custom RegExps
+- Fixed: unable to remove debug flag for custom checks
+- Added new custom template variables:
+  '${deadEndA/B}' and '${partialA/B}'
+- Google Analytics (I'll share the statistics later)
+- Added license
+
+
+- Add May 1st: The segment is locked for you, so Validator did not check it.
+- #128 #129 links to forum post, not MDN
+
+
+27.04.2014 v0.9.9:
+- Fixed #190 for Cyrillic letters
+- Fixed false positive in #171 for FR: 'Rue du Mal Assis'
+- Fixed #36 and #37 'Unneeded node' for partial nodes
+- Improvements in Settings->About->Available checks
+- Temporarily disabled #79 'Too short U-turn connector'
+  (the check will be updated in one of the next releases)
+
+- Fixed city checks #190 and #191
+
+
+15.04.2014 v0.9.8:
+- Fixed #24 filtering in 'Reported as' field
+- Fixed #173 'No space after abbreviation' for '11.'
+- Fixed segment length for newly created segments
+- Custom check severities are now warnings by default.
+  (sorry, I'm a bit busy these days, so a "real" fix will come in one of the next releases)
+
+- Improved RegExp debug log
+- Added a link to custom checks examples on the forum
+- Fixed default regexps for #160-163
+
+- CHECKS REVIEW:
+  Added new checks with params to validate city names:
+    #190 'Lowercase city name' (merged #92)
+    #191 'Incorrectly abbreviated city name'
+    #192 'Unneeded spaces in city name' (merged #31)
+    #193 'No space before/after abbreviation' (merged #33)
+
+- RegExp .match -> .test
+
+
+08.04.2014 v0.9.7:
+- Fixed #170 'Lowercase street name'
+
+08.04.2014 v0.9.6:
+- Fixed #170 'Lowercase street name'
+- New for US #106 'No state name selected'
+- Disabled skips of locked segment
+
+07.04.2014 v0.9.5:
+- Validator now skips locked segments, so the locks may
+  be used to hide issues for low-level users.
+- New faster 'Show report' method (Chrome only)
+- Layers param in permalinks in report
+
+- Updated Spanish translations thanks to robindlc
+- Updated #109 'Too short segment': 5m by default
+  (6m for BeNeLux) + wiki link added
+- Updated #79 'Too short U-turn connector' to report
+  only same road types
+- Updated #24 'Might be incorrect city name' for
+  Строитель снт vs Строитель 2 снт
+
+- Configured check parameters are listed now in
+  'Settings->About->Available checks'
+- New params to override default check description:
+  'titleEN', 'problemEN' and 'solutionEN'
+- Fixed custom check ${deadEnd} variable for off-screen
+  nodes
+- Fixed custom check ${softTurns} variable
+
+- CHECKS REVIEW:
+  All "option1" properties changed to params/regexp
+  Changed check ID #10 -> #9
+  Split check #40 'Soft turns' -> #200 and #300
+    'Node A/B: Unconfirmed turn on minor road'
+  Split check #86 'Soft turns on primary road' -> #201 and #301
+    'Node A/B: Unconfirmed turn on primary road'
+  Removed #49 and #111 (Roundabouts)
+  Added params for #73 'Too short street name'
+    and #109 'Too short segment'
+  Added new checks to validate street names:
+    #160 Freeway name (merged #61 and #80)
+    #161 Major Highway name (merged #53, #60 and #81)
+    #162 Minor Highway name (merged #82)
+    #163 Ramp name (merged #54, #64, #89 and #113)
+    #164 Primary Street name
+    #165 Street name
+    #166 Parking Lot Road name
+    #167 Railroad name (merged #58)
+    #169 any type street name (merged #55, #56 and #123)
+    #170 'Lowercase street name' (merged #93, #94)
+    #171 'Incorrectly abbreviated street'
+      (merged #26, #51, #68 and #88)
+    #172 'Unneeded spaces in street name' (merged #30)
+    #173 'No space before/after abbreviation' (merged #32)
+    #174 'Street name spelling mistake' (merged #100)
+    #175 'Empty street name' (merged #98)
+  Added new checks to validate street types:
+    #70 must be a Freeway (merged #83)
+    #71 must be a Major (merged #62 and #84)
+    #72 must be a Minor (merged #63 and #85)
+
+- Reported as: 24 or #24
+- Disabled for RU #77 'Dead-end U-turn'
+- Globaly enabled Moscow
+- Report TOC links: colons removed
+- Show report: direct += operators for reports
+
+
+30.03.2014 v0.9.4:
+- Complete French translation of UI and checks.
+  Many thanks to arbaot and ClementH44!
+- New variables for custom checks:
+  ${altCity[index or delimeter]}
+  ${altStreet[index or delimeter]}
+- Fixed bug with highlighting at the screen edges
+- CHECKS REVIEW:
+  Added 5 new checks #150-#154 for lock levels
+  Removed: #65, #66, #67, #70, #71, #72, #76, #96, #97,
+  and #122
+
+- Lowered severities for roundabout direction checks
+  #49 and #111
+- Object.keys -> for ... in
+
+- Fixed #108 'Node A/B: No connection' and deleted segment
+- Globaly enabled Kyiv
+
+
+25.03.2014 v0.9.3:
+- Complete Spanish translation of UI and checks.
+  Languages: Español, Español América Latina and Galego
+  Many thanks to robindlc and fernandoanguita!
+- CHECKS REVIEW:
+  Removed: #9, #11, #12, #75, #106 (duplicate/unused)
+  Added params to:
+  #52  'More than ${n} letters long street name'
+  #112 'More than ${n} letters long Ramp name'
+
+- Check parameters are listed now in
+  'Settings->About->Available checks'
+- Disabled nulls in #116 'Out of range elevations'
+
+- Added Andorra
+- Added a banner to translate Validator into 5 languages
+
+22.03.2014 v0.9.1:
+- Updated #116 'Out of range elevation' for nulls
+- New option 'Report external highlights'
+
+20.03.2014 v0.9.0:
+- New user-defined custom checks in Settings->Custom
+- New 5 custom checks #130 - #134 for localization
+- Validator now generates packages for dependent
+  countries
+
+- Fixed non-editable filter option
+- Fixed localization packs for Firefox
+- Fixed 'Non-drivable connected to drivable' for very
+  long segments
+- Removed 'Toolbox/WMECH: Report highlighted segments'
+  (now it is on by default)
+- Fixed lost TODO labels on upgrade package
+- Fixed 'Highlight issues on the map' menu item
+- Fixed #57 for other countries (was just enabled for PL)
+
+- Disabled #106 for PL
+- Try-catch for new RegExp parsing option1
+
+- WME Validator Localization for LanguageX
+- window.WME_Validator_* = {} + ';' + spaces not tabs
+- Fixed country name with spaces in Package Wizard
+- Generate title/problem/solution for checks which
+  enabled for dependant countries (see Argentina)
+
+
+14.03.2014 v0.8.3:
+- minor fixes
+- Updated #106 for PL 'Unneeded name on one-way Ramp'
+- Renamed some checks to 'Node A/B: ...'
+- Fixed: auto-disable slow checks on zoom levels 0-3
+
+09.03.2014 v0.8.2:
+- Auto-disable slow checks at zoom levels 0-3
+- Fixed severities for some checks (Unneeded node)
+
+- Updated #36 and #37 'Unneeded node A/B' for U-turns
+- Updated 'Unneeded node A/B' for partial nodes
+- NEW for AR: 'Street name matches the RegExp' (calle)
+  you may use localization pack to set the RegExp for
+  your country
+- Disabled for AR #56 'Incorrect word in street name'
+
+- HOTFIX 'Too many issues' note in properties (v0.8.1)
+
+- Removed #75 "BETA: Bow-Ties"
+
+08.03.2014 v0.8.0:
+- Support for localization packages
+- Package Wizard: Settings->About->Wizard
+- Auto-pause if there are more than 20K of segments
+- 'Too many issues' note in segment's properties
+- 'Validator is disabled' note in segment's properties
+
+- NEW for BeNeLux #122 'Incorrect Primary street lock'
+- Enabled for AR #56 'Incorrect word in street name'
+  word 'calle'
+- Fixed #38 and #39 'Expired restrictions'
+- Updated #98 'Street name with spaces only':
+  street name with just a dot
+- Enabled/disabled few checks for spanish countries
+- Updated spanish translations
+
+- No text direction (match WME)
+
+28.02.2014 v0.7.4:
+- UPD 'Too sharp turn at node A/B':
+  revCon turns are excluded
+- UPD for US 'Lowercase street name (with exceptions)'
+  now the check ignores [ENSW] at the beginning
+- Fixed 'Zoom out to start WME Validator' message
+- Fixed Spanish in Swedish language
+- UPD howto for 'The segment is overlapping'
+- Disabled for AU 'More than 55 letters Ramp name'
+
+- validate twice again
+
+24.02.2014 v0.7.3:
+- NEW for All 'BETA: Overlapping segments at node A/B'
+- NEW for All 'BETA: Too sharp turn at node A/B'
+- check IDs moved to the end of the check title
+
+24.02.2014 v0.7.2:
+- NEW for All: 'Obsolete CONST ZN marker'
+- UPD 'Closed road': case insensitive
+- UPD 'Non-drivable connected to drivable': excluded
+  short dead-end segments and segments with HNs
+- DISABLED for US 'More than 55 letters Ramp name'
+- DISABLED for IL 'Less than 3 letters long'
+- Fixed 'No connection at node A/B' for false
+  'Show report'
+- Improved 'Show report' performance
+- Fixed toggle on/off
+- Few new Spanish translations
+- Checks #36, #37, #46, #47, #78, #79, #102 and #103
+  are now marked as SLOW
+- Fixed few highlight issues (v0.7.1)
+
+- trL right into checks
+- Removed font awesome
+- fixed unclickable link in 'Check the forum thread...'
+
+
+19.02.2014 v0.7.0:
+- complete Spanish translation thanks to robindlc and
+  fernandoanguita
+- WME language switcher now also switch language of
+  problem and howtos (but not links)
+- 'Updated by' search option for country managers
+
+- NEW for ALL: 'Out of range elevation'
+- NEW for ALL: 'Non-drivable connected to drivable'
+- NEW for IT: 'Ramp name starts with an A' (untested)
+- NEW for ALL: 'More than 55 letters Ramp'
+- UPD #51 for PL 'Incorrectly abbreviated street name'
+  added: bł., kard., marsz., rtm.
+- UPD #101 'Closed road': default marker is '(Closed)'
+- UPD #40 'Soft turns on drivable road': check for
+  both nodes exist
+- UPD 'Incorrect lock level' checks for traffic locks
+- UPD 'No connection at node A/B': exclude non-editable
+  segments filter option
+- UPD for IL 'Less than 2 letters long street name'
+- DISABLED for US 'Two-way Ramp segment'
+- What's the problem and howtos are replaced with icons
+- fixed WME Color Highlights wiki URLs
+- added input placeholders
+- now Validator reports max 300 segments per check
+
+- Font Awesome in the report
+- total number of enabled/disabled checks
+- checks array -> object
+- remove all ck_ constants
+- check titles comparison without options
+
+
+
+12.02.2014 v0.6.3:
+- UPD 'Too short segment': roundabouts are excluded
+- ENABLED for Bulgaria #27 'City name on Railroad'
+- ENABLED for Chile #59, #86 and #93
+- UPD 'Exclude non-editable segments' option for nodes
+- Spanish translations thanks to robindlc and
+  fernandoanguita
+- Spanish set as a default for AR, BO, CL, CR, CO, CU,
+  DO, EC, GQ, GT, HN, MX, NI, PA, PE, PY, SV, UY, VE
+- fixed map scan: not all of the segments were reported
+- ISO date in report
+
+- Color Highlight -> WMECH
+- othersegments sometimes does not exist
+
+
+07.02.2014 v0.6.2:
+- Validator make a 1 sec pause on startup to allow
+  other scripts to start first
+- Improved startup time
+- NEW keyboard shortcut to toggle Validator on/off:
+  Shift+W
+- UPD 'Unneeded node A/B' for segment/turn
+  restrictions
+- ENABLED few checks for Spain
+- Spanish localization has started
+- FAQ and forum post updated for "flash"
+- fixed fallback rules for other countries
+
+
+05.02.2014 v0.6.1:
+- NEW search option to include/exclude certain checks:
+  Reported as (see forum for the details)
+- ENABLED for CZ 'Walking Trail instead of a Railroad'
+- fixed few bugs with new and deleted segments
+
+04.02.2014 v0.6.0:
+- NEW search tab: your edits, date and city
+  (see forum for the details)
+- NEW for ALL 'SLOW: No connection at node A/B':
+  a dead-end node is within 5m from another segment
+- NEW for ALL 'Too short segment'
+  (drivable non-dead-end less than 2m long segment)
+- NEW for AT, CH, DE 'Incorrect Freeway elevation'
+- NEW for ALL right-hand traffic countries
+  'Unusual B-A drivable roundabout direction'
+- UPD 'Construction zone': TRAVAUX for France, GF, NC, RE
+- UPD roundabout checks only for drivable segments now
+- ENABLED for AT, CH, DE 'Two-way Freeway segment'
+  'Incorrect Freeway lock level'
+- DISABLED for (almost) ALL
+  'Walking Trail instead of a Railroad'
+  'Unneeded name on one-way Ramp'
+- UI changes: search for your edits, segments updated since a specific date
+  or search for a specific city (wildcard are supported, i.e. Greater * Area)
+- NEW for ALL 'SLOW: No connection at node A/B': a dead-end node is within 5m from another segment
+- NEW for ALL 'Too short segment' (drivable non-dead-end less than 2m long segment)
+- NEW for DACH 'Incorrect Freeway elevation'
+- NEW for ALL right-hand traffic 'Unusual B-A drivable roundabout direction'
+- UPD 'Construction zone': TRAVAUX for France, GF, NC and RE
+- UPD 'Two-way drivable roundabout segment'
+ 'Street name on drivable roundabout'
+ 'Few outgoing segments at roundabout node A'
+ 'Few segments at roundabout node A'
+ 'No connectivity on roundabout'
+ 'Inconsistent roundabout direction': now only for drivable segments
+- ENABLED for DACH 'Two-way Freeway segment', 'Incorrect Freeway lock level'
+- DISABLED for (almost) ALL 'Walking Trail instead of a Railroad'
+- DISABLED for (almost) ALL: 'Unneeded name on one-way Ramp'
+- other minor changes/fixes
+
+02.02.2014 v0.5.9:
+- NEW for ALL: 'Railroad used for comments'
+- NEW for ALL: 'Walking Trail used as a Railroad'
+- NEW for ALL: 'Unneeded name on one-way Ramp'
+- 4xNEW for ALL: 'No inward/outward connectivity at node A/B' (warning)
+  (DELETED: 'No connectivity at node A/B of drivable road')
+- UPD for US 'Lowercase street name' exceptions: to
+- UPD for PL 'Incorrect Railroad name': added MPK, SKM and Tramwaje Śląskie
+- fixed: in segment properties issues are grouped now, i.e. 'Soft turns (12)'
+- fixed: beta editor login
+- fixed: Validator enabling/disabling
+- polish translations thanks to Zniwek
+
+31.01.2014 v0.5.8:
+- NEW 'Construction zone (only available in the report)'
+  Default marker: 'CONST ZN'
+  Marker for Poland: 'REMONT'
+- ENABLED for ALL: 'Same endpoints drivable segments'
+- fixed: after solving 'No inward connectivity', segment still remains highlighted
+- Validator is back in Layer Switcher
+  Note: you still might experience issues using old permalinks
+- other minor changes
+- Available checks: english text is grey
+- Available checks: no for country
+- afterloginchanged -> login LoginManager
+
+29.01.2014 v0.5.7:
+- DISABLED for ALL: 'Same endpoints drivable segments'
+- 'Settings->About->Available checks': added translate/localize markers
+- Check IDs in the titles
+
+29.01.2014 v0.5.6:
+- new WME beta compatibility
+- UPD for Ireland 'Incorrect Highway name' (accents)
+
+28.01.2014 v0.5.5:
+- fixed 'Available checks' crash
+- fixed 'Show report' crash (for some countries)
+
+28.01.2014 v0.5.4:
+- NEW for ALL 'U-turn at roundabout entrance'
+- NEW for FR, GF, NC, RE 'SLOW: Missing street name accents'
+- UPD 'Lowercase street name (with exceptions)': added SK and CZ exceptions
+- UPD 'Less than 3 letters long street name': Ramps are excluded
+- DISABLED for SK: 'Lowercase street name'
+- UPD: 'Street name with a dot': Ramps are excluded
+- now you can localize check titles
+- some translations for Italy
+- Validator is disabled in LayerSwitcher due to auto-enabling on permalink click
+- country-specific options (some checks will be merged in the feature versions)
+
+23.01.2014 v0.5.3:
+- NEW for ALL: 'Street name with spaces only'
+- UPD 'More than 25 letters street name': for drivables roads only
+- few checks enabled/localized for CZ and Slovakia
+- 'Settings->About->Available checks' button now shows enabled/disabled checks
+  for the current (i.e. map top left corner) country
+
+
+22.01.2014 v0.5.2:
+- NEW for IT: 'Street name with a dot'
+- UPD 'Same endpoints drivable segments': roundabouts are temporarily excluded
+- support for RTL languages
+- bunch of checks enabled/disabled for Israel
+- few checks enabled for Italy
+- other minor changes
+- styles: move classes down to the elements
+
+
+21.01.2014 v0.5.1:
+- NEW for ALL: 'Lowercase city name'
+- NEW for US: 'Lowercase street name (with exceptions)'
+- NEW for FR, GF, NC, RE 'Lowercase street name'
+- NEW for IL, US 'Two-way Ramp segment'
+- NEW for IL, US 'Two-way Freeway segment'
+- UPD 'Unneeded node A/B': total length is up to 10km
+- UPD 'Might be incorrect city name': same names
+- UPD 'Might be incorrect city name': De Witt vs Dewitt
+- ENABLED for AT, CH, DE 'City name on Freeway'
+- setting 'WME: Two-way segments' is off by default
+- popup when settings are reset to their defaults
+- popup with a changelog
+- started adaptations for RTL languages
+- started Israel localization
+- other changes
+- fixed HL issues in WME beta
+- destroy features on start scanning
+- rewrite dead-end u-turns, so it need only one node
+
+
+20.01.2014 v0.5.0:
+- new highlighting system (please report bugs/suggestions)
+- all options are reset
+- most of the checks are translated into French!
+- new check for France: 'Unwanted abbreviation in street name'
+- new check for France: '"Vers" in Ramp name'
+
+
+0.4.9:
+- fixed 'Two-Way segments by default' for roundabouts
+
+0.4.8:
+- new check: 'More than one outgoing segment connected to roundabout node A'
+- now it's a warning: 'More than one segment connected to roundabout node A'
+- more French translations
+- enabled "City name on named Ramp" for France, GF, NC and RE
+- added Reunion
+- fixed new segment roundabout error
+- new advanced setting: 'Two-Way segments by default'
+- a bit adjusted HL twinkeling, major HL update in the next release
+- no highlighting for 'Might be incorrect city name' check due to false positives,
+  but you can still use this check by scanning a map area
+
+0.4.7:
+- FAQ
+- begin of French localization!
+- new check: 'Soft turns on primary road' for UK and Chile
+- 6 new checks for Ireland: "Incorrect Freeway/Major/Minor name" and
+  "Might be incorrect road type (Freeway/Major/Minor)"
+- many HL objects now HLed in groups
+- $animatedObjects -> object, not array
+- Validator off -> stopAnimation
+- Validator off -> HLAllSegments
+- disabled 'Incorrect Freeway lock level' for US
+- enabled "No lock on Freeway" for US
+- fixed "Unneeded node" (state comparison)
+- correctly uncount city for might be incomplete city name
+- refactoring deleteSeenSegment: much less deletes due to check is segment is
+  still partial
+- fixed: "Might be incorrect city name" (highlighting)
+- fixed: "Same endpoints drivable segments" (node != null)
+
+0.4.6:
+- target: Validator for the links
+- fixed "Incorrect highway name" for NL
+- 4 blinks
+- optimized for many highlights
+- UK is globally enabled!
+- new check: Same endpoints drivable segments
+- new check: Too short U-turn connector
+- updated "Unneeded node A/B" checks: total length < 1000m & Same endpoints
+  prevention
+
+0.4.5:
+- fixed "Street name with no space before/after" for "Dr.-Herbert"
+- to switch HL just click on the title "Validator"
+- link styles
+- removed zoom/step
+
+0.4.4:
+- filter option for other drivable roads
+- no WCH highlights, just reports
+- all filter options are savable
+- highlighting turn issues fixed
+
+0.4.3:
+- unneeded node A/B is disabled
+- updated reverse roundabout -> Inconsistent roundabout direction
+- soft turns report fixed
+- new clear report icon
+- updated reverse connections
+- new default options for Lvl 1, 2, 5 and 6
+- less than 3 letters long report is fixed
+
+0.4.2:
+- check selected before and after the selection if not highlighted
+- fixed: uncount deleted segments/cities/reports
+- never report new roads, only in New road report?
+- No ID streets
+- recheck segment if nodes are partial
+- adjusted zoom levels
+- fixed bug with highlighting mign be incorrected city name
+- beta compatibility
+- Unneeded node A/B alt streets fixed
+- Few Australia reports
+- Dead-end U-turns report
+- I18n of reports: URLS, problem descriptions and how-tos are country-specific
+
+WME Map Validator
+- report: EXPERIMENTAL: bow-tie intersection -> normal
+  report overcomplicated intersection
+  https://www.waze.com/pl/editor/?lon=16.93542&lat=52.39904&zoom=7&layers=TBFTFFTTTTTTTTTTTTTFTTTTTT&env=row
+- report 2 segments in one node on a roundabout
+- report: dot at the end for US Mountail Ln.
+- add belgium and luxemburg
+- add singapur and brunei
+- updated Toolbox Colors
+- new option: Highlight reported issues on the map
+- check segment center and start extent
+- total number of segments in summary and % of errors
+- WCH and Toolbox are on by default
+- store silent mode in localstore
+- limit of segments per report
+- BBreport: warning 50000 chars
+- show the settings at the beginning of the report?
+- sort city/steeet/segment
+- in report major/critical permalinks -> orange and red
+- count city names and use for the report anme with the biggest counter
+- show total number of issues at the end of the report
+- report button color depend on severity of the issue: red, orange and blue
+- new filter: exclude minor issues
+- list of available checks
+- continue scan on error
+- scan the map continuesly, i.e. every move end
+- runtime reports (save username, road rank, editable flag)
+- UI change filters on a first page, all reports by default
+- new access lists + cache
+- road type rank
+
+
+v0.3.2:
+ - new option: Exclude non-drivable and streets (default for Lvl 5 and 6)
+ - new option: Exclude highway segments (default for Lvl 1 and 2)
+ - options rethinking
+New connection reports:
+ - Unterminated segments
+ - Unneeded junctions
+ - Unknown segment direction
+
+ - Unlock all segments not only for Poland
+
+v0.3.1 RC2 @ 26.11.2013:
+New set of reports (connection issues):
+ - Drivable roads are not connected
+ - Expired segment/turn restrictions
+ - Soft turns
+ - Reverse connections
+ - Unconnected segments
+ - Self-connected segments
+ - Unconnected one-way segments
+ - No U-turn on long (150 m) dead-end segments
+ - Two-way roundabout segments
+ - Unconnected roundabout segments
+ - Reverse connected (B->A) roundabout segments
+
+New set of reports for Netherland:
+ - Incorrect Freeway/Highway street names
+ - Incorrect Nnum road types
+ - Ramps start with a number
+New set of fixes for Netherland:
+ - Lock Freeway/Highway
+ - Correct 'ri.' abreviation
+
+UI changes:
+- separate BB button shows report in BBcode for forum/PM posts
+
+Bugs & Issues:
+- few issues with Toolbox/WCH interaction were fixed
+- Run once mode permalinks were fixed
+
+Other changes
+- report of a very long street names has moved to a Polish country pack
