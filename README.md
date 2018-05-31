@@ -11,8 +11,24 @@ the GPL along with build & install instructions.
 
 Please check the doc directory for more information.
 
-For questions and usage discussions please use official forum:
+For questions and usage discussions please use official forum:<br/>
 https://www.waze.com/forum/viewtopic.php?f=819&t=76488
 
-Report bugs and issues using GitHub issues tracker:
+Report bugs and issues using GitHub issues tracker:<br/>
 https://github.com/WMEValidator/validator/issues
+
+
+QUICK START
+===========
+WME Validator uses Closure Compiler:<br/>
+https://developers.google.com/closure/compiler/
+
+Download and unpack Closure Compiler's JAR into your `${HOME}/bin` directory.
+
+Here are the quick start steps:
+
+    $ git clone --recurse-submodules git@github.com:WMEValidator/validator
+    $ cd validator
+    $ ./10.release.sh
+
+The result of compilation should be in `build/WME_Validator.user.js`
