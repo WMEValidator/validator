@@ -141,6 +141,9 @@ function deepCompare(obj1, obj2) {
 	return false;
 }
 
+function getDirection(seg){
+	return (seg.attributes.fwdDirection ? 1 : 0) + (seg.attributes.revDirection ? 2 : 0);
+};
 
 // array of critical functions
 var CFA = ["length", [].unshift];
