@@ -507,7 +507,7 @@ _WV.$functions[F_VALIDATE] = function (disabledHL) {
 		this.$type = attrs.roadType;
 		this.$typeRank = this.getTypeRank(attrs.roadType);
 
-		this.$direction = seg.getDirection();
+		this.$direction = getDirection(seg);
 		this.$isToll = seg.isTollRoad();
 		this.$elevation = attrs.level;
 		this.$lock = attrs.lockRank + 1;

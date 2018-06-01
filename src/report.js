@@ -55,9 +55,6 @@ _WV.$functions[F_SHOWREPORT] = function (reportFormat) {
 	// window object
 	var newWin = null;
 
-	// layers value
-	var layersParam = getLayerParam();
-
 	///////////////////////////////////////////////////////////////////////
 	// Format strings
 	// h1
@@ -95,13 +92,6 @@ _WV.$functions[F_SHOWREPORT] = function (reportFormat) {
 
 	///////////////////////////////////////////////////////////////////////
 	// Support functions
-	function getLayerParam() {
-		var mask;
-		if (WME_BETA)
-			return W.map.mapState._getLayerVisibilityBitmask();
-
-		return W.map.mapState.getLayerVisibilityBitmask();
-	}
 	function setFormat(fmt) {
 		curFormat = fmt;
 		switch (fmt) {
@@ -175,7 +165,6 @@ _WV.$functions[F_SHOWREPORT] = function (reportFormat) {
 			+ '?zoom=' + zoom
 			+ '&lat=' + Math.round(c.lat * 1e5) / 1e5
 			+ '&lon=' + Math.round(c.lon * 1e5) / 1e5
-			+ '&layers=' + layersParam
 			+ '&env=' + nW.location.code
 			;
 	}
@@ -1150,8 +1139,6 @@ _WV.$functions[F_SHOWREPORT] = function (reportFormat) {
 		FR += obj.$segmentCopy.$center.lat;
 		FR += '&lon=';
 		FR += obj.$segmentCopy.$center.lon;
-		FR += '&layers=';
-		FR += layersParam;
 		FR += '&env=';
 		FR += nW.location.code;
 		FR += '&segments=';

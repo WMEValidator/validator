@@ -580,9 +580,7 @@ _WV.$functions[F_INIT] = function()
 	if(classCodeDefined(UW.require))
 	{
 		R = UW.require;
-		if (W.map.mapState._getLayerVisibilityBitmask) {
-			WME_BETA = true;
-		}
+			WME_BETA = /beta/.test(location.href);
 	}
 
 	// Google Analytics

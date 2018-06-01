@@ -29,6 +29,7 @@ var I18n = {
 			},
 		},
 	},
+	currentLocale: function(){},
 }
 
 ///////////////////////////////////////////////////////////////////////////
@@ -206,6 +207,8 @@ Waze.SEGMENT = function () {
 		revRestrictions: [],
 		fwdTurnsLocked: true,
 		revTurnsLocked: true,
+		fwdDirection: true,
+		revDirection: true,
 	};
 }
 /** @constructor */

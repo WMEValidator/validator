@@ -49,7 +49,7 @@ var WV_ABBREVIATION = "WV";
 /** @const */
 var WV_RELEASE_DATE = "2016-11-03";
 /** @const */
-var WV_RELEASE_VALID = "2017-07-01";
+var WV_RELEASE_VALID = "2023-07-01"; /* This check should be removed eventually, but setting to the future for now so we can just get the script working */
 /* Version: 1.1.20 */
 /** @const */
 var WV_MAJOR = "1.1";
