@@ -1,31 +1,32 @@
 // ==UserScript==
 // @name                WME Validator
-// @version             1.1.20
+// @version             1.9
 // @description         This script validates a map area in Waze Map Editor, highlights issues and generates a very detailed report with wiki references and solutions
-// @match               https://editor-beta.waze.com/*editor/*
-// @match               https://www.waze.com/*editor/*
+// @match               https://beta.waze.com/*editor*
+// @match               https://www.waze.com/*editor*
 // @exclude             https://www.waze.com/*user/*editor/*
 // @grant               none
 // @icon                http://s3.amazonaws.com/uso_ss/icon/191016/large.png?1388868317
-// @namespace           a
-// @author              berestovskyy
-// @copyright           2013-2018 berestovskyy
+// @namespace           https://www.waze.com/forum/viewtopic.php?f=819&t=76488
+// @author              Andriy Berestovskyy <berestovskyy@gmail.com>
+// @copyright           2013-2018 Andriy Berestovskyy
+// @license             GPLv3
+// @contributor         justins83
 // ==/UserScript==
-//
 /*
- * LICENSE:
- * This script has some features locked for certain
- * countries/editor levels, so there are 2 restrictions:
+ * WME Validator uses Open Source GPLv3 license, i.e. you may copy,
+ * distribute and modify the software as long as you track changes/dates
+ * in source files. Any modifications to or software including
+ * (via compiler) GPL-licensed code must also be made available under
+ * the GPL along with build & install instructions.
  *
- * 1. You may not modify or reverse engineer the script.
- * 2. You may not use the script for commercial purposes.
+ * WME Validator source code is available on GitHub:
+ * https://github.com/WMEValidator/
  *
- * The script is distributed 'as is'. No warranty of any
- * kind is expressed or implied. You use at your own risk.
+ * For questions and usage discussions please use official forum:
+ * https://www.waze.com/forum/viewtopic.php?f=819&t=76488
  *
- * If you do not agree with the terms of this license,
- * you must remove the script files from your storage
- * devices and cease to use WME Validator.
- *
+ * Report bugs and issues on GitHub Issues Tracker:
+ * https://github.com/WMEValidator/validator/issues
  */
 (function () {
