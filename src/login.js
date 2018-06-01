@@ -1231,10 +1231,6 @@ _WV.$functions[F_LOGIN] = function()
 	styleMap.addUniqueValueRules("default", 0, lookup);
 
 	_RT.$HLlayer = new OpenLayers.Layer.Vector(GL_LAYERNAME, {
-		displayInLayerSwitcher: true,
-		renderers: [R("Waze/Renderer/ExtendedSVG")],
-		// enable the indexer by setting zIndexing to true
-		rendererOptions: {zIndexing: true},
 		uniqueName: GL_LAYERUNAME,
 		shortcutKey: GL_LAYERSHORTCUT,
 		accelerator: GL_LAYERACCEL,
@@ -1244,7 +1240,7 @@ _WV.$functions[F_LOGIN] = function()
 		projection: new OpenLayers.Projection("EPSG:4326"),
 		visibility: _UI.pSettings.pScanner.oHLReported.CHECKED,
 	});
-	I18n.translations.en.layers.name[GL_LAYERUNAME] = GL_LAYERNAME;
+	I18n.translations[I18n.currentLocale()].layers.name[GL_LAYERUNAME] = GL_LAYERNAME;
 	_RT.$HLlayer.setOpacity(HL_OPACITY);
 	WM.addLayer(_RT.$HLlayer);
 	_RT.$HLlayer.setVisibility(_UI.pSettings.pScanner.oHLReported.CHECKED);
