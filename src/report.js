@@ -55,9 +55,6 @@ _WV.$functions[F_SHOWREPORT] = function (reportFormat) {
 	// window object
 	var newWin = null;
 
-	// layers value
-	var layersParam = getLayerParam();
-
 	///////////////////////////////////////////////////////////////////////
 	// Format strings
 	// h1
@@ -95,13 +92,6 @@ _WV.$functions[F_SHOWREPORT] = function (reportFormat) {
 
 	///////////////////////////////////////////////////////////////////////
 	// Support functions
-	function getLayerParam() {
-		/*var mask;
-		if (WME_BETA)
-			return W.map.mapState._getLayerVisibilityBitmask();
-
-		return W.map.mapState.getLayerVisibilityBitmask();*/
-	}
 	function setFormat(fmt) {
 		curFormat = fmt;
 		switch (fmt) {
