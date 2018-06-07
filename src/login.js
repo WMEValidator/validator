@@ -1159,7 +1159,11 @@ function F_LOGIN()
 	try
 	{
 		s = window.localStorage.getItem(AS_NAME);
-		storageObj = s ? JSON.parse(Tea.decrypt(s, AS_PASSWORD)) : null;
+		storageObj = s ? JSON.parse(s) : null;
+		if (!(AS_PASSWORD in storageObj))
+		{
+			storageObj = null;
+		}
 	}
 	catch (e) {}
 

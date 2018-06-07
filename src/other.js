@@ -1211,10 +1211,11 @@ function F_UPDATEUI(e)
 	var storageObj = _THUI.saveValues(_UI);
 	storageObj[AS_VERSION] = WV_VERSION;
 	storageObj[AS_LICENSE] = WV_LICENSE_VERSION;
+	storageObj[AS_PASSWORD] = 1;
 	try
 	{
 		window.localStorage.setItem(AS_NAME,
-			Tea.encrypt(JSON.stringify(storageObj), AS_PASSWORD));
+			JSON.stringify(storageObj));
 	}
 	catch (err) {}
 
