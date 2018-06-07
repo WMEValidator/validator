@@ -25,7 +25,7 @@
 /**
  * Login new user
  */
-_WV.$functions[F_LOGIN] = function()
+function F_LOGIN()
 {
 	log("login " + WLM.user.userName);
 

@@ -25,7 +25,7 @@
 /**
  * Validate current view
  */
-_WV.$functions[F_VALIDATE] = function (disabledHL) {
+function F_VALIDATE(disabledHL) {
 	if (!_RT.$isMapChanged)
 		return;
 	_RT.$isMapChanged = false;

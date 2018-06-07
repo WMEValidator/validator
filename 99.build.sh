@@ -32,7 +32,6 @@ java -jar "${COMPILER}" \
 	--language_in ECMASCRIPT5 \
 	--js "${SRC_DIR}/src/release.js" \
 	--js "${LOC_FILE}" \
-	--js "${SRC_DIR}/src/enc.js" \
 	--js "${SRC_DIR}/src/helpers.js" \
 	--js "${SRC_DIR}/src/data.js" \
 	--js "${SRC_DIR}/src/basic.js" \

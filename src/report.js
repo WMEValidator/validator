@@ -25,7 +25,7 @@
 /**
  * Show generated report
  */
-_WV.$functions[F_SHOWREPORT] = function (reportFormat) {
+function F_SHOWREPORT(reportFormat) {
 	// shortcuts
 	/** @const */
 	var _now = new Date();

@@ -25,7 +25,7 @@
 /**
  * On Segments Changed Handler
  */
-_WV.$functions[F_ONSEGMENTSCHANGED] = function(e)
+function F_ONSEGMENTSCHANGED(e)
 {
 	// add nearby segments to _RT.$revalidate
 	var changedNodes = [];
@@ -48,7 +48,7 @@ _WV.$functions[F_ONSEGMENTSCHANGED] = function(e)
 /**
  * On Nodes Changed Handler
  */
-_WV.$functions[F_ONNODESCHANGED] = function(e)
+function F_ONNODESCHANGED(e)
 {
 	// add nearby segments to _RT.$revalidate
 	var reHL = false;
@@ -67,7 +67,7 @@ _WV.$functions[F_ONNODESCHANGED] = function(e)
 /**
  * On Change Layer Handler
  */
-_WV.$functions[F_ONCHANGELAYER] = function(e)
+function F_ONCHANGELAYER(e)
 {
 	if(-1 !== e.layer.id.indexOf(GL_TBPREFIX))
 	{
@@ -95,7 +95,7 @@ _WV.$functions[F_ONCHANGELAYER] = function(e)
 /**
  * On Move End Handler
  */
-_WV.$functions[F_ONMOVEEND] = function()
+function F_ONMOVEEND()
 {
 	var c = WM.getCenter();
 
@@ -126,7 +126,7 @@ _WV.$functions[F_ONMOVEEND] = function()
 /**
  * On Load Start Handler
  */
-_WV.$functions[F_ONLOADSTART] = function()
+function F_ONLOADSTART()
 {
 	var c = WM.getCenter();
 
@@ -145,7 +145,7 @@ _WV.$functions[F_ONLOADSTART] = function()
 /**
  * Switch all layers but roads off
  */
-_WV.$functions[F_LAYERSOFF] = function()
+function F_LAYERSOFF()
 {
 	// TODO:
 //  Waze.Config.segments.zoomToRoadType[SCAN_ZOOM] = -1;
@@ -170,7 +170,7 @@ _WV.$functions[F_LAYERSOFF] = function()
 /**
  * Switch all layers back on
  */
-_WV.$functions[F_LAYERSON] = function()
+function F_LAYERSON()
 {
 //  if(!_RT.$layersVisibility || _UI.pSettings.pScanner.oShowLayers.CHECKED)
 	if(!_RT.$layersVisibility || GL_SHOWLAYERS)
@@ -192,7 +192,7 @@ _WV.$functions[F_LAYERSON] = function()
 /**
  * Pause scanning
  */
-_WV.$functions[F_PAUSE] = function()
+function F_PAUSE()
 {
 	if(!RTStateIs(ST_RUN))
 		return;
@@ -208,7 +208,7 @@ _WV.$functions[F_PAUSE] = function()
 /**
  * Stop scanning
  */
-_WV.$functions[F_STOP] = function()
+function F_STOP()
 {
 	if(!RTStateIs(ST_STOP))
 	{
@@ -235,7 +235,7 @@ _WV.$functions[F_STOP] = function()
 /**
  * Encrypted Merge End Handler
  */
-_WV.$functions[F_ONMERGEEND] = function()
+function F_ONMERGEEND()
 {
 	/** @const */
 	var c = WM.getCenter();
@@ -402,7 +402,7 @@ _WV.$functions[F_ONMERGEEND] = function()
 /**
  * Encrypted Run Handler
  */
-_WV.$functions[F_ONRUN] = function()
+function F_ONRUN()
 {
 	// clear error flag
 	clearErrorFlag();
@@ -439,7 +439,7 @@ _WV.$functions[F_ONRUN] = function()
 /**
  * Encrypted Login Handler
  */
-_WV.$functions[F_ONLOGIN] = function()
+function F_ONLOGIN()
 {
 	if(WLM.user)
 	{
@@ -515,7 +515,7 @@ _WV.$functions[F_HAXRED] = function(l)
 /**
  * Show hax messages
  */
-_WV.$functions[F_HAXBLUE] = function(l)
+function F_HAXBLUE(l)
 {
 	alert("Please report " + WV_NAME + " CODE BLUE: " + l);
 	// destroy UI
@@ -532,7 +532,7 @@ _WV.$functions[F_HAXBLUE] = function(l)
 /**
  * Init
  */
-_WV.$functions[F_INIT] = function()
+function F_INIT()
 {
 	var relDate = new Date(WV_RELEASE_VALID);
 	var nowDate = Date.now();
@@ -816,7 +816,7 @@ _WV.$functions[F_INIT] = function()
 /**
  * Warn User
  */
-_WV.$functions[F_ONWARNING] = function(e)
+function F_ONWARNING(e)
 {
 	// update document
 	_THUI.viewToDoc(_UI);
@@ -834,7 +834,7 @@ _WV.$functions[F_ONWARNING] = function(e)
 /**
  * Update User Interface
  */
-_WV.$functions[F_UPDATEUI] = function(e)
+function F_UPDATEUI(e)
 {
 	/**
 	 * Destroj HLs
@@ -1294,7 +1294,7 @@ _WV.$functions[F_UPDATEUI] = function(e)
 /**
  * Logout a user
  */
-_WV.$functions[F_LOGOUT] = function()
+function F_LOGOUT()
 {
 	log("logout");
 	// destroy UI
