@@ -74,8 +74,7 @@ function getMsg(mType, msg, newLine) {
  * @param {string} msg
  */
 function log(msg) {
-	// window.console.log(getMsg("", msg));
-	async(alog(getMsg("", msg)));
+	window.console.log(getMsg("", msg));
 }
 
 /**
@@ -84,7 +83,7 @@ function log(msg) {
  */
 function error(msg) {
 	var s = getMsg("error", msg, true);
-	async(alog(s));
+	log(s);
 	if (!isErrorFlag()) {
 		// set error flag
 		setErrorFlag();
@@ -104,7 +103,7 @@ function error(msg) {
  */
 function warning(msg) {
 	var s = getMsg("warning", msg, true);
-	async(alog(s));
+	log(s);
 	alert(s);
 
 	// error code
@@ -249,19 +248,6 @@ function RTStateIs(st) { return getRTState() === st }
  * Returns current run time state
  */
 function getRTState() { return _RT.$state }
-
-/**
- * Log a message anonymously
- * @param {string} msg
- */
-function alog(msg) {
-	async(function () {
-		var de = document.createElement("i");
-		de.setAttribute("onclick",
-			"console" + ".log(\"" + esc(msg) + "\")");
-		de.onclick(null);
-	});
-}
 
 /**
  * Highlight segments

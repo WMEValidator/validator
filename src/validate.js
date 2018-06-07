@@ -1489,7 +1489,7 @@ _WV.$functions[F_VALIDATE] = function (disabledHL) {
 				(optBool ? false : true)
 				: (optBool ? true : false));
 			_REP.$debugCounter--;
-			async(alog(getMsg("debug log for segment " + segmentID + ", check #" + checkID,
+			log(getMsg("debug log for segment " + segmentID + ", check #" + checkID,
 				'\n1. '
 				+ (optString ?
 					'Expand template: ' + optString + ' -> '
@@ -1504,7 +1504,7 @@ _WV.$functions[F_VALIDATE] = function (disabledHL) {
 					: "skip the segment")
 				+ (0 < _REP.$debugCounter ? ''
 					: "\nEnd of debug log. Click '\u2718' (Clear report) button to start debug over.")
-			)));
+			));
 		}
 		if (optRegExp.test(expandedString)) {
 			if (!optBool)
