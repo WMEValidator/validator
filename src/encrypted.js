@@ -103,8 +103,7 @@ _WV.$functions[F_ONMOVEEND] = function()
 		&& -1 === _RT.$WDloadID
 		&& c.equals(_RT.$nextCenter)
 		)
-		_RT.$WDmoveID = CFCALLTHIS2(CF_SETTIMEOUT,
-			CFGET(CF_WINDOW), onMergeEnd, WD_SHORT);
+		_RT.$WDmoveID = window.setTimeout(onMergeEnd, WD_SHORT);
 	else
 	{
 		// autopause on user move
@@ -132,13 +131,12 @@ _WV.$functions[F_ONLOADSTART] = function()
 	var c = WM.getCenter();
 
 	// kill move WD
-	CFCALLTHIS1(CF_CLEARTIMEOUT, CFGET(CF_WINDOW), _RT.$WDmoveID);
+	window.clearTimeout(_RT.$WDmoveID);
 
 	if(-1 === _RT.$WDloadID
 		&& c.equals(_RT.$nextCenter)
 	)
-		_RT.$WDloadID = CFCALLTHIS2(CF_SETTIMEOUT,
-			CFGET(CF_WINDOW), onMergeEnd, WD_LONG);
+		_RT.$WDloadID = window.setTimeout(onMergeEnd, WD_LONG);
 
 	_RT.$WDmoveID = -1;
 
@@ -545,20 +543,6 @@ _WV.$functions[F_INIT] = function()
 		error("This build of " + WV_NAME + " has expired. Please upgrade!");
 		return;
 	}
-/*
-	// check critical functions
-	if(!OFF_DEF_SUPERUSERS)
-	{
-		var critSum = 0;
-		CFA.forEach(function(e){critSum += e.toString().length});
-		if(critSum != CF_SUMREDC && critSum != CF_SUMREDF)
-		{
-			async(F_HAXRED, (critSum - CF_SUMREDC)
-				+ "," + (critSum - CF_SUMREDF), 1e3);
-			return;
-		}
-	}
-*/
 
 	// init shortcuts
 	UW = window;
@@ -1344,9 +1328,5 @@ _WV.$functions[F_LOGOUT] = function()
 	});
 }
 
-// critical functions in ENCRYPTED
-CFADD(classCode, "".replace, "console",
-	CFGET(CF_FUNCTION)["apply"], CFGET(CF_FUNCTION)["call"]);
-
 // call the init function when the library is initialized
-CFCALL3(CF_ASYNC, F_INIT, 0, 1);
+async(F_INIT, 0, 1);

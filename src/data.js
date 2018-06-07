@@ -541,6 +541,3 @@ var WC = null;
 var UW = null;
 /** requite @const */
 var R = null;
-
-// critical functions in DATA
-CFADD(async, "onclick", document);

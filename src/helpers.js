@@ -57,10 +57,9 @@ function classOf(val) { return {}.toString.call(val).slice(8, -1); }
  * Get object class code
  */
 function classCode(obj)
-//{ return {}.toString.call(obj).charCodeAt(8) ^ {}.toString.call(obj).charCodeAt(11); }
 {
-	return CFCALLTHIS1(CF_CHARCODEAT, CFAPPLYTHIS(CF_TOSTRING, obj), 8)
-		^ CFCALLTHIS1(CF_CHARCODEAT, CFAPPLYTHIS(CF_TOSTRING, obj), 11);
+	return {}.toString.call(obj).charCodeAt(8)
+		^ {}.toString.call(obj).charCodeAt(11);
 }
 
 /**
@@ -144,12 +143,3 @@ function deepCompare(obj1, obj2) {
 function getDirection(seg){
 	return (seg.attributes.fwdDirection ? 1 : 0) + (seg.attributes.revDirection ? 2 : 0);
 };
-
-// array of critical functions
-var CFA = ["length", [].unshift];
-
-// add basic critical functions
-CFADD({}.toString, "".charCodeAt);
-
-// TODO: fix with self-encryption removal
-function CFEVAL1(cfunc, param1) { var f = CFGET(cfunc); return f(param1) }

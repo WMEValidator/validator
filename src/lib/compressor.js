@@ -162,6 +162,3 @@ _COMP.decompress = function (str) {
 
 	return str;
 }
-
-// critical functions in LIB
-CFADD("log", eval, "error", "warning");

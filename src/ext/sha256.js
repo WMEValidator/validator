@@ -97,9 +97,6 @@ Sha256.hash = function (msg, utf8encode) {
 	return Base64.encode(Tea.longsToStr(H));
 }
 
-// critical functions in END
-CFADD(Tea.decrypt);
-
 Sha256.ROTR = function (n, x) { return (x >>> n) | (x << (32 - n)); }
 Sha256.Sigma0 = function (x) { return Sha256.ROTR(2, x) ^ Sha256.ROTR(13, x) ^ Sha256.ROTR(22, x); }
 Sha256.Sigma1 = function (x) { return Sha256.ROTR(6, x) ^ Sha256.ROTR(11, x) ^ Sha256.ROTR(25, x); }
