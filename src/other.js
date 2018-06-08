@@ -1,5 +1,5 @@
 /*
- * encrypted.js -- WME Validator encrypted functions and handlers
+ * other.js -- WME Validator other functions and handlers
  * Copyright (C) 2013-2018 Andriy Berestovskyy
  *
  * This file is part of WME Validator: https://github.com/WMEValidator/
@@ -17,10 +17,6 @@
  * You should have received a copy of the GNU General Public License
  * along with WME Validator. If not, see <http://www.gnu.org/licenses/>.
  */
-
-/*************************************************************************
- * ENCRYPTED FUNCTIONS
- *************************************************************************/
 
 /**
  * On Segments Changed Handler
@@ -233,7 +229,7 @@ function F_STOP()
 }
 
 /**
- * Encrypted Merge End Handler
+ * Merge End Handler
  */
 function F_ONMERGEEND()
 {
@@ -400,7 +396,7 @@ function F_ONMERGEEND()
 }
 
 /**
- * Encrypted Run Handler
+ * Run Handler
  */
 function F_ONRUN()
 {
@@ -437,7 +433,7 @@ function F_ONRUN()
 }
 
 /**
- * Encrypted Login Handler
+ * Login Handler
  */
 function F_ONLOGIN()
 {

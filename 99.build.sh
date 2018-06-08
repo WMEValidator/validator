@@ -38,7 +38,7 @@ java -jar "${COMPILER}" \
 	--js "${SRC_DIR}/src/report.js" \
 	--js "${SRC_DIR}/src/validate.js" \
 	--js "${SRC_DIR}/src/login.js" \
-	--js "${SRC_DIR}/src/encrypted.js" \
+	--js "${SRC_DIR}/src/other.js" \
 	--js "${SRC_DIR}/src/lib/i18n.js" \
 	--js "${SRC_DIR}/src/lib/audio.js" \
 	--js "${SRC_DIR}/src/lib/thui.js" \

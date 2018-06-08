@@ -18,10 +18,6 @@
  * along with WME Validator. If not, see <http://www.gnu.org/licenses/>.
  */
 
-/*************************************************************************
- * ENCRYPTED FUNCTIONS
- *************************************************************************/
-
 /**
  * Show generated report
  */

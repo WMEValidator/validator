@@ -59,7 +59,7 @@ _THUI.DATE = 9;
  *************************************************************************/
 
 /**
- * Global private namespace for encrypted functions
+ * Global private namespace
  * @type {Object}
  */
 var _WV = {};
