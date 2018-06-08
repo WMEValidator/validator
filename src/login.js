@@ -192,8 +192,6 @@ function F_LOGIN()
 		$seen: {},
 		// map of segment IDs to revalidate
 		$revalidate: {},
-		// hax message number
-		$haxMessage: 0,
 		// current user
 		$curUserName: WLM.user.userName,
 		// error flag
