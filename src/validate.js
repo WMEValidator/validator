@@ -504,7 +504,7 @@ function F_VALIDATE(disabledHL) {
 		this.$typeRank = this.getTypeRank(attrs.roadType);
 
 		this.$direction = getDirection(seg);
-		this.$isToll = seg.isTollRoad();
+		// TODO: this.$isToll = seg.isTollRoad();
 		this.$elevation = attrs.level;
 		this.$lock = attrs.lockRank + 1;
 		this.$rank = attrs.rank + 1;
