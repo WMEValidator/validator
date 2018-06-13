@@ -42,7 +42,6 @@ java -jar "${COMPILER}" \
 	--js "${SRC_DIR}/src/lib/i18n.js" \
 	--js "${SRC_DIR}/src/lib/audio.js" \
 	--js "${SRC_DIR}/src/lib/thui.js" \
-	--js "${SRC_DIR}/src/lib/compressor.js" \
 	--externs "${SRC_DIR}/meta/wme-externs.js" \
 	--externs "${SRC_DIR}/meta/jquery-1.9.js" \
 	--js_output_file "${TMP_DIR}/gen-${EXT_NAME}-compiled.js" \
