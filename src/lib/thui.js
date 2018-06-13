@@ -22,7 +22,7 @@
 /**
  * Tiny HTML User Interface
  * see header for THUI types declarations
- * (c) 2013-2016 berestovskyy
+ * (c) 2013-2018 Andriy Berestovskyy
  */
 
 /**

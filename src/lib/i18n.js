@@ -20,7 +20,7 @@
 
 /**
  * Simple I18n Class
- * (c) 2013-2016 berestovskyy
+ * (c) 2013-2018 Andriy Berestovskyy
  *
  * $defLng - default language
  * $lng - current language

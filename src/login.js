@@ -1077,7 +1077,7 @@ function F_LOGIN()
 			TEXT: '<p><b>' + WV_NAME + '</b>'
 				+ '<br>Version ' + WV_VERSION + ' <a target="_blank" href="' + PFX_FORUM + FORUM_HOME + '">check for updates</a>'
 				+ '<br>Expiration date: ' + WV_RELEASE_VALID
-				+ '<br>&copy; 2013-2016 berestovskyy</p>'
+				+ '<br>&copy; 2013-2018 Andriy Berestovskyy</p>'
 				+ '<p><b>Built-in localization packs for:</b><br>'
 				+ listOfIntPacks
 				+ '<p><b>External localization packs for:</b><br>'
