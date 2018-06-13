@@ -11,10 +11,10 @@ the GPL along with build & install instructions.
 
 Please check the doc directory for more information.
 
-For questions and usage discussions please use official forum:<br/>
+For questions please use official forum:<br/>
 https://www.waze.com/forum/viewtopic.php?f=819&t=76488
 
-Report bugs and issues on GitHub Issues Tracker:<br/>
+Report bugs on GitHub Issues Tracker:<br/>
 https://github.com/WMEValidator/validator/issues
 
 
