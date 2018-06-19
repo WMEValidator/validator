@@ -74,8 +74,7 @@ function getMsg(mType, msg, newLine) {
  * @param {string} msg
  */
 function log(msg) {
-	//  CFCALLTHIS1(CF_LOG, CFGET(CF_CONSOLE), getMsg("", msg));
-	async(alog(getMsg("", msg)));
+	window.console.log(getMsg("", msg));
 }
 
 /**
@@ -83,12 +82,12 @@ function log(msg) {
  * @param {string} msg
  */
 function error(msg) {
-	var s = getMsg(CFGET(CF_SERROR), msg, true);
-	async(alog(s));
+	var s = getMsg("error", msg, true);
+	log(s);
 	if (!isErrorFlag()) {
 		// set error flag
 		setErrorFlag();
-		CFCALL1(CF_ALERT, s);
+		alert(s);
 	}
 
 	// pause scanning
@@ -103,9 +102,9 @@ function error(msg) {
  * @param {string} msg
  */
 function warning(msg) {
-	var s = getMsg(CFGET(CF_SWARN), msg, true);
-	async(alog(s));
-	CFCALL1(CF_ALERT, s);
+	var s = getMsg("warning", msg, true);
+	log(s);
+	alert(s);
 
 	// error code
 	return -1;
@@ -117,35 +116,10 @@ function warning(msg) {
  */
 function info(msg) {
 	var s = getMsg("", msg, true);
-	CFCALL1(CF_ALERT, s);
+	alert(s);
 
 	// error code
 	return -1;
-}
-
-/**
- * Command pattern: decrypt and execute a function
- * @param {number} id
- * @param {...*} args
- */
-function dde(id, args) {
-	var efunc = _WV.$functions[id];
-
-	if (CFABSENT(CF_WARN))
-		// critical functions in DDE
-		CFADD(CFGET(CF_CONSOLE)[CFGET(CF_SWARN)], alert);
-
-	switch (CFCALL1(CF_CLASSCODE, efunc)) {
-		case CC_STRING:
-			// try to decrypt the function
-			_WV.$functions[id] = efunc = CFEVAL1(CF_EVAL,
-				CFCALL2(CF_TEADECRYPT, efunc, "" + id));
-		case CC_FUNCTION:
-			return efunc.apply(
-				_WV, [].slice.call(arguments, 1)
-			);
-	}
-	return error("" + id);
 }
 
 /**
@@ -153,14 +127,7 @@ function dde(id, args) {
  * @param {*=} param
  */
 function sync(func, param) {
-	switch (CFCALL1(CF_CLASSCODE, func)) {
-		case CC_NUMBER:
-			return CFCALL2(CF_DDE, func, param);
-		case CC_STRING:
-			return CFEVAL1(CF_EVAL, func);
-		case CC_FUNCTION:
-			return func(param);
-	}
+	return func(param);
 }
 
 /**
@@ -171,34 +138,8 @@ function sync(func, param) {
 function async(func, param, inter) {
 	var i = 0;
 	if (inter) i = inter;
-	function asyncEval() { CFEVAL1(CF_EVAL, func); }
-	function asyncE() {
-		if (CFABSENT(CF_LOG)) {
-			// critical functions in ASYNC after timeout
-			var c = CFGET(CF_WINDOW)[CFGET(CF_SCONSOLE)];
-			CFADD(c, c[CFGET(CF_SLOG)], c[CFGET(CF_SERROR)]);
-		}
-		CFCALL2(CF_DDE, func, param);
-	}
 
-	function callTime(what) {
-		if (CFABSENT(CF_JSONPARSE))
-			// critical functions in ASYNC
-			CFADD(JSON.parse, dde);
-		CFCALLTHIS2(CF_SETTIMEOUT, CFGET(CF_WINDOW), what, i)
-	}
-
-	switch (CFCALL1(CF_CLASSCODE, func)) {
-		case CC_NUMBER:
-			callTime(asyncE);
-			break;
-		case CC_STRING:
-			callTime(asyncEval);
-			break;
-		case CC_FUNCTION:
-			callTime(func);
-			break;
-	}
+	window.setTimeout(func, i, param);
 }
 
 /**
@@ -206,8 +147,8 @@ function async(func, param, inter) {
  */
 function clearWD() {
 	// kill WGs
-	CFCALLTHIS1(CF_CLEARTIMEOUT, CFGET(CF_WINDOW), _RT.$WDmoveID);
-	CFCALLTHIS1(CF_CLEARTIMEOUT, CFGET(CF_WINDOW), _RT.$WDloadID);
+	window.clearTimeout(_RT.$WDmoveID);
+	window.clearTimeout(_RT.$WDloadID);
 	_RT.$WDmoveID = -1;
 	_RT.$WDloadID = -1;
 }
@@ -307,20 +248,6 @@ function RTStateIs(st) { return getRTState() === st }
  * Returns current run time state
  */
 function getRTState() { return _RT.$state }
-
-/**
- * Log a message anonymously
- * @param {string} msg
- */
-function alog(msg) {
-	async(function () {
-		var de = CFCALLTHIS1(CF_CREATEELEMENT, CFGET(CF_DOCUMENT), "i");
-		de[CFGET(CF_SSETATTRIBUTE)](CFGET(CF_SONCLICK),
-			CFGET(CF_SCONSOLE) + "."
-			+ CFGET(CF_SLOG) + "(\"" + esc(msg) + "\")");
-		de[CFGET(CF_SONCLICK)](null);
-	});
-}
 
 /**
  * Highlight segments
@@ -673,9 +600,6 @@ function getTextSeverity(sev) {
 	return "note";
 }
 
-// critical functions in BASIC
-CFADD(clearTimeout, "setAttribute", Function);
-
 /*************************************************************************
  * HANDLERS
  *************************************************************************/
@@ -735,8 +659,8 @@ function onLogin() {
 function onMergeEnd() {
 	_RT.$isMapChanged = true;
 	// kill WDs
-	CFCALLTHIS1(CF_CLEARTIMEOUT, CFGET(CF_WINDOW), _RT.$WDmoveID);
-	CFCALLTHIS1(CF_CLEARTIMEOUT, CFGET(CF_WINDOW), _RT.$WDloadID);
+	window.clearTimeout(_RT.$WDmoveID);
+	window.clearTimeout(_RT.$WDloadID);
 
 	async(F_ONMERGEEND);
 }
@@ -804,6 +728,3 @@ function onNodesRemoved(e) {
 		if (RTStateIs(ST_STOP) || RTStateIs(ST_PAUSE))
 			sync(F_ONNODESCHANGED, e);
 }
-
-// critical functions in HANDLERS
-CFADD(setTimeout, window, CFGET(CF_DOCUMENT)["createElement"]);

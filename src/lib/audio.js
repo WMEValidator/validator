@@ -20,7 +20,7 @@
 
 /**
  * Audio Context
- * (c) 2013-2016 berestovskyy
+ * (c) 2013-2018 Andriy Berestovskyy
  * oscType: sine, square, sawtooth, triangle
  */
 var _AUDIO = {};

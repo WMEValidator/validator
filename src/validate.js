@@ -18,14 +18,10 @@
  * along with WME Validator. If not, see <http://www.gnu.org/licenses/>.
  */
 
-/*************************************************************************
- * ENCRYPTED FUNCTIONS
- *************************************************************************/
-
 /**
  * Validate current view
  */
-_WV.$functions[F_VALIDATE] = function (disabledHL) {
+function F_VALIDATE(disabledHL) {
 	if (!_RT.$isMapChanged)
 		return;
 	_RT.$isMapChanged = false;
@@ -508,7 +504,7 @@ _WV.$functions[F_VALIDATE] = function (disabledHL) {
 		this.$typeRank = this.getTypeRank(attrs.roadType);
 
 		this.$direction = getDirection(seg);
-		this.$isToll = seg.isTollRoad();
+		// TODO: this.$isToll = seg.isTollRoad();
 		this.$elevation = attrs.level;
 		this.$lock = attrs.lockRank + 1;
 		this.$rank = attrs.rank + 1;
@@ -1489,7 +1485,7 @@ _WV.$functions[F_VALIDATE] = function (disabledHL) {
 				(optBool ? false : true)
 				: (optBool ? true : false));
 			_REP.$debugCounter--;
-			async(alog(getMsg("debug log for segment " + segmentID + ", check #" + checkID,
+			log(getMsg("debug log for segment " + segmentID + ", check #" + checkID,
 				'\n1. '
 				+ (optString ?
 					'Expand template: ' + optString + ' -> '
@@ -1504,7 +1500,7 @@ _WV.$functions[F_VALIDATE] = function (disabledHL) {
 					: "skip the segment")
 				+ (0 < _REP.$debugCounter ? ''
 					: "\nEnd of debug log. Click '\u2718' (Clear report) button to start debug over.")
-			)));
+			));
 		}
 		if (optRegExp.test(expandedString)) {
 			if (!optBool)

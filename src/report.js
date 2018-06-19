@@ -18,14 +18,10 @@
  * along with WME Validator. If not, see <http://www.gnu.org/licenses/>.
  */
 
-/*************************************************************************
- * ENCRYPTED FUNCTIONS
- *************************************************************************/
-
 /**
  * Show generated report
  */
-_WV.$functions[F_SHOWREPORT] = function (reportFormat) {
+function F_SHOWREPORT(reportFormat) {
 	// shortcuts
 	/** @const */
 	var _now = new Date();
@@ -714,7 +710,7 @@ _WV.$functions[F_SHOWREPORT] = function (reportFormat) {
 	// returns HTML footer
 	function getHTMLFooter() {
 		return '\n<hr>'
-			+ '\n<center dir="ltr"><small>' + WV_NAME + ' v' + WV_VERSION + '<br>&copy; 2013-2016 berestovskyy</small></center>'
+			+ '\n<center dir="ltr"><small>' + WV_NAME + ' v' + WV_VERSION + '<br>&copy; 2013-2018 Andriy Berestovskyy</small></center>'
 			+ '\n</body></html>'
 			;
 	}

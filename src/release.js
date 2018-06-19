@@ -47,20 +47,18 @@ var WV_NAME_NO_SPACE = WV_NAME.split(" ").join("");
 /** @const */
 var WV_ABBREVIATION = "WV";
 /** @const */
-var WV_RELEASE_DATE = "2016-11-03";
+var WV_RELEASE_DATE = "2018-06-13";
 /** @const */
 var WV_RELEASE_VALID = "2023-07-01"; /* This check should be removed eventually, but setting to the future for now so we can just get the script working */
-/* Version: 1.1.20 */
-/** @const */
-var WV_MAJOR = "1.1";
-/** @const */
-var WV_MINOR = "20";
-/** Auto-save password @const */
-var AS_PASSWORD = "3";
-/** @const */
-var WV_VERSION = WV_MAJOR + "." + WV_MINOR;
+/** WME Validator version @const */
+var WV_VERSION = "2018.06.13";
+/** Auto-save password. Increase to reset auto-save config. @const */
+var AS_PASSWORD = "v1";
 /** @const */
 var WV_WHATSNEW = ""
+	+ "- First open source release"
+	+ "\n"
+	+ "\n03.11.2016 v1.1.20:"
 	+ "- Fixed #23 Unconfirmed road"
 	+ "\n"
 	+ "\n04.06.2016 v1.1.19:"
@@ -88,20 +86,23 @@ var WV_LICENSE_VERSION = "1";
 /** @const */
 var WV_LICENSE = ""
 	+ "\nLICENSE:"
-	+ "\nThis script has some features locked for certain"
-	+ "\ncountries/editor levels, so there are 2 restrictions:"
-	+ "\n"
-	+ "\n1. You may not modify or reverse engineer the script."
-	+ "\n2. You may not use the script for commercial purposes."
-	+ "\n"
-	+ "\nThe script is distributed 'as is'. No warranty of any"
-	+ "\nkind is expressed or implied. You use at your own risk."
-	+ "\n"
-	+ "\nIf you do not agree with the terms of this license,"
-	+ "\nyou must remove the script files from your storage"
-	+ "\ndevices and cease to use " + WV_NAME + '.'
-	+ "\n"
-	+ "\nNote: " + WV_NAME + " uses local storage to remember"
+	+ "\nWME Validator uses Open Source GPLv3 license,"
+ 	+ "\ni.e. you may copy, distribute and modify the software"
+ 	+ "\nas long as you track changes/dates in source files."
+ 	+ "\nAny modifications to or software including (via compiler)"
+ 	+ "\nGPL-licensed code must also be made available"
+ 	+ "\nunder the GPL along with build & install instructions."
+ 	+ "\n"
+ 	+ "\nWME Validator source code is available on GitHub:"
+ 	+ "\nhttps://github.com/WMEValidator/"
+ 	+ "\n"
+ 	+ "\nFor questions please use official forum:"
+ 	+ "\nhttps://www.waze.com/forum/viewtopic.php?f=819&t=76488"
+ 	+ "\n"
+ 	+ "\nReport bugs on GitHub Issues Tracker:"
+ 	+ "\nhttps://github.com/WMEValidator/validator/issues"
+ 	+ "\n"
+	+ "\nNote: WME Validator uses local storage to remember"
 	+ "\nyour choices and preferences."
 	;
 

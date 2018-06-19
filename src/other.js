@@ -1,5 +1,5 @@
 /*
- * encrypted.js -- WME Validator encrypted functions and handlers
+ * other.js -- WME Validator other functions and handlers
  * Copyright (C) 2013-2018 Andriy Berestovskyy
  *
  * This file is part of WME Validator: https://github.com/WMEValidator/
@@ -18,14 +18,10 @@
  * along with WME Validator. If not, see <http://www.gnu.org/licenses/>.
  */
 
-/*************************************************************************
- * ENCRYPTED FUNCTIONS
- *************************************************************************/
-
 /**
  * On Segments Changed Handler
  */
-_WV.$functions[F_ONSEGMENTSCHANGED] = function(e)
+function F_ONSEGMENTSCHANGED(e)
 {
 	// add nearby segments to _RT.$revalidate
 	var changedNodes = [];
@@ -48,7 +44,7 @@ _WV.$functions[F_ONSEGMENTSCHANGED] = function(e)
 /**
  * On Nodes Changed Handler
  */
-_WV.$functions[F_ONNODESCHANGED] = function(e)
+function F_ONNODESCHANGED(e)
 {
 	// add nearby segments to _RT.$revalidate
 	var reHL = false;
@@ -67,7 +63,7 @@ _WV.$functions[F_ONNODESCHANGED] = function(e)
 /**
  * On Change Layer Handler
  */
-_WV.$functions[F_ONCHANGELAYER] = function(e)
+function F_ONCHANGELAYER(e)
 {
 	if(-1 !== e.layer.id.indexOf(GL_TBPREFIX))
 	{
@@ -95,7 +91,7 @@ _WV.$functions[F_ONCHANGELAYER] = function(e)
 /**
  * On Move End Handler
  */
-_WV.$functions[F_ONMOVEEND] = function()
+function F_ONMOVEEND()
 {
 	var c = WM.getCenter();
 
@@ -103,8 +99,7 @@ _WV.$functions[F_ONMOVEEND] = function()
 		&& -1 === _RT.$WDloadID
 		&& c.equals(_RT.$nextCenter)
 		)
-		_RT.$WDmoveID = CFCALLTHIS2(CF_SETTIMEOUT,
-			CFGET(CF_WINDOW), onMergeEnd, WD_SHORT);
+		_RT.$WDmoveID = window.setTimeout(onMergeEnd, WD_SHORT);
 	else
 	{
 		// autopause on user move
@@ -127,18 +122,17 @@ _WV.$functions[F_ONMOVEEND] = function()
 /**
  * On Load Start Handler
  */
-_WV.$functions[F_ONLOADSTART] = function()
+function F_ONLOADSTART()
 {
 	var c = WM.getCenter();
 
 	// kill move WD
-	CFCALLTHIS1(CF_CLEARTIMEOUT, CFGET(CF_WINDOW), _RT.$WDmoveID);
+	window.clearTimeout(_RT.$WDmoveID);
 
 	if(-1 === _RT.$WDloadID
 		&& c.equals(_RT.$nextCenter)
 	)
-		_RT.$WDloadID = CFCALLTHIS2(CF_SETTIMEOUT,
-			CFGET(CF_WINDOW), onMergeEnd, WD_LONG);
+		_RT.$WDloadID = window.setTimeout(onMergeEnd, WD_LONG);
 
 	_RT.$WDmoveID = -1;
 
@@ -147,7 +141,7 @@ _WV.$functions[F_ONLOADSTART] = function()
 /**
  * Switch all layers but roads off
  */
-_WV.$functions[F_LAYERSOFF] = function()
+function F_LAYERSOFF()
 {
 	// TODO:
 //  Waze.Config.segments.zoomToRoadType[SCAN_ZOOM] = -1;
@@ -172,7 +166,7 @@ _WV.$functions[F_LAYERSOFF] = function()
 /**
  * Switch all layers back on
  */
-_WV.$functions[F_LAYERSON] = function()
+function F_LAYERSON()
 {
 //  if(!_RT.$layersVisibility || _UI.pSettings.pScanner.oShowLayers.CHECKED)
 	if(!_RT.$layersVisibility || GL_SHOWLAYERS)
@@ -194,7 +188,7 @@ _WV.$functions[F_LAYERSON] = function()
 /**
  * Pause scanning
  */
-_WV.$functions[F_PAUSE] = function()
+function F_PAUSE()
 {
 	if(!RTStateIs(ST_RUN))
 		return;
@@ -210,7 +204,7 @@ _WV.$functions[F_PAUSE] = function()
 /**
  * Stop scanning
  */
-_WV.$functions[F_STOP] = function()
+function F_STOP()
 {
 	if(!RTStateIs(ST_STOP))
 	{
@@ -235,9 +229,9 @@ _WV.$functions[F_STOP] = function()
 }
 
 /**
- * Encrypted Merge End Handler
+ * Merge End Handler
  */
-_WV.$functions[F_ONMERGEEND] = function()
+function F_ONMERGEEND()
 {
 	/** @const */
 	var c = WM.getCenter();
@@ -402,9 +396,9 @@ _WV.$functions[F_ONMERGEEND] = function()
 }
 
 /**
- * Encrypted Run Handler
+ * Run Handler
  */
-_WV.$functions[F_ONRUN] = function()
+function F_ONRUN()
 {
 	// clear error flag
 	clearErrorFlag();
@@ -439,9 +433,9 @@ _WV.$functions[F_ONRUN] = function()
 }
 
 /**
- * Encrypted Login Handler
+ * Login Handler
  */
-_WV.$functions[F_ONLOGIN] = function()
+function F_ONLOGIN()
 {
 	if(WLM.user)
 	{
@@ -467,74 +461,9 @@ _WV.$functions[F_ONLOGIN] = function()
 }
 
 /**
- * Show hax messages
- */
- /*
-_WV.$functions[F_HAX] = function(l)
-{
-	if(!DEF_DEBUG)
-	{
-		var msgs = [
-		"Integrity check failed. Please reinstall " + WV_NAME + "!",
-//      "Are you trying to hack?\n\nPlease reinstall " + WV_NAME + "!",
-//      WV_NAME.toUpperCase() + " CAN DELETE ALL THE SEGMENTS\nif you keep trying to hack it!"
-		];
-
-		if(_WV.$loggedIn)
-		{
-			if(_RT.$haxMessage < msgs.length)
-				warning("\n" + msgs[_RT.$haxMessage++]);
-			else
-				_RT.$haxMessage = 0;
-
-			async(F_HAX, l, 1e5);
-		}
-	}
-}
-*/
-
-/**
- * Show hax messages
- */
- /*
-_WV.$functions[F_HAXRED] = function(l)
-{
-	alert("Please report " + WV_NAME + " CODE RED: " + l);
-	// destroy UI
-	_UI = {};
-	// logout
-	async(F_LOGOUT);
-	// uninstall login/logout handler
-	WLM.events.un({
-		"afterloginchanged": onLogin,
-		"login": onLogin
-	});
-	// every 100 sec
-//  async(F_HAX, l, 1e5);
-}
-*/
-
-/**
- * Show hax messages
- */
-_WV.$functions[F_HAXBLUE] = function(l)
-{
-	alert("Please report " + WV_NAME + " CODE BLUE: " + l);
-	// destroy UI
-	_UI = {};
-	// uninstall login/logout handler
-	WLM.events.un({
-		"afterloginchanged": onLogin,
-		"login": onLogin
-	});
-	// every 100 sec
-//  async(F_HAX, l, 1e5);
-}
-
-/**
  * Init
  */
-_WV.$functions[F_INIT] = function()
+function F_INIT()
 {
 	var relDate = new Date(WV_RELEASE_VALID);
 	var nowDate = Date.now();
@@ -545,20 +474,6 @@ _WV.$functions[F_INIT] = function()
 		error("This build of " + WV_NAME + " has expired. Please upgrade!");
 		return;
 	}
-/*
-	// check critical functions
-	if(!OFF_DEF_SUPERUSERS)
-	{
-		var critSum = 0;
-		CFA.forEach(function(e){critSum += e.toString().length});
-		if(critSum != CF_SUMREDC && critSum != CF_SUMREDF)
-		{
-			async(F_HAXRED, (critSum - CF_SUMREDC)
-				+ "," + (critSum - CF_SUMREDF), 1e3);
-			return;
-		}
-	}
-*/
 
 	// init shortcuts
 	UW = window;
@@ -832,7 +747,7 @@ _WV.$functions[F_INIT] = function()
 /**
  * Warn User
  */
-_WV.$functions[F_ONWARNING] = function(e)
+function F_ONWARNING(e)
 {
 	// update document
 	_THUI.viewToDoc(_UI);
@@ -850,7 +765,7 @@ _WV.$functions[F_ONWARNING] = function(e)
 /**
  * Update User Interface
  */
-_WV.$functions[F_UPDATEUI] = function(e)
+function F_UPDATEUI(e)
 {
 	/**
 	 * Destroj HLs
@@ -1296,10 +1211,11 @@ _WV.$functions[F_UPDATEUI] = function(e)
 	var storageObj = _THUI.saveValues(_UI);
 	storageObj[AS_VERSION] = WV_VERSION;
 	storageObj[AS_LICENSE] = WV_LICENSE_VERSION;
+	storageObj[AS_PASSWORD] = 1;
 	try
 	{
 		window.localStorage.setItem(AS_NAME,
-			Tea.encrypt(JSON.stringify(storageObj), AS_PASSWORD));
+			JSON.stringify(storageObj));
 	}
 	catch (err) {}
 
@@ -1310,7 +1226,7 @@ _WV.$functions[F_UPDATEUI] = function(e)
 /**
  * Logout a user
  */
-_WV.$functions[F_LOGOUT] = function()
+function F_LOGOUT()
 {
 	log("logout");
 	// destroy UI
@@ -1344,9 +1260,5 @@ _WV.$functions[F_LOGOUT] = function()
 	});
 }
 
-// critical functions in ENCRYPTED
-CFADD(classCode, "".replace, "console",
-	CFGET(CF_FUNCTION)["apply"], CFGET(CF_FUNCTION)["call"]);
-
 // call the init function when the library is initialized
-CFCALL3(CF_ASYNC, F_INIT, 0, 1);
+async(F_INIT, 0, 1);

@@ -22,7 +22,7 @@
 /**
  * Tiny HTML User Interface
  * see header for THUI types declarations
- * (c) 2013-2016 berestovskyy
+ * (c) 2013-2018 Andriy Berestovskyy
  */
 
 /**
@@ -124,7 +124,7 @@ _THUI.storage = {
 	get: function (name) {
 		try {
 			var s = window.localStorage.getItem(name);
-			return s ? JSON.parse(Base64.decode(s)) : null;
+			return s ? JSON.parse(s) : null;
 		}
 		catch (e) {
 			return null;
@@ -133,7 +133,7 @@ _THUI.storage = {
 	set: function (name, obj) {
 		try {
 			var s = JSON.stringify(obj);
-			window.localStorage.setItem(name, Base64.encode(s));
+			window.localStorage.setItem(name, s);
 			return true;
 		}
 		catch (e) {

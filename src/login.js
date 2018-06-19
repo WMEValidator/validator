@@ -18,14 +18,10 @@
  * along with WME Validator. If not, see <http://www.gnu.org/licenses/>.
  */
 
-/*************************************************************************
- * ENCRYPTED FUNCTIONS
- *************************************************************************/
-
 /**
  * Login new user
  */
-_WV.$functions[F_LOGIN] = function()
+function F_LOGIN()
 {
 	log("login " + WLM.user.userName);
 
@@ -192,8 +188,6 @@ _WV.$functions[F_LOGIN] = function()
 		$seen: {},
 		// map of segment IDs to revalidate
 		$revalidate: {},
-		// hax message number
-		$haxMessage: 0,
 		// current user
 		$curUserName: WLM.user.userName,
 		// error flag
@@ -1083,7 +1077,7 @@ _WV.$functions[F_LOGIN] = function()
 			TEXT: '<p><b>' + WV_NAME + '</b>'
 				+ '<br>Version ' + WV_VERSION + ' <a target="_blank" href="' + PFX_FORUM + FORUM_HOME + '">check for updates</a>'
 				+ '<br>Expiration date: ' + WV_RELEASE_VALID
-				+ '<br>&copy; 2013-2016 berestovskyy</p>'
+				+ '<br>&copy; 2013-2018 Andriy Berestovskyy</p>'
 				+ '<p><b>Built-in localization packs for:</b><br>'
 				+ listOfIntPacks
 				+ '<p><b>External localization packs for:</b><br>'
@@ -1165,7 +1159,11 @@ _WV.$functions[F_LOGIN] = function()
 	try
 	{
 		s = window.localStorage.getItem(AS_NAME);
-		storageObj = s ? JSON.parse(Tea.decrypt(s, AS_PASSWORD)) : null;
+		storageObj = s ? JSON.parse(s) : null;
+		if (!(AS_PASSWORD in storageObj))
+		{
+			storageObj = null;
+		}
 	}
 	catch (e) {}
 

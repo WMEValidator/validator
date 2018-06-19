@@ -59,7 +59,7 @@ _THUI.DATE = 9;
  *************************************************************************/
 
 /**
- * Global private namespace for encrypted functions
+ * Global private namespace
  * @type {Object}
  */
 var _WV = {};
@@ -387,47 +387,47 @@ var CL_MSGY = 0xd5a79147;
 var CL_TRANSLATETIP = 0xd5a79147 + 1;
 
 /** @const */
-var AS_LICENSE = 0x14292967 - 2;
+var AS_LICENSE = "license";
 /** @const */
-var AS_VERSION = 0x14292967 - 1;
+var AS_VERSION = "version";
 /** Filter: @const */
-var AS_NONEDITABLES = 0x14292967;
+var AS_NONEDITABLES = "non_editables";
 /** @const */
-var AS_DUPLICATES = 0x14292967 + 1;
+var AS_DUPLICATES = "duplicates";
 /** @const */
-var AS_STREETS = 0x14292967 + 2;
+var AS_STREETS = "streets";
 /** @const */
-var AS_OTHERS = 0x14292967 + 3;
+var AS_OTHERS = "others";
 /** @const */
-var AS_NOTES = 0x14292967 + 4;
+var AS_NOTES = "notes";
 
 /** @const */
-var AS_YOUREDITS = 0x14292967 + 5;
+var AS_YOUREDITS = "your_edits";
 /** @const */
-var AS_UPDATEDSINCE = 0x14292967 + 6;
+var AS_UPDATEDSINCE = "updated_since";
 /** @const */
-var AS_CITYNAME = 0x14292967 + 7;
+var AS_CITYNAME = "city_name";
 /** @const */
-var AS_CHECKS = 0x14292967 + 8;
+var AS_CHECKS = "checks";
 /** @const */
-var AS_UPDATEDBY = 0x14292967 + 9;
+var AS_UPDATEDBY = "updated_by";
 
 /** Settings: @const */
-var AS_SOUNDS = 0x06ca6351;
+var AS_SOUNDS = "sounds";
 /** @const */
-var AS_HLISSUES = 0x06ca6351 + 1;
+var AS_HLISSUES = "hl_issues";
 /** @const */
-var AS_SLOWCHECKS = 0x06ca6351 + 2;
+var AS_SLOWCHECKS = "slow_checks";
 /** @const */
-var AS_CUSTOM1TEMPLATE = 0x06ca6351 + 4;
+var AS_CUSTOM1TEMPLATE = "custom1_template";
 /** @const */
-var AS_CUSTOM1REGEXP = 0x06ca6351 + 5;
+var AS_CUSTOM1REGEXP = "custom1_regexp";
 /** @const */
-var AS_CUSTOM2TEMPLATE = 0x06ca6351 + 6;
+var AS_CUSTOM2TEMPLATE = "custom2_template";
 /** @const */
-var AS_CUSTOM2REGEXP = 0x06ca6351 + 7;
+var AS_CUSTOM2REGEXP = "custom2_regexp";
 /** @const */
-var AS_REPORTEXT = 0x06ca6351 + 8;
+var AS_REPORTEXT = "report_ext";
 
 /** @const */
 var ID_PROPERTY = 0xe49b69c1;
@@ -541,6 +541,3 @@ var WC = null;
 var UW = null;
 /** requite @const */
 var R = null;
-
-// critical functions in DATA
-CFADD(async, "onclick", document);
