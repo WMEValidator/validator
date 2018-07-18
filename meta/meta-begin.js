@@ -6,8 +6,9 @@
 // @match               https://www.waze.com/*editor*
 // @exclude             https://www.waze.com/*user/*editor/*
 // @grant               none
-// @icon                http://s3.amazonaws.com/uso_ss/icon/191016/large.png?1388868317
-// @namespace           https://www.waze.com/forum/viewtopic.php?f=819&t=76488
+// @icon                https://raw.githubusercontent.com/WMEValidator/release/master/img/WV-icon96.png
+// @namespace           a
+// @homepage            https://www.waze.com/forum/viewtopic.php?f=819&t=76488
 // @author              Andriy Berestovskyy <berestovskyy@gmail.com>
 // @copyright           2013-2018 Andriy Berestovskyy
 // @license             GPLv3

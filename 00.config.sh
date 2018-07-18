@@ -2,7 +2,7 @@
 COMPILER=${HOME}/bin/closure-compiler-v20180506.jar
 
 EXT_NAME=WV
-EXT_FILE_NAME="WME_Validator"
+EXT_FILE_NAME="WME_Validator.user.js"
 
 SRC_DIR="."
 DST_DIR="build"

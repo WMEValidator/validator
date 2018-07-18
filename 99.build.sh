@@ -61,4 +61,4 @@ mkdir -p "${DST_DIR}"
 cat "${SRC_DIR}/meta/meta-begin.js" \
 	"${TMP_DIR}/gen-${EXT_NAME}-compiled.js" \
 	"${SRC_DIR}/meta/meta-end.js" \
-	> "${DST_DIR}/${EXT_FILE_NAME}.user.js"
+	> "${DST_DIR}/${EXT_FILE_NAME}"
