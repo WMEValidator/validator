@@ -47,19 +47,19 @@ var WV_NAME_NO_SPACE = WV_NAME.split(" ").join("");
 /** @const */
 var WV_ABBREVIATION = "WV";
 /** @const */
-var WV_RELEASE_DATE = "2018-06-13";
+var WV_RELEASE_DATE = "2018-07-18";
 /** @const */
 var WV_RELEASE_VALID = "2023-07-01"; /* This check should be removed eventually, but setting to the future for now so we can just get the script working */
 /** WME Validator version @const */
-var WV_VERSION = "2018.06.13";
+var WV_VERSION = "2018.07.18";
 /** Auto-save password. Increase to reset auto-save config. @const */
 var AS_PASSWORD = "v1";
 /** @const */
 var WV_WHATSNEW = ""
-	+ "- First open source release"
+	+ "\n- First public open source release"
 	+ "\n"
 	+ "\n03.11.2016 v1.1.20:"
-	+ "- Fixed #23 Unconfirmed road"
+	+ "\n- Fixed #23 Unconfirmed road"
 	+ "\n"
 	+ "\n04.06.2016 v1.1.19:"
 	+ "\n- Fixed WME Beta"
