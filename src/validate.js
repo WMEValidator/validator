@@ -118,7 +118,7 @@ function F_VALIDATE(disabledHL) {
 	 * @param {number} objID
 	 */
 	function getUserName(objID) {
-		var u = WMo.users.get(objID);
+		var u = WMo.users.getObjectById(objID);
 		return u ? u.userName : objID.toString();
 	}
 
@@ -128,7 +128,7 @@ function F_VALIDATE(disabledHL) {
 	 * @param {number} objID
 	 */
 	function getUserLevel(objID) {
-		var u = WMo.users.get(objID);
+		var u = WMo.users.getObjectById(objID);
 		return u ? u.normalizedLevel : 0;
 	}
 
@@ -190,7 +190,7 @@ function F_VALIDATE(disabledHL) {
 		/** @type {number} */
 		this.$inConnectionsLen = 0;
 
-		var n = WMo.nodes.get(objID);
+		var n = WMo.nodes.getObjectById(objID);
 		this.$rawNode = n;
 		if (n) {
 			this.$isPartial = n.attributes.partial;
@@ -217,7 +217,7 @@ function F_VALIDATE(disabledHL) {
 			for (var i = 0; i < n.attributes.segIDs.length; i++) {
 				var si = n.attributes.segIDs[i];
 				// TODO: workaround for hangs at new segment save / 20150105
-				if (segID === si || !WMo.segments.get(si))
+				if (segID === si || !WMo.segments.getObjectById(si))
 					continue;
 				this._rawOtherSegments.push(si);
 			}
@@ -482,7 +482,7 @@ function F_VALIDATE(disabledHL) {
 		/** @type {number} */
 		this.$BARestrictionsLen = 0;
 
-		var seg = WMo.segments.get(objID);
+		var seg = WMo.segments.getObjectById(objID);
 		if (classCodeIs(seg, CC_UNDEFINED) || classCodeIs(seg, CC_NULL))
 			return;
 
