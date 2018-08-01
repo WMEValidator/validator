@@ -51,11 +51,16 @@ var WV_RELEASE_DATE = "2018-07-18";
 /** @const */
 var WV_RELEASE_VALID = "2023-07-01"; /* This check should be removed eventually, but setting to the future for now so we can just get the script working */
 /** WME Validator version @const */
-var WV_VERSION = "2018.07.18";
+var WV_VERSION = "2018.08.01";
 /** Auto-save password. Increase to reset auto-save config. @const */
 var AS_PASSWORD = "v1";
 /** @const */
 var WV_WHATSNEW = ""
+	+ "\n01.08.2018:"
+	+ "\n- Transfer NL translations from Greasyfork"
+	+ "\n- other minor changes"
+	+ "\n"
+	+ "\n18.07.2018:"
 	+ "\n- First public open source release"
 	+ "\n"
 	+ "\n03.11.2016 v1.1.20:"
@@ -69,17 +74,6 @@ var WV_WHATSNEW = ""
 	+ "\n02.06.2016 v1.1.18:"
 	+ "\n- Fixed Firefox browser"
 	+ "\n- Added Validator tab"
-	+ "\n"
-	+ "\n01.06.2016 v1.1.17:"
-	+ "\n- Fixed (some) icons"
-	+ "\n- Fixed (some) event handlers"
-	+ "\n"
-	+ "\n29.01.2016 v1.1.16:"
-	+ "\n- Fixed Firefox browser (thanks to Glodenox)"
-	+ "\n- Updated CZ localizations"
-	+ "\n"
-	+ "\n13.12.2015 v1.1.15:"
-	+ "\n- Updated US and CZ localizations"
 	;
 /** @const */
 var WV_LICENSE_VERSION = "1";

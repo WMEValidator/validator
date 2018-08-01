@@ -1,6 +1,6 @@
 // ==UserScript==
 // @name                WME Validator
-// @version             2018.07.18
+// @version             2018.08.01
 // @description         This script validates a map area in Waze Map Editor, highlights issues and generates a very detailed report with wiki references and solutions
 // @match               https://beta.waze.com/*editor*
 // @match               https://www.waze.com/*editor*
@@ -13,6 +13,7 @@
 // @copyright           2013-2018 Andriy Berestovskyy
 // @license             GPLv3
 // @contributor         justins83
+// @contributor         davidakachaos
 // ==/UserScript==
 /*
  * WME Validator uses Open Source GPLv3 license, i.e. you may copy,

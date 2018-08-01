@@ -1,4 +1,8 @@
-30.05.2018:
+01.08.2018:
+- Transfer NL translations from Greasyfork
+- other minor changes
+
+18.07.2018:
 - First open source release
 
 30.05.2018:
