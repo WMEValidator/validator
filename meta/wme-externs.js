@@ -329,28 +329,29 @@ var W = {
 		},
 		segments: {
 			getObjectArray: function () { },
+			getObjectById: function (e) { },
 			objects: {},
 			topCityID: 0
 		},
 		nodes: {
-			get: function (i) { }
+			getObjectById: function (i) { }
 		},
 		streets: {
-			get: function (i) { }
+			getObjectById: function (i) { }
 		},
 		cities: {
-			get: function (i) { }
+			getObjectById: function (i) { }
 		},
 		states: {
-			get: function (i) { },
+			getObjectById: function (i) { },
 			getByAttributes: function (i) { }
 		},
 		countries: {
-			get: function (i) { },
+			getObjectById: function (i) { },
 			getByAttributes: function (i) { }
 		},
 		users: {
-			get: function (i) { }
+			getObjectById: function (i) { }
 		}
 	},
 	controller: {},
@@ -360,7 +361,7 @@ var W = {
 // window Namespace
 window.OpenLayers = {};
 window.$ = function (e) { };
-window.Waze = {};
+// window.Waze = {};
 window.W = {};
 window.viewHelpers = {
 	formatRank: function (r) { }

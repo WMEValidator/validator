@@ -32,7 +32,7 @@ function F_ONSEGMENTSCHANGED(e)
 		{
 			var nodeID = nodeIDs[j];
 			if(!nodeID) continue;
-			var node = WMo.nodes.get(nodeID);
+			var node = WMo.nodes.getObjectById(nodeID);
 			if(node)
 				changedNodes.push(node);
 		}
@@ -600,15 +600,15 @@ function F_INIT()
 		if(objID)
 		{
 			this.$cityID = objID;
-			var oc = WMo.cities.get(objID);
+			var oc = WMo.cities.getObjectById(objID);
 			if(oc)
 			{
 				this.$city = oc.attributes.isEmpty ? "" : oc.attributes.name;
-				var o = WMo.states.get(oc.attributes.stateID);
+				var o = WMo.states.getObjectById(oc.attributes.stateID);
 				if(o)
 					this.$state = o.name;
 					this.$countryID = oc.attributes.countryID;
-				o = WMo.countries.get(oc.attributes.countryID);
+				o = WMo.countries.getObjectById(oc.attributes.countryID);
 				if(o)
 					this.$country = o.name;
 			}
@@ -723,7 +723,7 @@ function F_INIT()
 		if(objID)
 		{
 			this.$streetID = objID;
-			var o = WMo.streets.get(objID);
+			var o = WMo.streets.getObjectById(objID);
 			if(o)
 			{
 				this.$street = o.isEmpty ? "" : o.name;
