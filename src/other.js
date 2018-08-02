@@ -467,7 +467,7 @@ function F_INIT()
 {
 	// init shortcuts
 	UW = window;
-	Wa = UW.Waze;
+	Wa = UW.W;
 	nW = UW.W;
 	WLM = nW.loginManager;
 	WSM = nW.selectionManager;
