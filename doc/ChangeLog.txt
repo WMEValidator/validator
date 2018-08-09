@@ -1,11 +1,17 @@
-01.08.2018:
-- Transfer NL translations from Greasyfork
+Current changes:
+
+v2018.08.09:
+- add GreasyFork release script
+- disable checks 114 and 115 (drivable & non-drivable)
+
+v2018.08.01:
+- davidakachaos: Transfer NL translations from Greasyfork
 - other minor changes
 
-18.07.2018:
+v2018.07.18:
 - First open source release
 
-30.05.2018:
+v2018.05.30:
 - Initial public commit
 
 
