@@ -1,5 +1,7 @@
 #!/bin/sh
 
+echo "===> Building ${EXT_FILE_NAME}"
+
 if [ -z "${SRC_DIR}" ]; then
 	echo "No config found"
 	exit 1
