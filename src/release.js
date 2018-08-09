@@ -35,16 +35,20 @@
  * WV RELEASE INFORMATION
  */
 /** WME Validator version @const */
-var WV_VERSION = "2018.08.01";
+var WV_VERSION = "2018.08.09";
 /** Auto-save password. Increase to reset auto-save config. @const */
 var AS_PASSWORD = "v1";
 /** @const */
 var WV_WHATSNEW = ""
-	+ "\n01.08.2018:"
+	+ "\nv2018.08.09:"
+	+ "\n- GreasyFork release is live again"
+	+ "\n- disable #114 and #115 (drivable & non-drivable)"
+	+ "\n"
+	+ "\nv2018.08.01:"
 	+ "\n- Transfer NL translations from Greasyfork"
 	+ "\n- other minor changes"
 	+ "\n"
-	+ "\n18.07.2018:"
+	+ "\nv2018.07.18:"
 	+ "\n- First public open source release"
 	+ "\n"
 	+ "\n03.11.2016 v1.1.20:"
