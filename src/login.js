@@ -159,7 +159,6 @@ function F_LOGIN()
 			$userID: WLM.user.id,
 			$userName: WLM.user.userName,
 			$userLevel: WLM.user.normalizedLevel,
-			$isSuperUser: WLM.user.userName === GA_SUPERUSER,
 			$isCM: WLM.user.editableCountryIDs ?
 				0 !== WLM.user.editableCountryIDs.length : false,
 			$countryIDs: WLM.user.editableCountryIDs ?
@@ -447,10 +446,10 @@ function F_LOGIN()
 	for(var gObject in window)
 	{
 		if(!window.hasOwnProperty(gObject)) continue;
-		if(-1 !== gObject.indexOf(WV_NAME_))
+		if(-1 !== gObject.indexOf("WME_Validator"))
 		{
 			var translation = window[gObject];
-			log("found localization pack: " + gObject.replace(WV_NAME_ + '_', ''));
+			log("found localization pack: " + gObject.replace('WME_Validator_', ''));
 			mirrorChecks(translation);
 			_I18n.addTranslation(translation);
 
@@ -981,7 +980,7 @@ function F_LOGIN()
 			_ONCLICK: onUpdateUI,
 			tMain: {
 				TEXT:   trS("tab.settings.text") + ':',
-				TITLE:  WV_NAME + " Version " + WV_VERSION,
+				TITLE:  "WME Validator Version " + WV_VERSION,
 				STYLEO: "max-width:85px",
 				DISABLED: 1
 			},
@@ -1074,9 +1073,8 @@ function F_LOGIN()
 		pAbout: {
 			CLASS: CL_PANEL,
 			NODISPLAY: 1,
-			TEXT: '<p><b>' + WV_NAME + '</b>'
+			TEXT: '<p><b>WME Validator</b>'
 				+ '<br>Version ' + WV_VERSION + ' <a target="_blank" href="' + PFX_FORUM + FORUM_HOME + '">check for updates</a>'
-				+ '<br>Expiration date: ' + WV_RELEASE_VALID
 				+ '<br>&copy; 2013-2018 Andriy Berestovskyy</p>'
 				+ '<p><b>Built-in localization packs for:</b><br>'
 				+ listOfIntPacks
@@ -1124,7 +1122,7 @@ function F_LOGIN()
 	clearReport();
 
 	// check if user is a country manager
-	if(_RT.$topUser.$isCM || _RT.$topUser.$isSuperUser)
+	if(_RT.$topUser.$isCM)
 	{
 		_UI.pMain.pSearch.oIncludeYourEdits.NODISPLAY = 1;
 		_UI.pMain.pSearch.oIncludeUpdatedBy.NODISPLAY = 0;
@@ -1248,8 +1246,8 @@ function F_LOGIN()
 	$('#user-tabs ul').append('<li>'
 		+ '<a data-toggle="tab" href="#sidepanel-' + ID_PREFIX + '">'
 		+ '<span class="fa fa-check-square-o"></span>'
-		// + '<span class="c' + CL_COLLAPSE + '"> ' + WV_SHORTNAME + ':</span>'
-		+ ' ' + WV_SHORTNAME
+		// + '<span class="c' + CL_COLLAPSE + '"> Validator:</span>'
+		+ ' Validator'
 		+ '</a></li>'
 		);
 	$('#user-tabs+div.tab-content').append(

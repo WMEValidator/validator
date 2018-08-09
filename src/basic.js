@@ -62,7 +62,7 @@ function escRE(e) {
  * @param {boolean=} newLine
  */
 function getMsg(mType, msg, newLine) {
-	return WV_NAME + " v" + WV_VERSION
+	return "WME Validator v" + WV_VERSION
 		+ (mType ? " " + mType : "")
 		+ (msg ? ":"
 			+ (newLine ? "\n" : " ")
@@ -458,8 +458,7 @@ function checkFilter(severity, segmentCopy, seenSegments) {
 				cache[hash] = false;
 				// check if the user tries to match another user
 				if (curUser !== _RT.$topUser.$userName
-					&& !_RT.$topUser.$isCM
-					&& !_RT.$topUser.$isSuperUser)
+					&& !_RT.$topUser.$isCM)
 					return false;
 				// check if CM match country ID
 				if (_RT.$topUser.$isCM

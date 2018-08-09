@@ -1280,8 +1280,7 @@ function F_VALIDATE(disabledHL) {
 			}
 		} // for all selected segments
 
-		var newProp = '<b style="display:block"><a target="_blank" href="' + PFX_FORUM + FORUM_HOME + '">' + WV_NAME
-			+ '</a> ' + trS("props.reports") + ':</b>'
+		var newProp = '<b style="display:block"><a target="_blank" href="' + PFX_FORUM + FORUM_HOME + '">WME Validator</a> ' + trS("props.reports") + ':</b>'
 			;
 		if (_REP.$isLimitPerCheck) {
 			newProp += '<div class="c' + CL_RIGHTTIP + ' c' + CL_NOTE + '">'
@@ -1685,18 +1684,6 @@ function F_VALIDATE(disabledHL) {
 		// check if any editable found
 		if (segment.$isEditable)
 			_REP.$isEditableFound = true;
-
-		// check expiration date
-		if (0 === segmentID % 13 && segment.$updatedOn) {
-			var relDate = new Date(WV_RELEASE_VALID);
-			var nowDate = new Date(segment.$updatedOn);
-			if (0 > relDate.getTime() - nowDate) {
-				// destroy UI
-				_UI = {};
-				error("This build of " + WV_NAME + " has expired. Please upgrade!");
-				return;
-			}
-		}
 
 		///////////////////////////////////////////////////////////////////
 		// Checks
