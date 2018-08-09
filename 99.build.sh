@@ -50,6 +50,7 @@ java -jar "${COMPILER}" \
 	--jscomp_warning=checkTypes \
 	--jscomp_warning=missingProperties \
 	--jscomp_off es5Strict \
+	--charset UTF-8 \
 	${EXTRA_PARAMS}
 
 if [ $? != 0 ]; then
