@@ -1,5 +1,7 @@
 #!/bin/sh
 
+echo "===> Building ${EXT_FILE_NAME}"
+
 if [ -z "${SRC_DIR}" ]; then
 	echo "No config found"
 	exit 1
@@ -50,6 +52,7 @@ java -jar "${COMPILER}" \
 	--jscomp_warning=checkTypes \
 	--jscomp_warning=missingProperties \
 	--jscomp_off es5Strict \
+	--charset UTF-8 \
 	${EXTRA_PARAMS}
 
 if [ $? != 0 ]; then

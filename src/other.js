@@ -465,16 +465,6 @@ function F_ONLOGIN()
  */
 function F_INIT()
 {
-	var relDate = new Date(WV_RELEASE_VALID);
-	var nowDate = Date.now();
-	if(0 > relDate.getTime() - nowDate)
-	{
-		// destroy UI
-		_UI = {};
-		error("This build of " + WV_NAME + " has expired. Please upgrade!");
-		return;
-	}
-
 	// init shortcuts
 	UW = window;
 	Wa = UW.Waze;
@@ -502,9 +492,9 @@ function F_INIT()
 	var _gaq = UW["_gaq"];
 	if(_gaq)
 	{
-		_gaq.push([WV_NAME_ + "._setAccount", "UA-46853768-3"]);
-		_gaq.push([WV_NAME_ + "._setDomainName", "waze.com"]);
-		_gaq.push([WV_NAME_ + "._trackPageview"]);
+		_gaq.push(["WME_Validator._setAccount", "UA-46853768-3"]);
+		_gaq.push(["WME_Validator._setDomainName", "waze.com"]);
+		_gaq.push(["WME_Validator._trackPageview"]);
 	}
 
 	_WV.$loggedIn = false;
@@ -847,16 +837,16 @@ function F_UPDATEUI(e)
 		if(_UI.pSettings.pScanner.oHLReported.CHECKED)
 		{
 // TODO: France
-			_UI.pMain.pTabs.tMain.TEXT = '<i class="fa fa-check-square-o" aria-hidden="true"></i> ' + WV_SHORTNAME + ':';
+			_UI.pMain.pTabs.tMain.TEXT = '<i class="fa fa-check-square-o" aria-hidden="true"></i> ' + 'Validator:';
 //            _UI.pMain.pTabs.tMain.TEXT = '<i class="fa fa-check-square-o" aria-hidden="true"></i><span style="background-color:#9999e0"> Val</span><span style="background-color:#f8f8f8">ida</span><span style="background-color:#e09999">tor:</span>';
 			_UI.pMain.pTabs.tMain.TITLE = trS("tab.switch.tip.off");
 		}
 		else
 		{
-			_UI.pMain.pTabs.tMain.TEXT = '<font color="#ccc"><i class="fa fa-power-off" aria-hidden="true"></i> ' + WV_SHORTNAME + ':</font>';
+			_UI.pMain.pTabs.tMain.TEXT = '<font color="#ccc"><i class="fa fa-power-off" aria-hidden="true"></i> ' + 'Validator:</font>';
 			_UI.pMain.pTabs.tMain.TITLE = trS("tab.switch.tip.on");
 		}
-		_UI.pMain.pTabs.tMain.TITLE += '\n' + WV_NAME + " Version " + WV_VERSION;
+		_UI.pMain.pTabs.tMain.TITLE += '\nWME Validator Version ' + WV_VERSION;
 
 	}
 	/**

@@ -34,33 +34,21 @@
 /**
  * WV RELEASE INFORMATION
  */
-/** CHECKSUM @const */
-var CF_SUMBLUE = 329630;
-/** @const */
-var WV_SHORTNAME = "Validator";
-/** @const */
-var WV_NAME = "WME " + WV_SHORTNAME;
-/** @const */
-var WV_NAME_ = WV_NAME.split(" ").join("_");
-/** @const */
-var WV_NAME_NO_SPACE = WV_NAME.split(" ").join("");
-/** @const */
-var WV_ABBREVIATION = "WV";
-/** @const */
-var WV_RELEASE_DATE = "2018-07-18";
-/** @const */
-var WV_RELEASE_VALID = "2023-07-01"; /* This check should be removed eventually, but setting to the future for now so we can just get the script working */
 /** WME Validator version @const */
-var WV_VERSION = "2018.08.01";
+var WV_VERSION = "2018.08.09";
 /** Auto-save password. Increase to reset auto-save config. @const */
 var AS_PASSWORD = "v1";
 /** @const */
 var WV_WHATSNEW = ""
-	+ "\n01.08.2018:"
+	+ "\nv2018.08.09:"
+	+ "\n- GreasyFork release is live again"
+	+ "\n- disable #114 and #115 (drivable & non-drivable)"
+	+ "\n"
+	+ "\nv2018.08.01:"
 	+ "\n- Transfer NL translations from Greasyfork"
 	+ "\n- other minor changes"
 	+ "\n"
-	+ "\n18.07.2018:"
+	+ "\nv2018.07.18:"
 	+ "\n- First public open source release"
 	+ "\n"
 	+ "\n03.11.2016 v1.1.20:"
@@ -107,13 +95,6 @@ var WV_LICENSE = ""
 var GA_FORLEVEL = 1;
 /** @const */
 var GA_FORUSER = "!Dekis,*";
-/** @const */
-var GA_LEVEL1 = 1;
-/**
- * Users allowed to lookup other users
- * @const
- */
-var GA_SUPERUSER = "berestovskyy";
 
 /** @const */
 var GA_FORCOUNTRY = "";

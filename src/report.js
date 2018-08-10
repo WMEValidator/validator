@@ -412,10 +412,10 @@ function F_SHOWREPORT(reportFormat) {
 	// returns new pack header
 	function getPackHeader(country, lng) {
 		return '// ==UserScript==' + Br
-			+ '// @name                ' + WV_NAME + ' Localization for ' + country + Br
+			+ '// @name                WME Validator Localization for ' + country + Br
 			+ '// @version             ' + WV_VERSION + Br
-			+ '// @description         This script localizes ' + WV_NAME + ' for ' + country
-			+ '. You also need main package (' + WV_NAME + ') installed.' + Br
+			+ '// @description         This script localizes WME Validator for ' + country
+			+ '. You also need main package (WME Validator) installed.' + Br
 			+ '// @match               https://editor-beta.waze.com/*editor/*' + Br
 			+ '// @match               https://www.waze.com/*editor/*' + Br
 			+ '// @grant               none' + Br
@@ -461,7 +461,7 @@ function F_SHOWREPORT(reportFormat) {
 
 		var ret = ''
 			+ Br
-			+ 'window.' + WV_NAME_ + '_' + _country + ' = '
+			+ 'window.WME_Validator_' + _country + ' = '
 			;
 
 		var newCountries = [];
@@ -710,7 +710,7 @@ function F_SHOWREPORT(reportFormat) {
 	// returns HTML footer
 	function getHTMLFooter() {
 		return '\n<hr>'
-			+ '\n<center dir="ltr"><small>' + WV_NAME + ' v' + WV_VERSION + '<br>&copy; 2013-2018 Andriy Berestovskyy</small></center>'
+			+ '\n<center dir="ltr"><small>WME Validator v' + WV_VERSION + '<br>&copy; 2013-2018 Andriy Berestovskyy</small></center>'
 			+ '\n</body></html>'
 			;
 	}

@@ -108,13 +108,13 @@ var _REP = {}
 /** @const */
 var GL_SHOWLAYERS = false;
 /** @const */
-var GL_LAYERNAME = WV_NAME;
+var GL_LAYERNAME = "WME Validator";
 /** @const */
 //var GL_LAYERBIT = 13;
 /** @const */
-var GL_LAYERUNAME = WV_NAME_NO_SPACE;
+var GL_LAYERUNAME = "WMEValidator";
 /** @const */
-var GL_LAYERACCEL = "toggle" + WV_NAME_NO_SPACE;
+var GL_LAYERACCEL = "toggleWMEValidator";
 /** @const */
 var GL_LAYERSHORTCUT = "A+v";
 /** @const */
@@ -456,7 +456,7 @@ var CL_RIGHTTIPDESCR = 0x4a7484aa + 2;
  * Autosave
  */
 /** Auto-save object name @const */
-var AS_NAME = WV_NAME_;
+var AS_NAME = "WME_Validator";
 
 /**
  * Sizes
