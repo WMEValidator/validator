@@ -467,7 +467,7 @@ function F_INIT()
 {
 	// init shortcuts
 	UW = window;
-	Wa = UW.Waze;
+	Wa = UW.W;
 	nW = UW.W;
 	WLM = nW.loginManager;
 	WSM = nW.selectionManager;
@@ -503,6 +503,9 @@ function F_INIT()
 		"loginStatus": onLogin,
 		"login": onLogin
 	});
+
+	// install event recovery
+	W.app.modeController.model.bind('change:mode', F_INIT);
 
 	// do login or wait for user
 	async(F_ONLOGIN);
