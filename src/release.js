@@ -32,8 +32,11 @@
  *************************************************************************/
 
 /**
- * WV RELEASE INFORMATION
- */
+* WV RELEASE INFORMATION
+*/
+// Fixes error building the I18n
+var WV_NAME = "WME Validator";
+var WV_SHORTNAME = "Validator";
 /** WME Validator version @const */
 var WV_VERSION = "2018.08.09";
 /** Auto-save password. Increase to reset auto-save config. @const */
