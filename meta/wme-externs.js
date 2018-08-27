@@ -263,6 +263,13 @@ String.prototype.startsWith = function (a) { };
 ///////////////////////////////////////////////////////////////////////////
 // W Namespace
 var W = {
+	app: {
+		modeController:{
+			model:{
+				bind: function(a, b) { },
+			},
+		},
+	},
 	accelerators: {
 		events: {
 			register: function (a, b, c) { },
