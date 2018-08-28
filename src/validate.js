@@ -2012,6 +2012,10 @@ function F_VALIDATE(disabledHL) {
 					&& otherSegment.$address.$city === city
 					&& otherSegment.$address.$state === state
 					&& otherSegment.$address.$country === country
+					&& otherSegment.$fwdMaxSpeed === forwardSpeed
+					&& otherSegment.$revMaxSpeed === reverseSpeed
+					&& otherSegment.$fwdMaxSpeedUnverified === forwardSpeedUnverified
+					&& otherSegment.$revMaxSpeedUnverified === reverseSpeedUnverified
 					&& otherSegment.$type === roadType
 					&& otherSegment.$isToll === isToll
 					// 2 & 2 || !2 && !2
@@ -2075,6 +2079,10 @@ function F_VALIDATE(disabledHL) {
 					&& otherSegment.$address.$city === city
 					&& otherSegment.$address.$state === state
 					&& otherSegment.$address.$country === country
+					&& otherSegment.$fwdMaxSpeed === forwardSpeed
+					&& otherSegment.$revMaxSpeed === reverseSpeed
+					&& otherSegment.$fwdMaxSpeedUnverified === forwardSpeedUnverified
+					&& otherSegment.$revMaxSpeedUnverified === reverseSpeedUnverified
 					&& otherSegment.$type === roadType
 					&& otherSegment.$isToll === isToll
 					// 2 & 2 || !2 && !2
