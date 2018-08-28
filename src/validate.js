@@ -1600,15 +1600,16 @@ function F_VALIDATE(disabledHL) {
 
 		// emulate WMECH_color
 		var segmentGeometry = document.getElementById(rawSegment.geometry.id);
-		if (!segmentGeometry) continue;
-
-		var strokeColor = segmentGeometry.getAttribute("stroke").toUpperCase();
-		if (4 === strokeColor.length)
-			strokeColor = '#' + strokeColor.charAt(1) + strokeColor.charAt(1)
-				+ strokeColor.charAt(2) + strokeColor.charAt(2)
-				+ strokeColor.charAt(3) + strokeColor.charAt(3);
-		if (strokeColor in _RT.$WMECHcolors)
-			rawSegment[GL_WMECHCOLOR] = strokeColor;
+		if (segmentGeometry){ // continue; // this breaks looking for segments when WMECH_color isn't here!
+			// if we have it, else ignore this.
+			var strokeColor = segmentGeometry.getAttribute("stroke").toUpperCase();
+			if (4 === strokeColor.length)
+				strokeColor = '#' + strokeColor.charAt(1) + strokeColor.charAt(1)
+					+ strokeColor.charAt(2) + strokeColor.charAt(2)
+					+ strokeColor.charAt(3) + strokeColor.charAt(3);
+			if (strokeColor in _RT.$WMECHcolors)
+				rawSegment[GL_WMECHCOLOR] = strokeColor;
+		}
 
 		// check if the segment was already seen
 		if (seen) {
