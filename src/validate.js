@@ -481,6 +481,14 @@ function F_VALIDATE(disabledHL) {
 		this.$ABRestrictionsLen = 0;
 		/** @type {number} */
 		this.$BARestrictionsLen = 0;
+		/** @type {number} */
+		this.$fwdMaxSpeed = 0;
+		/** @type {boolean} */
+		this.$fwdMaxSpeedUnverified = true;
+		 /** @type {number} */
+		 this.$revMaxSpeed = 0;
+		 /** @type {boolean} */
+		 this.$revMaxSpeedUnverified = false;
 
 		var seg = WMo.segments.getObjectById(objID);
 		if (classCodeIs(seg, CC_UNDEFINED) || classCodeIs(seg, CC_NULL))
@@ -534,6 +542,11 @@ function F_VALIDATE(disabledHL) {
 			attrs.fwdRestrictions.length : 0;
 		this.$BARestrictionsLen = attrs.revRestrictions ?
 			attrs.revRestrictions.length : 0;
+		// set speedlimits
+		this.$fwdMaxSpeed = attrs.fwdMaxSpeed;
+		this.$fwdMaxSpeedUnverified = attrs.fwdMaxSpeedUnverified;
+		this.$revMaxSpeed = attrs.revMaxSpeed;
+		this.$revMaxSpeedUnverified = attrs.revMaxSpeedUnverified;
 
 		// mark some properties as readonly
 		Object.defineProperties(this, {
@@ -1658,6 +1671,11 @@ function F_VALIDATE(disabledHL) {
 		var nodeBID = segment.$nodeBID;
 		var isPartial = nodeA.$isPartial || nodeB.$isPartial;
 
+		var forwardSpeed = segment.$fwdMaxSpeed;
+		var reverseSpeed = segment.$revMaxSpeed;
+		var forwardSpeedUnverified = segment.$fwdMaxSpeedUnverified;
+		var reverseSpeedUnverified = segment.$fwdMaxSpeedUnverified;
+
 		var now = Date.now();
 
 		// check partial segment
@@ -1994,6 +2012,10 @@ function F_VALIDATE(disabledHL) {
 					&& otherSegment.$address.$city === city
 					&& otherSegment.$address.$state === state
 					&& otherSegment.$address.$country === country
+					&& otherSegment.$fwdMaxSpeed === forwardSpeed
+					&& otherSegment.$revMaxSpeed === reverseSpeed
+					&& otherSegment.$fwdMaxSpeedUnverified === forwardSpeedUnverified
+					&& otherSegment.$revMaxSpeedUnverified === reverseSpeedUnverified
 					&& otherSegment.$type === roadType
 					&& otherSegment.$isToll === isToll
 					// 2 & 2 || !2 && !2
@@ -2057,6 +2079,10 @@ function F_VALIDATE(disabledHL) {
 					&& otherSegment.$address.$city === city
 					&& otherSegment.$address.$state === state
 					&& otherSegment.$address.$country === country
+					&& otherSegment.$fwdMaxSpeed === forwardSpeed
+					&& otherSegment.$revMaxSpeed === reverseSpeed
+					&& otherSegment.$fwdMaxSpeedUnverified === forwardSpeedUnverified
+					&& otherSegment.$revMaxSpeedUnverified === reverseSpeedUnverified
 					&& otherSegment.$type === roadType
 					&& otherSegment.$isToll === isToll
 					// 2 & 2 || !2 && !2
