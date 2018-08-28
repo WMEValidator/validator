@@ -2,29 +2,20 @@
  * release.js -- WME Validator release information
  * Copyright (C) 2013-2018 Andriy Berestovskyy
  *
- * This file is part of WME Validator:
+ * This file is part of WME Validator: https://github.com/WMEValidator/
  *
- * GnuPG is free software; you can redistribute it and/or modify
+ * WME Validator is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
- * the Free Software Foundation; either version 2 of the License, or
+ * the Free Software Foundation, either version 3 of the License, or
  * (at your option) any later version.
- *
- * GnuPG is distributed in the hope that it will be useful,
+
+ * WME Validator is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
  * GNU General Public License for more details.
- *
+
  * You should have received a copy of the GNU General Public License
- * along with this program; if not, write to the Free Software
- * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA
- *
- * Note: This code is heavily based on the GNU MP Library.
- *	 Actually it's the same code with only minor changes in the
- *	 way the data is stored; this is to support the abstraction
- *	 of an optional secure memory allocation which may be used
- *	 to avoid revealing of sensitive data due to paging etc.
- *	 The GNU MP Library itself is published under the LGPL;
- *	 however I decided to publish this code under the plain GPL.
+ * along with WME Validator. If not, see <http://www.gnu.org/licenses/>.
  */
 
 /*************************************************************************
@@ -35,11 +26,17 @@
  * WV RELEASE INFORMATION
  */
 /** WME Validator version @const */
-var WV_VERSION = "2018.08.09";
+var WV_VERSION = "2018.08.28";
 /** Auto-save password. Increase to reset auto-save config. @const */
 var AS_PASSWORD = "v1";
 /** @const */
 var WV_WHATSNEW = ""
+	+ "\nv2018.08.28:"
+	+ "\n- davidakachaos: fix switching to/from event mode"
+	+ "\n- davidakachaos: fix 'unneeded node' for segments"
+	+ "\n  with different speeds"
+	+ "\n- davidakachaos: fix WMECH integration bug"
+	+ "\n"
 	+ "\nv2018.08.09:"
 	+ "\n- GreasyFork release is live again"
 	+ "\n- disable #114 and #115 (drivable & non-drivable)"
@@ -50,18 +47,6 @@ var WV_WHATSNEW = ""
 	+ "\n"
 	+ "\nv2018.07.18:"
 	+ "\n- First public open source release"
-	+ "\n"
-	+ "\n03.11.2016 v1.1.20:"
-	+ "\n- Fixed #23 Unconfirmed road"
-	+ "\n"
-	+ "\n04.06.2016 v1.1.19:"
-	+ "\n- Fixed WME Beta"
-	+ "\n- Fixed icons in segment properties"
-	+ "\n- The work is still in progress..."
-	+ "\n"
-	+ "\n02.06.2016 v1.1.18:"
-	+ "\n- Fixed Firefox browser"
-	+ "\n- Added Validator tab"
 	;
 /** @const */
 var WV_LICENSE_VERSION = "1";
