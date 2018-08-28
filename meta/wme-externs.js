@@ -209,6 +209,10 @@ Waze.SEGMENT = function () {
 		revTurnsLocked: true,
 		fwdDirection: true,
 		revDirection: true,
+		fwdMaxSpeed: 0,
+		fwdMaxSpeedUnverified: true,
+		revMaxSpeed: 0,
+		revMaxSpeedUnverified: true,
 	};
 }
 /** @constructor */
