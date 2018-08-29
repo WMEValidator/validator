@@ -2429,30 +2429,31 @@ function F_VALIDATE(disabledHL) {
 
 			// check Public connection
 			if (slowChecks
-				&& segment.$isRoutable){
+				&& segment.$isRoutable
+				&& nodeA.$otherSegments.length > 0
+				&& nodeB.$otherSegments.length > 0){
 				// Check other segments to be a drivable public segment
 				var foundPublicConnection = false;
-				for (var i = 0; i < nodeA.$otherSegmentsLen; i++) {
+				for (var i = 0; i < nodeA.$otherSegments.length; i++) {
 					var otherSegment = nodeA.$otherSegments[i];
-					if (otherSegment.$isRoutable){
+					if (otherSegment.$rawSegment.isRoutable()){
 						foundPublicConnection = true;
 						break;
 					}
 				}
-				// if not already found, check node B
-				if(!foundPublicConnection){
-					for (var i = 0; i < nodeB.$otherSegmentsLen; i++) {
-						var otherSegment = nodeB.$otherSegments[i];
-						if (otherSegment.$isRoutable){
-							foundPublicConnection = true;
-							break;
-						}
+				// check node B
+				for (var i = 0; i < nodeB.$otherSegments.length; i++) {
+					var otherSegment = nodeB.$otherSegments[i];
+					if (otherSegment.$rawSegment.isRoutable()){
+						foundPublicConnection = true;
+						break;
 					}
 				}
 				if (!foundPublicConnection
 					&& isLimitOk(202)
-					&& address.isOkFor(202))
-					segment.report(202);
+					&& address.isOkFor(202)){
+						segment.report(202);
+					}
 			}
 
 			// GROUP isDrivable
