@@ -185,6 +185,7 @@ Waze.SEGMENT = function () {
 		this.getAddress = function () { };
 	this.getDirection = function () { };
 	this.isTollRoad = function () { };
+	this.isRoutable = function () { };
 
 	this.attributes = {
 		fromNodeID: 0,

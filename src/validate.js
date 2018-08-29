@@ -502,6 +502,8 @@ function F_VALIDATE(disabledHL) {
 
 		this.$address = new _WV.SimpleADDRESS(attrs.primaryStreetID);
 
+		this.$isRoutable = this.$rawSegment.isRoutable();
+
 		this.$isTurnALocked = attrs.revTurnsLocked;
 		this.$isTurnBLocked = attrs.fwdTurnsLocked;
 		this.$isRoundabout = classCodeDefined(attrs.junctionID)
@@ -2424,6 +2426,34 @@ function F_VALIDATE(disabledHL) {
 					} // !nodeB.$outConnectionsLen
 				}
 			} // outward connectivity issues
+
+			// check Public connection
+			if (slowChecks
+				&& segment.$isRoutable){
+				// Check other segments to be a drivable public segment
+				var foundPublicConnection = false;
+				for (var i = 0; i < nodeA.$otherSegmentsLen; i++) {
+					var otherSegment = nodeA.$otherSegments[i];
+					if (otherSegment.$isRoutable){
+						foundPublicConnection = true;
+						break;
+					}
+				}
+				// if not already found, check node B
+				if(!foundPublicConnection){
+					for (var i = 0; i < nodeB.$otherSegmentsLen; i++) {
+						var otherSegment = nodeB.$otherSegments[i];
+						if (otherSegment.$isRoutable){
+							foundPublicConnection = true;
+							break;
+						}
+					}
+				}
+				if (!foundPublicConnection
+					&& isLimitOk(202)
+					&& address.isOkFor(202))
+					segment.report(202);
+			}
 
 			// GROUP isDrivable
 			if (DIR_UNKNOWN === direction
