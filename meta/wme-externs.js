@@ -173,6 +173,7 @@ Waze.SEGMENT = function () {
 	this.selected = false;
 	this.layer = {};
 	this.arePropertiesEditable = function () { };
+	this.hasRestrictions = function () { };
 	/** @type {Object} */
 	this.bounds;
 	this.geometry = {
@@ -203,8 +204,7 @@ Waze.SEGMENT = function () {
 		fwdCrossSpeed: 0,
 		updatedBy: 0,
 		updatedOn: 0,
-		fwdRestrictions: [],
-		revRestrictions: [],
+		restrictions: [],
 		fwdTurnsLocked: true,
 		revTurnsLocked: true,
 		fwdDirection: true,
@@ -217,17 +217,42 @@ Waze.SEGMENT = function () {
 }
 /** @constructor */
 Waze.RESTRICTION = function () {
-	this.allDay = true;
-	this.days = 0;
-	this.description = "";
-	this.isInThePast = function () { };
-	this.enabled = true;
-	this.fromDate = "";
-	this.fromTime = "";
-	this.toDate = "";
-	this.toTime = "";
-	this.vehicleTypes = -1;
+	// this.allDay = true;
+	// this.days = 0;
+	// this.description = "";
+	// this.isInThePast = function () { };
+	// this.enabled = true;
+	// this.fromDate = "";
+	// this.fromTime = "";
+	// this.toDate = "";
+	// this.toTime = "";
+	// this.vehicleTypes = -1;
+	this.getDirection = function () {};
+	this.getDescription = function () {};
+	this.getTimeFrame = function () {};
+	this.getDriveProfileList = function () {};
+	this.isBidi = function () {};
+	this.isForward = function () {};
+	this.isReverse = function () {};
+	this.isEditable = function () {};
+	this.isAllowedModality = function () {};
+	this.isBlockedModality = function () {};
 };
+/** @constructor */
+Waze.TIMEFRAME = function () {
+	this.getEndDate = function () {};
+	this.getFromTime = function () {};
+	this.getStartDate = function () {};
+	this.getToTime = function () {};
+	this.getWeekdays = function () {};
+	this.isAllDay = function () {};
+	this.isAllWeek = function () {};
+}
+/** @constructor */
+Waze.DRIVEPROFILE = function () {
+	this.isAllVehicles = function () {};
+	this.isEmpty = function () {};
+}
 
 var CITY = {
 	getID: function () { },

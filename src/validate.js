@@ -340,6 +340,8 @@ function F_VALIDATE(disabledHL) {
 	 * @param {number} segID
 	 */
 	function SimpleRESTRICTION(obj, segID) {
+		var timeFrame = obj.getTimeFrame();
+		// var driveProfiles = obj.getDriveProfileList();
 		// cached node
 		/** *type {SimpleSEGMENT} */
 		this._to = null;
@@ -347,25 +349,33 @@ function F_VALIDATE(disabledHL) {
 		/** @type {number} */
 		this.$toID = segID;
 		/** @type {boolean} */
-		this.$allDay = obj.allDay || false;
+		this.$allDay = timeFrame.isAllDay() || false;
 		/** @type {number} */
-		this.$days = obj.days;
+		this.$days = timeFrame.getWeekdays();
 		/** @type {string} */
-		this.$description = (obj.description || "");
+		this.$description = (obj.getDescription() || "");
 		/** @type {boolean} */
-		this.$isInThePast = obj.isInThePast() || false;
+		this.$isInThePast = false;
+		if(timeFrame.getEndDate() === null){
+			this.$isInThePast = false;
+		}else if (timeFrame.getEndDate() > new Date){
+			this.$isInThePast = false;
+		} else {
+			this.$isInThePast = true;
+		}
+		// this.$isInThePast = obj.isInThePast() || false;
 		/** @type {boolean} */
-		this.$isEnabled = obj.enabled || false;
+		this.$isEnabled = true; //obj.enabled || false;
 		/** @type {string} */
-		this.$fromDate = (obj.fromDate || "");
+		this.$fromDate = (timeFrame.getStartDate() || "");
 		/** @type {string} */
-		this.$fromTime = (obj.fromTime || "");
+		this.$fromTime = (timeFrame.getFromTime() || "");
 		/** @type {string} */
-		this.$toDate = (obj.toDate || "");
+		this.$toDate = (timeFrame.getEndDate() || "");
 		/** @type {string} */
-		this.$toTime = (obj.toTime || "");
-		/** @type {number} */
-		this.$vehicles = obj.vehicleTypes;
+		this.$toTime = (timeFrame.getToTime() || "");
+		// /** @type {number} */
+		// this.$vehicles = obj.vehicleTypes;
 
 		Object.defineProperties(this, {
 			_to: { enumerable: false },
@@ -380,7 +390,7 @@ function F_VALIDATE(disabledHL) {
 			$fromTime: { writable: false },
 			$toDate: { writable: false },
 			$toTime: { writable: false },
-			$vehicles: { writable: false }
+			// $vehicles: { writable: false }
 		});
 	}
 	/**
@@ -418,14 +428,9 @@ function F_VALIDATE(disabledHL) {
 		this.$center = null;
 		// cached restriction
 		/** @type {Array.<SimpleRESTRICTION>} */
-		this._ABRestrictions = null;
+		this._restrictions = null;
 		/** @type {Array.<SimpleRESTRICTION>} */
-		this.$ABRestrictions = null;
-		// cached restriction
-		/** @type {Array.<SimpleRESTRICTION>} */
-		this._BARestrictions = null;
-		/** @type {Array.<SimpleRESTRICTION>} */
-		this.$BARestrictions = null;
+		this.$restrictions = null;
 
 		/** @type {number} */
 		this.$segmentID = objID;
@@ -478,9 +483,7 @@ function F_VALIDATE(disabledHL) {
 		/** @type {Array} */
 		this.$alts = [];
 		/** @type {number} */
-		this.$ABRestrictionsLen = 0;
-		/** @type {number} */
-		this.$BARestrictionsLen = 0;
+		this.restrictionsLen = 0;
 		/** @type {number} */
 		this.$fwdMaxSpeed = 0;
 		/** @type {boolean} */
@@ -508,6 +511,8 @@ function F_VALIDATE(disabledHL) {
 			&& null !== attrs.junctionID;
 		this.$hasHNs = attrs.hasHNs;
 		this.$isEditable = seg.arePropertiesEditable();
+		this.$hasRestrictions = seg.hasRestrictions();
+		this.$restrictions = attrs.restrictions;
 		this.$type = attrs.roadType;
 		this.$typeRank = this.getTypeRank(attrs.roadType);
 
@@ -538,10 +543,7 @@ function F_VALIDATE(disabledHL) {
 		this.$alts = attrs.streetIDs.map(function (objID) {
 			return new _WV.SimpleADDRESS(objID);
 		});
-		this.$ABRestrictionsLen = attrs.fwdRestrictions ?
-			attrs.fwdRestrictions.length : 0;
-		this.$BARestrictionsLen = attrs.revRestrictions ?
-			attrs.revRestrictions.length : 0;
+		this.$restrictionsLen = attrs.restrictions.length;
 		// set speedlimits
 		this.$fwdMaxSpeed = attrs.fwdMaxSpeed;
 		this.$fwdMaxSpeedUnverified = attrs.fwdMaxSpeedUnverified;
@@ -559,10 +561,8 @@ function F_VALIDATE(disabledHL) {
 			$nodeBID: { writable: false },
 			_center: { enumerable: false },
 			$center: { get: this.getCenter },
-			_ABRestrictions: { enumerable: false },
-			$ABRestrictions: { get: this.getABRestrictions },
-			_BARestrictions: { enumerable: false },
-			$BARestrictions: { get: this.getRevRestrictions },
+			_restrictions: { enumerable: false },
+			$restrictions: { get: this.getRestrictions },
 			$segmentID: { writable: false },
 			$isTurnALocked: { writable: false },
 			$isTurnBLocked: { writable: false },
@@ -580,8 +580,7 @@ function F_VALIDATE(disabledHL) {
 			$createdBy: { writable: false },
 			$createdByID: { writable: false },
 			$createdByLevel: { writable: false },
-			$ABRestrictionsLen: { writable: false },
-			$BARestrictionsLen: { writable: false },
+			$restrictionsLen: { writable: false },
 		});
 	}
 	/**
@@ -657,28 +656,14 @@ function F_VALIDATE(disabledHL) {
 		return this._center;
 	};
 	/**
-	 * Get forward restrictions
+	 * Get restrictions
 	 * *returns {SimpleRESTRICTION}
 	 */
-	SimpleSEGMENT.prototype.getABRestrictions = function () {
+	SimpleSEGMENT.prototype.getRestrictions = function () {
 		var t;
-		return this._ABRestrictions ? this._ABRestrictions :
-			this._ABRestrictions =
-			(t = this, this.$rawSegment.attributes.fwdRestrictions.map(
-				function (e) {
-					return new SimpleRESTRICTION(e, t.$segmentID)
-				})
-			);
-	}
-	/**
-	 * Get reverse restrictions
-	 * *returns {SimpleRESTRICTION}
-	 */
-	SimpleSEGMENT.prototype.getRevRestrictions = function () {
-		var t;
-		return this._BARestrictions ? this._BARestrictions :
-			this._BARestrictions =
-			(t = this, this.$rawSegment.attributes.revRestrictions.map(
+		return this._restrictions ? this._restrictions :
+			this._restrictions =
+			(t = this, this.$rawSegment.attributes.restrictions.map(
 				function (e) {
 					return new SimpleRESTRICTION(e, t.$segmentID)
 				})
@@ -1677,6 +1662,9 @@ function F_VALIDATE(disabledHL) {
 		var forwardSpeedUnverified = segment.$fwdMaxSpeedUnverified;
 		var reverseSpeedUnverified = segment.$fwdMaxSpeedUnverified;
 
+		var hasRestrictions = segment.$hasRestrictions;
+		// var restrictions = segment.$restrictions;
+
 		var now = Date.now();
 
 		// check partial segment
@@ -1840,10 +1828,10 @@ function F_VALIDATE(disabledHL) {
 		}
 
 		if (slowChecks
-			&& (segment.$ABRestrictionsLen || segment.$BARestrictionsLen)
+			&& segment.$restrictionsLen
 			&& isLimitOk(38)
 			&& address.isOkFor(38)) {
-			var restrictions = segment.$ABRestrictions.concat(segment.$BARestrictions);
+			var restrictions = segment.$restrictions;
 			for (var i = 0; i < restrictions.length; i++) {
 				if (restrictions[i].$isInThePast) {
 					segment.report(38);
@@ -1991,8 +1979,7 @@ function F_VALIDATE(disabledHL) {
 				&& !nodeA.$isUturn
 				// no turn restrictions
 				&& !nodeA.$restrictionsLen
-				&& !segment.$ABRestrictionsLen
-				&& !segment.$BARestrictionsLen
+				&& !segment.$restrictionsLen
 				&& isLimitOk(36)
 				&& address.isOkFor(36)) {
 				var otherSegment = nodeA.$otherSegments[0];
@@ -2019,6 +2006,7 @@ function F_VALIDATE(disabledHL) {
 					&& otherSegment.$revMaxSpeedUnverified === reverseSpeedUnverified
 					&& otherSegment.$type === roadType
 					&& otherSegment.$isToll === isToll
+					&& otherSegment.$hasRestrictions === hasRestrictions
 					// 2 & 2 || !2 && !2
 					&& (
 						DIR_TWO === otherSegment.$direction && DIR_TWO === direction
@@ -2029,8 +2017,7 @@ function F_VALIDATE(disabledHL) {
 					&& otherSegment.$nodeAID !== nodeBID
 					&& otherSegment.$nodeBID !== nodeBID
 					// restrictions
-					&& !otherSegment.$ABRestrictionsLen
-					&& !otherSegment.$BARestrictionsLen
+					&& !otherSegment.$restrictionsLen
 					&& !otherNode.$restrictionsLen
 					&& deepCompare(otherSegment.$alts, alts)
 				) {
@@ -2058,8 +2045,7 @@ function F_VALIDATE(disabledHL) {
 				&& !nodeB.$isUturn
 				// no turn restrictions
 				&& !nodeB.$restrictionsLen
-				&& !segment.$ABRestrictionsLen
-				&& !segment.$BARestrictionsLen
+				&& !segment.$restrictionsLen
 				&& isLimitOk(37)
 				&& address.isOkFor(37)) {
 				var otherSegment = nodeB.$otherSegments[0];
@@ -2086,6 +2072,7 @@ function F_VALIDATE(disabledHL) {
 					&& otherSegment.$revMaxSpeedUnverified === reverseSpeedUnverified
 					&& otherSegment.$type === roadType
 					&& otherSegment.$isToll === isToll
+					&& otherSegment.$hasRestrictions === hasRestrictions
 					// 2 & 2 || !2 && !2
 					&& (
 						DIR_TWO === otherSegment.$direction && DIR_TWO === direction
@@ -2096,8 +2083,7 @@ function F_VALIDATE(disabledHL) {
 					&& otherSegment.$nodeAID !== nodeAID
 					&& otherSegment.$nodeBID !== nodeAID
 					// restrictions
-					&& !otherSegment.$ABRestrictionsLen
-					&& !otherSegment.$BARestrictionsLen
+					&& !otherSegment.$restrictionsLen
 					&& !otherNode.$restrictionsLen
 					&& deepCompare(otherSegment.$alts, alts)
 				) {
