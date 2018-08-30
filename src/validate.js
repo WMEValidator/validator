@@ -1229,23 +1229,13 @@ function F_VALIDATE(disabledHL) {
 		if (prop)
 			prop.innerHTML = defHTML;
 		else {
-			var segmentProperties = document.getElementsByClassName("segment")[0];
+			var segmentProperties = document.getElementsByClassName("selection-icon")[0];
 			if (segmentProperties) {
-				var refElement = null;
-				for (var i = 0; i < segmentProperties.children.length; i++) {
-					var c = segmentProperties.children[i];
-					if ("selection-text" === c.className)
-						continue;
-
-					refElement = c;
-					break;
-				}
-				if (refElement) {
-					var d = document.createElement("div");
-					d.innerHTML = defHTML;
-					d.id = "i" + defID;
-					prop = segmentProperties.insertBefore(d, refElement);
-				}
+				var d = document.createElement("div");
+				d.innerHTML = defHTML;
+				d.id = "i" + defID;
+				d.style.cssText = "text-transform: none; padding: 5px;"
+				prop = segmentProperties.appendChild(d)
 			} // if segmentProperties
 		} // if prop
 
