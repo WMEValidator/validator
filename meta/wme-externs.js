@@ -217,16 +217,6 @@ Waze.SEGMENT = function () {
 }
 /** @constructor */
 Waze.RESTRICTION = function () {
-	// this.allDay = true;
-	// this.days = 0;
-	// this.description = "";
-	// this.isInThePast = function () { };
-	// this.enabled = true;
-	// this.fromDate = "";
-	// this.fromTime = "";
-	// this.toDate = "";
-	// this.toTime = "";
-	// this.vehicleTypes = -1;
 	this.getDirection = function () {};
 	this.getDescription = function () {};
 	this.getTimeFrame = function () {};
@@ -397,7 +387,6 @@ var W = {
 // window Namespace
 window.OpenLayers = {};
 window.$ = function (e) { };
-// window.Waze = {};
 window.W = {};
 window.viewHelpers = {
 	formatRank: function (r) { }
