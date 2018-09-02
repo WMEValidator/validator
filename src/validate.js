@@ -341,7 +341,6 @@ function F_VALIDATE(disabledHL) {
 	 */
 	function SimpleRESTRICTION(obj, segID) {
 		var timeFrame = obj.getTimeFrame();
-		// var driveProfiles = obj.getDriveProfileList();
 		// cached node
 		/** *type {SimpleSEGMENT} */
 		this._to = null;
@@ -363,7 +362,6 @@ function F_VALIDATE(disabledHL) {
 		} else {
 			this.$isInThePast = true;
 		}
-		// this.$isInThePast = obj.isInThePast() || false;
 		/** @type {boolean} */
 		this.$isEnabled = true; //obj.enabled || false;
 		/** @type {string} */
@@ -374,8 +372,6 @@ function F_VALIDATE(disabledHL) {
 		this.$toDate = (timeFrame.getEndDate() || "");
 		/** @type {string} */
 		this.$toTime = (timeFrame.getToTime() || "");
-		// /** @type {number} */
-		// this.$vehicles = obj.vehicleTypes;
 
 		Object.defineProperties(this, {
 			_to: { enumerable: false },
@@ -390,7 +386,6 @@ function F_VALIDATE(disabledHL) {
 			$fromTime: { writable: false },
 			$toDate: { writable: false },
 			$toTime: { writable: false },
-			// $vehicles: { writable: false }
 		});
 	}
 	/**
@@ -1663,7 +1658,6 @@ function F_VALIDATE(disabledHL) {
 		var reverseSpeedUnverified = segment.$fwdMaxSpeedUnverified;
 
 		var hasRestrictions = segment.$hasRestrictions;
-		// var restrictions = segment.$restrictions;
 
 		var now = Date.now();
 
