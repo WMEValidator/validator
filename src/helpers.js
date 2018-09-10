@@ -56,8 +56,7 @@ function classOf(val) { return {}.toString.call(val).slice(8, -1); }
 /**
  * Get object class code
  */
-function classCode(obj)
-{
+function classCode(obj) {
 	return {}.toString.call(obj).charCodeAt(8)
 		^ {}.toString.call(obj).charCodeAt(11);
 }
@@ -140,6 +139,6 @@ function deepCompare(obj1, obj2) {
 	return false;
 }
 
-function getDirection(seg){
+function getDirection(seg) {
 	return (seg.attributes.fwdDirection ? 1 : 0) + (seg.attributes.revDirection ? 2 : 0);
 };

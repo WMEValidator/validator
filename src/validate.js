@@ -355,9 +355,9 @@ function F_VALIDATE(disabledHL) {
 		this.$description = (obj.getDescription() || "");
 		/** @type {boolean} */
 		this.$isInThePast = false;
-		if(timeFrame.getEndDate() === null){
+		if (timeFrame.getEndDate() === null) {
 			this.$isInThePast = false;
-		}else if (timeFrame.getEndDate() > new Date){
+		} else if (timeFrame.getEndDate() > new Date) {
 			this.$isInThePast = false;
 		} else {
 			this.$isInThePast = true;
@@ -483,10 +483,10 @@ function F_VALIDATE(disabledHL) {
 		this.$fwdMaxSpeed = 0;
 		/** @type {boolean} */
 		this.$fwdMaxSpeedUnverified = true;
-		 /** @type {number} */
-		 this.$revMaxSpeed = 0;
-		 /** @type {boolean} */
-		 this.$revMaxSpeedUnverified = false;
+		/** @type {number} */
+		this.$revMaxSpeed = 0;
+		/** @type {boolean} */
+		this.$revMaxSpeedUnverified = false;
 
 		var seg = WMo.segments.getObjectById(objID);
 		if (classCodeIs(seg, CC_UNDEFINED) || classCodeIs(seg, CC_NULL))
@@ -1583,7 +1583,7 @@ function F_VALIDATE(disabledHL) {
 
 		// emulate WMECH_color
 		var segmentGeometry = document.getElementById(rawSegment.geometry.id);
-		if (segmentGeometry){ // continue; // this breaks looking for segments when WMECH_color isn't here!
+		if (segmentGeometry) { // continue; // this breaks looking for segments when WMECH_color isn't here!
 			// if we have it, else ignore this.
 			var strokeColor = segmentGeometry.getAttribute("stroke").toUpperCase();
 			if (4 === strokeColor.length)
@@ -2422,16 +2422,16 @@ function F_VALIDATE(disabledHL) {
 				var foundPublicConnection = false;
 				for (var i = 0; i < nodeA.$otherSegmentsLen; i++) {
 					var otherSegment = nodeA.$otherSegments[i];
-					if (otherSegment.$rawSegment.isRoutable()){
+					if (otherSegment.$rawSegment.isRoutable()) {
 						foundPublicConnection = true;
 						break;
 					}
 				}
-				if(!foundPublicConnection){
+				if (!foundPublicConnection) {
 					// check node B
 					for (var i = 0; i < nodeB.$otherSegmentsLen; i++) {
 						var otherSegment = nodeB.$otherSegments[i];
-						if (otherSegment.$rawSegment.isRoutable()){
+						if (otherSegment.$rawSegment.isRoutable()) {
 							foundPublicConnection = true;
 							break;
 						}

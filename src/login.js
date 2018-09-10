@@ -21,8 +21,7 @@
 /**
  * Login new user
  */
-function F_LOGIN()
-{
+function F_LOGIN() {
 	log("login " + WLM.user.userName);
 
 	///////////////////////////////////////////////////////////////////////
@@ -30,15 +29,14 @@ function F_LOGIN()
 	/**
 	 * Parse access list and returns array of rules
 	 */
-	_WV.parseAccessList = function(s)
-	{
+	_WV.parseAccessList = function (s) {
 		var a = s.split(/\s*,\s*/)
 		var res = [];
-		a.forEach(function(r, i) {
+		a.forEach(function (r, i) {
 			var n = false;
-			if("!" === r.charAt(0))
+			if ("!" === r.charAt(0))
 				n = true, r = r.slice(1);
-			res[i] = {$id: r, $not: n}
+			res[i] = { $id: r, $not: n }
 		});
 		return res;
 	}
@@ -46,22 +44,19 @@ function F_LOGIN()
 	/**
 	 * Check for list of rules
 	 */
-	_WV.checkAccessFor = function(forStr, cmpFunc)
-	{
+	_WV.checkAccessFor = function (forStr, cmpFunc) {
 		// empty list is true
-		if(!forStr)
+		if (!forStr)
 			return true;
 		var l = _WV.parseAccessList(forStr);
 		// empty list is true
-		if(!l.length)
+		if (!l.length)
 			return true;
-		for(var i = 0; i < l.length; i++)
-		{
+		for (var i = 0; i < l.length; i++) {
 			var r = l[i];
-			if("*" === r.$id || cmpFunc(r.$id))
-			{
+			if ("*" === r.$id || cmpFunc(r.$id)) {
 				// match found
-				if(r.$not)
+				if (r.$not)
 					return false;
 				else
 					return true;
@@ -71,30 +66,27 @@ function F_LOGIN()
 		return false;
 	}
 	// Generate mirror checks
-	function mirrorChecks(defTranslation)
-	{
+	function mirrorChecks(defTranslation) {
 		var allLabels = _RT.$otherLabels.concat(_RT.$textLabels);
-		for(var i = CK_MIRRORFIRST; i <= CK_MIRRORLAST; i++)
-		{
-			allLabels.forEach(function(l) {
+		for (var i = CK_MIRRORFIRST; i <= CK_MIRRORLAST; i++) {
+			allLabels.forEach(function (l) {
 				var label = i + '.' + l;
-				if(!(label in defTranslation)) return;
+				if (!(label in defTranslation)) return;
 
 				var value = defTranslation[label];
 				var mLabel = (i + 100) + '.' + l;
-				switch(l)
-				{
-				case "title":
-				case "problem":
-				case "solution":
-					defTranslation[mLabel] = value.replace(/ A($|\b)/g, " B");
-					break;
-				case "params":
-					defTranslation[mLabel] = deepCopy(value);
-					break;
-				default:
-					defTranslation[mLabel] = value;
-					break;
+				switch (l) {
+					case "title":
+					case "problem":
+					case "solution":
+						defTranslation[mLabel] = value.replace(/ A($|\b)/g, " B");
+						break;
+					case "params":
+						defTranslation[mLabel] = deepCopy(value);
+						break;
+					default:
+						defTranslation[mLabel] = value;
+						break;
 				}
 			});
 		}
@@ -149,7 +141,7 @@ function F_LOGIN()
 		// timer to measure ETA
 		$timer: { $secInRun: 0, $lastUpdate: 0 },
 		// current message to show
-		$curMessage: {TEXT: "", TITLE: "", CLASS: CL_MSG},
+		$curMessage: { TEXT: "", TITLE: "", CLASS: CL_MSG },
 		// top city and country
 		$topCity: null,
 		// cached top country code
@@ -172,16 +164,16 @@ function F_LOGIN()
 		// current layers visibility
 		$layersVisibility: "",
 		// current state
-		$state:     ST_STOP,
+		$state: ST_STOP,
 		// current direction
 		$direction: DIR_L2R,
 		// first step
 		$firstStep: true,
 		// current map position
-		$startExtent:   null,
-		$startCenter:   null,
-		$startZoom:     null,
-		$nextCenter:    null,
+		$startExtent: null,
+		$startCenter: null,
+		$startZoom: null,
+		$nextCenter: null,
 		$moveEndCenter: null,
 		// map of seen object IDs
 		$seen: {},
@@ -200,9 +192,9 @@ function F_LOGIN()
 		// WMECH colors
 		$WMECHcolors: {},
 		// untranslated languages
-//      $untranslatedLocales: ["ja", "ro", "tr", "af",
-//          "ko", "ms", "hu", "nl", "sv", "no",
-//          "da", "lt", "zh"],
+		//      $untranslatedLocales: ["ja", "ro", "tr", "af",
+		//          "ko", "ms", "hu", "nl", "sv", "no",
+		//          "da", "lt", "zh"],
 		$untranslatedLngs: ["IT"],
 	};
 
@@ -234,7 +226,7 @@ function F_LOGIN()
 	// Locales
 	///////////////////////////////////////////////////////////////////////
 	// init I18n
-	_I18n.init({$lng: _RT.$lng});
+	_I18n.init({ $lng: _RT.$lng });
 
 	/** @const */
 	var defTranslation = _translations[_I18n.$defLng];
@@ -256,7 +248,7 @@ function F_LOGIN()
 		["#FF30FF", , , "Simple segment",
 			"The segment has unneeded geometry nodes", ,
 			"Simplify segment geometry by hovering mouse pointer and pressing \"d\" key",
-				"W:Creating_and_Editing_street_segments#Adjusting_road_geometry_.28nodes.29"
+			"W:Creating_and_Editing_street_segments#Adjusting_road_geometry_.28nodes.29"
 		],
 		["#11F247", , true, "Lvl 2 lock"],
 		["#71F211", , true, "Lvl 3 lock"],
@@ -266,23 +258,22 @@ function F_LOGIN()
 		["#00A8FF", , true, "House numbers"],
 		["#F7B020", , true, "Segment with time restrictions"]
 	];
-	for(var i = CK_TBFIRST; i <= CK_TBLAST; i++)
-	{
+	for (var i = CK_TBFIRST; i <= CK_TBLAST; i++) {
 		var cc = TBchecks[i - CK_TBFIRST];
 		var cp = cc[4] || defTBProblem;
 		var cpl = cc[5];
-		if(!classCodeDefined(cpl))
+		if (!classCodeDefined(cpl))
 			cpl = defTBProblemLink;
 
 		defTranslation[i + '.enabled'] = true;
 		defTranslation[i + '.color'] = cc[0];
-		if(cc[1]) defTranslation[i + '.severity'] = cc[1];
-		if(cc[2]) defTranslation[i + '.reportOnly'] = cc[2];
+		if (cc[1]) defTranslation[i + '.severity'] = cc[1];
+		if (cc[2]) defTranslation[i + '.reportOnly'] = cc[2];
 		defTranslation[i + '.title'] = "WME Toolbox: " + cc[3];
 		defTranslation[i + '.problem'] = cp;
-		if(cpl) defTranslation[i + '.problemLink'] = cpl;
-		if(cc[6]) defTranslation[i + '.solution'] = cc[6];
-		if(cc[7]) defTranslation[i + '.solutionLink'] = cc[7];
+		if (cpl) defTranslation[i + '.problemLink'] = cpl;
+		if (cc[6]) defTranslation[i + '.solution'] = cc[6];
+		if (cc[7]) defTranslation[i + '.solutionLink'] = cc[7];
 	}
 
 	// Generate WMECH check descriptions in EN
@@ -306,8 +297,7 @@ function F_LOGIN()
 		["#FFFF01", , true, "Filter by city (alt. city)"],
 		["#00FF00", , true, "Filter by editor"]
 	];
-	for(var i = CK_WMECHFIRST; i <= CK_WMECHLAST; i++)
-	{
+	for (var i = CK_WMECHFIRST; i <= CK_WMECHLAST; i++) {
 		var cc = WMECHchecks[i - CK_WMECHFIRST];
 		/** @const */
 		var cp = defWMECHProblem;
@@ -316,11 +306,11 @@ function F_LOGIN()
 
 		defTranslation[i + '.enabled'] = true;
 		defTranslation[i + '.color'] = cc[0];
-		if(cc[1]) defTranslation[i + '.severity'] = cc[1];
-		if(cc[2]) defTranslation[i + '.reportOnly'] = cc[2];
+		if (cc[1]) defTranslation[i + '.severity'] = cc[1];
+		if (cc[2]) defTranslation[i + '.reportOnly'] = cc[2];
 		defTranslation[i + '.title'] = "WME Color Highlights: " + cc[3];
 		defTranslation[i + '.problem'] = cp;
-		if(cpl) defTranslation[i + '.problemLink'] = cpl;
+		if (cpl) defTranslation[i + '.problemLink'] = cpl;
 	}
 
 	/** @const */
@@ -328,8 +318,7 @@ function F_LOGIN()
 		"Ramp", "Primary Street", "Street", "Parking Lot Road",
 		"Railroad"];
 	// Generate custom checks descriptions in EN
-	for(var i = CK_TYPEFIRST; i <= CK_TYPELAST; i++)
-	{
+	for (var i = CK_TYPEFIRST; i <= CK_TYPELAST; i++) {
 		var streetName = streetNames[i - CK_TYPEFIRST];
 		defTranslation[i + '.severity'] = "W";
 		defTranslation[i + '.title'] = "Must be a " + streetName;
@@ -338,8 +327,7 @@ function F_LOGIN()
 			+ streetName + " or change the road name";
 	}
 	// Generate custom checks descriptions in EN
-	for(var i = CK_CUSTOMFIRST; i <= CK_CUSTOMLAST; i++)
-	{
+	for (var i = CK_CUSTOMFIRST; i <= CK_CUSTOMLAST; i++) {
 		defTranslation[i + '.title'] = "Custom check";
 		defTranslation[i + '.severity'] = "W";
 		defTranslation[i + '.problem'] = "The segment matched custom conditions";
@@ -366,8 +354,7 @@ function F_LOGIN()
 		153: 4,
 		154: 2,
 	};
-	for(var i = CK_LOCKFIRST; i <= CK_LOCKLAST; i++)
-	{
+	for (var i = CK_LOCKFIRST; i <= CK_LOCKLAST; i++) {
 		var lockName = streetNames[i - CK_LOCKFIRST];
 		var lockLevel = lockLevels[i];
 		defTranslation[i + '.title'] = "No lock on " + lockName;
@@ -388,11 +375,10 @@ function F_LOGIN()
 	};
 	/** @const */
 	var streetDefRegExp = "!/.?/";
-	for(var i = CK_STREETTNFIRST; i <= CK_STREETTNLAST; i++)
-	{
+	for (var i = CK_STREETTNFIRST; i <= CK_STREETTNLAST; i++) {
 		var streetName = streetNames[i - CK_STREETTNFIRST];
 		var streetRegExp = streetRegExps[CK_STREETTNFIRST] || streetDefRegExp;
-		if(i < 165 || i > 167)
+		if (i < 165 || i > 167)
 			defTranslation[i + '.severity'] = "W";
 		defTranslation[i + '.title'] = "Incorrect " + streetName + " name";
 		defTranslation[i + '.problem'] = "The " + streetName
@@ -409,33 +395,31 @@ function F_LOGIN()
 
 	// init internal translations
 	var listOfIntPacks = '';
-	for(var translationsKey in _translations)
-	{
+	for (var translationsKey in _translations) {
 		var translation = _translations[translationsKey];
 		mirrorChecks(translation);
 		_I18n.addTranslation(translation);
 
 		// update listOfIntPacks
 		var country = translation[".country"];
-		if(!country) continue;
-		if(classCodeIs(country, CC_ARRAY))
+		if (!country) continue;
+		if (classCodeIs(country, CC_ARRAY))
 			country = country[0];
 		country = country.split(' ').join('&nbsp;')
 
-		if(listOfIntPacks)
+		if (listOfIntPacks)
 			listOfIntPacks += ', ';
-		if(".lng" in translation)
+		if (".lng" in translation)
 			listOfIntPacks += '<b>' + country + '*';
 		else
 			listOfIntPacks += country;
 
-		if(".author" in translation)
-		{
+		if (".author" in translation) {
 			listOfIntPacks += ' by&nbsp;' + translation[".author"];
 		}
-		if(".lng" in translation)
+		if (".lng" in translation)
 			listOfIntPacks += '</b>';
-		if(".updated" in translation)
+		if (".updated" in translation)
 			listOfIntPacks += ' (' + translation[".updated"] + ')';
 	}
 	listOfIntPacks += '.';
@@ -443,35 +427,31 @@ function F_LOGIN()
 
 	// add external translations
 	var listOfPacks = '';
-	for(var gObject in window)
-	{
-		if(!window.hasOwnProperty(gObject)) continue;
-		if(-1 !== gObject.indexOf("WME_Validator"))
-		{
+	for (var gObject in window) {
+		if (!window.hasOwnProperty(gObject)) continue;
+		if (-1 !== gObject.indexOf("WME_Validator")) {
 			var translation = window[gObject];
 			log("found localization pack: " + gObject.replace('WME_Validator_', ''));
 			mirrorChecks(translation);
 			_I18n.addTranslation(translation);
 
 			// update listOfPacks
-			if(".country" in translation)
-			{
+			if (".country" in translation) {
 				var country = translation[".country"];
-				if(classCodeIs(country, CC_ARRAY))
+				if (classCodeIs(country, CC_ARRAY))
 					country = country[0];
 				listOfPacks += '<b>' + country;
 
-				if(".author" in translation)
+				if (".author" in translation)
 					listOfPacks += ' by&nbsp;' + translation[".author"];
-				listOfPacks +=  '</b>';
+				listOfPacks += '</b>';
 
-				if(!(".lng" in translation))
+				if (!(".lng" in translation))
 					listOfPacks += '<br>(does not include translations)';
 
-				if(".updated" in translation)
-				{
+				if (".updated" in translation) {
 					listOfPacks += '<br>Updated: ' + translation[".updated"];
-					if(".link" in translation
+					if (".link" in translation
 						&& translation[".link"])
 						listOfPacks += ' <a target="_blank" href="'
 							+ translation[".link"]
@@ -487,8 +467,7 @@ function F_LOGIN()
 		+ 'how to create a localization pack</a>';
 
 	// Generate $checks
-	for(var i = 1; i < MAX_CHECKS; i++)
-	{
+	for (var i = 1; i < MAX_CHECKS; i++) {
 		var check = {
 			ENABLED: {},
 			PROBLEMLINK: {},
@@ -499,54 +478,51 @@ function F_LOGIN()
 
 		// set title
 		var label = i + '.title';
-		if(!_I18n.isLabelExist(label))
+		if (!_I18n.isLabelExist(label))
 			continue;
 		check.TITLE = trS(label);
 
 		label = i + '.color';
-		if(_I18n.isLabelExist(label))
-		{
+		if (_I18n.isLabelExist(label)) {
 			var col = trS(label).toUpperCase();
 			check.COLOR = col;
 			// Generate $WMECHcolors
-			if(CK_WMECHFIRST <= i
+			if (CK_WMECHFIRST <= i
 				&& CK_WMECHLAST >= i)
 				_RT.$WMECHcolors[col] = true;
 		}
 		label = i + '.problem';
-		if(_I18n.isLabelExist(label))
+		if (_I18n.isLabelExist(label))
 			check.PROBLEM = trS(label);
 		label = i + '.solution';
-		if(_I18n.isLabelExist(label))
+		if (_I18n.isLabelExist(label))
 			check.SOLUTION = trS(label);
 		label = i + '.reportOnly';
-		if(_I18n.isLabelExist(label))
+		if (_I18n.isLabelExist(label))
 			check.REPORTONLY = trS(label);
 		label = i + '.severity';
 		var s = 'N';
-		if(_I18n.isLabelExist(label))
+		if (_I18n.isLabelExist(label))
 			s = trS(label);
-		if(s)
-		{
-			switch(s.charAt(0))
-			{
-			case "w":
-			case "W":
-				check.SEVERITY = RS_WARNING;
-				break;
-			case "e":
-			case "E":
-				check.SEVERITY = RS_ERROR;
-				break;
-			case "1":
-				check.SEVERITY = RS_CUSTOM1;
-				break;
-			case "2":
-				check.SEVERITY = RS_CUSTOM2;
-				break;
-			default:
-				check.SEVERITY = RS_NOTE;
-				break;
+		if (s) {
+			switch (s.charAt(0)) {
+				case "w":
+				case "W":
+					check.SEVERITY = RS_WARNING;
+					break;
+				case "e":
+				case "E":
+					check.SEVERITY = RS_ERROR;
+					break;
+				case "1":
+					check.SEVERITY = RS_CUSTOM1;
+					break;
+				case "2":
+					check.SEVERITY = RS_CUSTOM2;
+					break;
+				default:
+					check.SEVERITY = RS_NOTE;
+					break;
 			}
 		}
 		else
@@ -560,82 +536,73 @@ function F_LOGIN()
 
 		var defEnabled = false;
 		var arrCodes = [];
-		for(var ccode in _I18n.$translations)
-		{
+		for (var ccode in _I18n.$translations) {
 			var translation = _I18n.$translations[ccode];
-			if(label in translation)
-			{
+			if (label in translation) {
 				var e = translation[label];
 				check.ENABLED[ccode] = e;
 				// create FORCOUNTRY
-				if(_I18n.$defLng === ccode)
-				{
-					if(e) defEnabled = true;
+				if (_I18n.$defLng === ccode) {
+					if (e) defEnabled = true;
 				}
-				else
-				{
-					if(e)
+				else {
+					if (e)
 						arrCodes.push(ccode);
 					else
 						arrCodes.push('!' + ccode);
 				}
 			}
 
-			if(labelPL in translation)
-			{
+			if (labelPL in translation) {
 				var l = translation[labelPL]
 					.replace('W:', PFX_WIKI)
 					.replace('F:', PFX_FORUM)
 					;
 				check.PROBLEMLINK[ccode] = encodeURI(l);
-				if(-1 !== l.indexOf(PFX_WIKI))
+				if (-1 !== l.indexOf(PFX_WIKI))
 					check.PROBLEMLINKTEXT[ccode] = trS('report.link.wiki');
 				else
-				if(-1 !== l.indexOf(PFX_FORUM))
-					check.PROBLEMLINKTEXT[ccode] = trS('report.link.forum');
-				else
-					check.PROBLEMLINKTEXT[ccode] = trS('report.link.other');
+					if (-1 !== l.indexOf(PFX_FORUM))
+						check.PROBLEMLINKTEXT[ccode] = trS('report.link.forum');
+					else
+						check.PROBLEMLINKTEXT[ccode] = trS('report.link.other');
 			}
-			if(labelSL in translation)
-			{
+			if (labelSL in translation) {
 				var l = translation[labelSL]
 					.replace('W:', PFX_WIKI)
 					.replace('F:', PFX_FORUM)
-				;
+					;
 				check.SOLUTIONLINK[ccode] = encodeURI(l);
-				if(-1 !== l.indexOf(PFX_WIKI))
+				if (-1 !== l.indexOf(PFX_WIKI))
 					check.SOLUTIONLINKTEXT[ccode] = trS('report.link.wiki');
 				else
-				if(-1 !== l.indexOf(PFX_FORUM))
-					check.SOLUTIONLINKTEXT[ccode] = trS('report.link.forum');
-				else
-					check.SOLUTIONLINKTEXT[ccode] = trS('report.link.other');
+					if (-1 !== l.indexOf(PFX_FORUM))
+						check.SOLUTIONLINKTEXT[ccode] = trS('report.link.forum');
+					else
+						check.SOLUTIONLINKTEXT[ccode] = trS('report.link.other');
 			}
-			if(labelP in translation)
-			{
+			if (labelP in translation) {
 				var params = translation[labelP];
-				if(!check.OPTIONS)
+				if (!check.OPTIONS)
 					check.OPTIONS = {};
-				if(!(ccode in check.OPTIONS))
+				if (!(ccode in check.OPTIONS))
 					check.OPTIONS[ccode] = params;
 
-				if(params["template"])
+				if (params["template"])
 					check.OPTIONS[ccode][CO_STRING] = params["template"];
-				if(params["regexp"])
+				if (params["regexp"])
 					_WV.buildRegExp(i, check.OPTIONS[ccode], params["regexp"]);
-				if(params["n"])
+				if (params["n"])
 					check.OPTIONS[ccode][CO_NUMBER] = +params["n"];
 			} // .params
 		} // for codeKeys
 		// create FORCOUNTRY
-		if(defEnabled)
-		{
-			if(arrCodes.length)
+		if (defEnabled) {
+			if (arrCodes.length)
 				check.FORCOUNTRY = arrCodes.join(',') + ',*';
 		}
-		else
-		{
-			if(arrCodes.length)
+		else {
+			if (arrCodes.length)
 				check.FORCOUNTRY = arrCodes.join(',');
 			else
 				check.FORCOUNTRY = '!*';
@@ -643,7 +610,7 @@ function F_LOGIN()
 
 		_RT.$checks[i] = check;
 	}
-//  window.console.log(_RT.$checks);
+	//  window.console.log(_RT.$checks);
 
 	///////////////////////////////////////////////////////////////////////
 	// User interface
@@ -680,7 +647,7 @@ function F_LOGIN()
 	_THUI.addElemetClassStyle("label", "c1", cssRules);
 	_THUI.addElemetClassStyle("label", "c2", cssRules);
 	// buttons
-//  "{white-space:nowrap;overflow:hidden;text-overflow:ellipsis}");
+	//  "{white-space:nowrap;overflow:hidden;text-overflow:ellipsis}");
 	_THUI.addElemetClassStyle("div", CL_BUTTONS, "{overflow:hidden;margin-bottom:1em}");
 	_THUI.addElemetClassStyle("div", CL_BUTTONS, ">button{font-weight:normal;padding:4px 12px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}");
 	_THUI.addElemetClassStyle("div", CL_BUTTONS, ">button>i{pointer-events:none}");
@@ -697,12 +664,12 @@ function F_LOGIN()
 	_THUI.addElemetClassStyle("div", CL_PANEL, ">label.text>span{display:inline-block;line-height:28px;vertical-align:middle;width:100%;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}");
 	_THUI.addElemetClassStyle("div", CL_PANEL, ">label.text>input[type=text]{box-sizing:border-box;height:28px;padding:2px 10px;float:" + dirRight + ";margin-" + dirRight + ":-155px;width:150px}");
 	// number inputs
-//  _THUI.addElemetClassStyle("div", CL_PANEL, ">label.number{font-weight:normal;display:block;line-height:28px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;}");
-//  _THUI.addElemetClassStyle("div", CL_PANEL, ">label.number>span{float:" + dirLeft + "}");
-//  _THUI.addElemetClassStyle("div", CL_PANEL, ">label.number>input[type=number]{box-sizing:border-box;display:inline-block;width:64px;height:26px;line-height:20px;border-width:1px;float:" + dirRight + ";padding:2px 6px;margin:0}");
+	//  _THUI.addElemetClassStyle("div", CL_PANEL, ">label.number{font-weight:normal;display:block;line-height:28px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;}");
+	//  _THUI.addElemetClassStyle("div", CL_PANEL, ">label.number>span{float:" + dirLeft + "}");
+	//  _THUI.addElemetClassStyle("div", CL_PANEL, ">label.number>input[type=number]{box-sizing:border-box;display:inline-block;width:64px;height:26px;line-height:20px;border-width:1px;float:" + dirRight + ";padding:2px 6px;margin:0}");
 	// password inputs
-//  _THUI.addElemetClassStyle("div", CL_PANEL, ">input[type=password]{box-sizing:border-box;width:270px;height:28px}");
-//  cssRules = ''
+	//  _THUI.addElemetClassStyle("div", CL_PANEL, ">input[type=password]{box-sizing:border-box;width:270px;height:28px}");
+	//  cssRules = ''
 	// show translate and report banner
 	cssRules = "{position:relative;height:2em;width:100%;margin-bottom:";
 	cssRules2 = ">span{position:absolute;" + dirLeft + ":0;bottom:0;display:inline-block;padding:4px 12px;margin:0px;border-radius:8px;border-bottom-" + dirLeft + "-radius:0;box-shadow:3px 3px 3px #aaa;border:1px solid ";
@@ -747,403 +714,400 @@ function F_LOGIN()
 	_THUI.addElemetClassStyle('div', CL_RIGHTTIP, ':hover>div' + cssRules);
 
 	_UI = {
-	// set to defaults to suppress warnings
-	_DISABLED: undefined,
-	_NODISPLAY: undefined,
-	MAXLENGTH: undefined,
-	REVERSE: undefined,
-	WARNING: undefined,
-	TYPE: undefined,
-	FORUSER: undefined,
-	FORCITY: undefined,
-	FORCOUNTRY: undefined,
-	FORLEVEL: undefined,
-	ACCESSKEY: undefined,
-	STYLEI: "",
-//  STYLEO: "",
-	DISCLOSE: 0,
-	_NAME: "",
-	READONLY: 0,
-	_STYLE: "",
-	ONWARNING: null,
-	ONCHANGE: null,
-	_ONCHANGE: undefined,
-	ONCLICKO: undefined,
-	MIN: undefined,
-	MAX: undefined,
-	STEP: undefined,
-	CLASS: CL_UI,
+		// set to defaults to suppress warnings
+		_DISABLED: undefined,
+		_NODISPLAY: undefined,
+		MAXLENGTH: undefined,
+		REVERSE: undefined,
+		WARNING: undefined,
+		TYPE: undefined,
+		FORUSER: undefined,
+		FORCITY: undefined,
+		FORCOUNTRY: undefined,
+		FORLEVEL: undefined,
+		ACCESSKEY: undefined,
+		STYLEI: "",
+		//  STYLEO: "",
+		DISCLOSE: 0,
+		_NAME: "",
+		READONLY: 0,
+		_STYLE: "",
+		ONWARNING: null,
+		ONCHANGE: null,
+		_ONCHANGE: undefined,
+		ONCLICKO: undefined,
+		MIN: undefined,
+		MAX: undefined,
+		STEP: undefined,
+		CLASS: CL_UI,
 
-	// global params
-	_TYPE: _THUI.DIV,
-	_ONWARNING: onWarning,
-	pTips: {
-	},
-	pTranslateBanner: {
-		CLASS: CL_TRANSLATETIP,
-//      NODISPLAY: 1,
-		TEXT: "Please help to "
-			+ '<a target="_blank" href="' + PFX_FORUM + FORUM_LOCAL + '">'
-			+ 'translate Validator!</a>',
-		TITLE: trS("about.tip"),
-	},
-	pNoAccess: {
-		CLASS: CL_PANEL,
-		NODISPLAY: 1,
-		STYLE: 'text-align:center',
-		TEXT: trS("noaccess.text"),
-		TITLE: trS("noaccess.tip"),
-	},
-	pMain: {
-		pTabs: {
-			CLASS: CL_TABS,
-			_DISCLOSE: 1,
-			_TYPE: _THUI.RADIO,
-			_ONCLICK: onUpdateUI,
-			tMain: {
-				// text and title update automatically
-				TEXT:   '',
-				TITLE:  '',
-				DISABLED: 1,
-				STYLEO: "cursor:pointer;max-width:97px",
-				ONCLICKO: onUpdateUI
-			},
-			tFilter: {
-				TEXT:   '<i class="fa fa-filter" aria-hidden="true"></i>' + "<span class='c" + CL_COLLAPSE + "'> " + trS("tab.filter.text") + "</span>",
-				TITLE:  trS("tab.filter.tip"),
-				CHECKED: 1
-			},
-			tSearch: {
-				TEXT:   '<i class="fa fa-search" aria-hidden="true"></i>' + "<span class='c" + CL_COLLAPSE + "'> " + trS("tab.search.text") + "</span>",
-				TITLE:  trS("tab.search.tip"),
-			},
-			tHelp: {
-				TEXT:   '<i class="fa fa-question-circle" aria-hidden="true"></i>' + "<span class='c" + CL_COLLAPSE + "'> " + trS("tab.help.text") + "</span>",
-				TITLE:  trS("tab.help.tip"),
-				STYLEO: "float:" + dirRight
-			},
-		}, // pMain.pTabs
-		pFilter: {
-			CLASS: CL_PANEL,
-			_CLASS: "checkbox",
-			_TYPE: _THUI.CHECKBOX,
-			_REVERSE: 1,
-			_ONCHANGE: onUpdateUI,
-			oExcludeNonEditables: {
-				TEXT: trS("filter.noneditables.text"),
-				TITLE: trS("filter.noneditables.tip"),
-				AUTOSAVE: AS_NONEDITABLES
-			},
-			oExcludeDuplicates: {
-				TEXT: trS("filter.duplicates.text"),
-				TITLE: trS("filter.duplicates.tip"),
-				AUTOSAVE: AS_DUPLICATES
-			},
-			oExcludeStreets: {
-				TEXT: trS("filter.streets.text"),
-				TITLE: trS("filter.streets.tip"),
-				AUTOSAVE: AS_STREETS
-			},
-			oExcludeOther: {
-				TEXT: trS("filter.other.text"),
-				TITLE: trS("filter.other.tip"),
-				AUTOSAVE: AS_OTHERS
-			},
-			oExcludeNotes: {
-				TEXT: trS("filter.notes.text"),
-				TITLE: trS("filter.notes.tip"),
-				AUTOSAVE: AS_NOTES
-			},
-		}, // pMain.pFilter
-		pSearch: {
-			CLASS: CL_PANEL,
-			NODISPLAY: 1,
-//          _CLASS: "checkbox",
-//          _TYPE: _THUI.CHECKBOX,
-			_REVERSE: 1,
-			_ONCHANGE: onUpdateUI,
-			oIncludeYourEdits: {
-				NODISPLAY: 1,
-				TYPE: _THUI.CHECKBOX,
-				TEXT: trS("search.youredits.text"),
-				TITLE: trS("search.youredits.tip"),
-				CLASS: "checkbox",
-				AUTOSAVE: AS_YOUREDITS
-			},
-			oIncludeUpdatedBy: {
-//              NODISPLAY: 1,
-				TYPE: _THUI.TEXT,
-				TEXT: trS("search.updatedby.text"),
-				TITLE: trS("search.updatedby.tip"),
-				PLACEHOLDER: trS("search.updatedby.example"),
-				CLASS: "form-label text",
-				CLASSI: "form-control",
-				AUTOSAVE: AS_UPDATEDBY
-			},
-			oIncludeUpdatedSince: {
-				TYPE: _THUI.DATE,
-				TEXT: trS("search.updatedsince.text"),
-				TITLE: trS("search.updatedsince.tip"),
-				PLACEHOLDER: trS("search.updatedsince.example"),
-				CLASS: "form-label date",
-				CLASSI: "form-control",
-				AUTOSAVE: AS_UPDATEDSINCE
-			},
-			oIncludeCityName: {
-				TYPE: _THUI.TEXT,
-				TEXT: trS("search.city.text"),
-				TITLE: trS("search.city.tip"),
-				PLACEHOLDER: trS("search.city.example"),
-				CLASS: "form-label text",
-				CLASSI: "form-control",
-				AUTOSAVE: AS_CITYNAME
-			},
-			oIncludeChecks: {
-				TYPE: _THUI.TEXT,
-				TEXT: trS("search.checks.text"),
-				TITLE: trS("search.checks.tip"),
-				PLACEHOLDER: trS("search.checks.example"),
-				CLASS: "form-label text",
-				CLASSI: "form-control",
-				AUTOSAVE: AS_CHECKS
-			},
-		}, // pMain.pSearch
-		pHelp: {
-			CLASS: CL_PANEL,
-			NODISPLAY: 1,
-			TEXT: trS("help.text"),
-			TITLE: trS("help.tip"),
-		}, // pMain.pHelp
-		pButtons: {
-			CLASS: CL_BUTTONS,
-			_CLASS: "btn btn-default",
-			_TYPE: _THUI.BUTTON,
-			_ONCLICK: onUpdateUI,
-			bScan: {
-				TEXT:   "\uf04b",
-				// title updates automatically
-				TITLE:  "",
-				STYLE:  "float:" + dirLeft + ";width:38px;font-family:FontAwesome"
-			},
-			bPause: {
-				NODISPLAY: 1,
-				TEXT:   "\uf04c",
-				TITLE:  trS("button.pause.tip"),
-				STYLE:  "float:" + dirLeft + ";width:38px;font-family:FontAwesome"
-			},
-			bContinue: {
-				TEXT:   "\uf04b",
-				TITLE:  trS("button.continue.tip"),
-				NODISPLAY: 1,
-				STYLE:  "float:" + dirLeft + ";width:38px;font-family:FontAwesome"
-			},
-			bStop: {
-				TEXT:   "\uf04d",
-				TITLE:  trS("button.stop.tip"),
-				STYLE:  "float:" + dirLeft + ";width:38px;font-family:FontAwesome;margin-" + dirRight + ":10px"
-			},
-			bClear: {
-//              TEXT:   "\uf016",
-				TEXT:   "\u2718",
-				// title updates automatically
-				TITLE:  "",
-				NODISPLAY: 1,
-				DISABLED: 1,
-				STYLE:  "float:" + dirLeft + ";width:38px;margin-" + dirRight + ":10px"
-			},
-			bReport: {
-				TEXT:   trS("button.report.text"),
-				TITLE:  trS("button.report.tip"),
-				STYLE:  "float:" + dirLeft + ";max-width:110px",
-				ONCLICK: onShowReport
-			},
-			bReportBB: {
-//              TEXT:   "\uf003",
-				TEXT:   "\uf0e0",
-				TITLE:  trS("button.BBreport.tip"),
-				ONCLICK: onShareReport,
-				STYLE:  "float:" + dirLeft + ";width:38px;font-family:FontAwesome"
-			},
-			bSettings: {
-				TEXT:   "\uf013",
-				TITLE:  trS("button.settings.tip"),
-				STYLE:  "float:" + dirRight + ";width:38px;font-family:FontAwesome"
-			},
-		} // pMain.pButtons
-	}, // pMain
-	pSettings: {
-		NODISPLAY: 1,
-		pTabs: {
-			CLASS: CL_TABS,
-			_DISCLOSE: 1,
-			_TYPE: _THUI.RADIO,
-			_ONCLICK: onUpdateUI,
-			tMain: {
-				TEXT:   trS("tab.settings.text") + ':',
-				TITLE:  "WME Validator Version " + WV_VERSION,
-				STYLEO: "max-width:85px",
-				DISABLED: 1
-			},
-			tCustom: {
-				TEXT:   '<i class="fa fa-user" aria-hidden="true"></i>' + "<span class='c" + CL_COLLAPSE + "'> " + trS("tab.custom.text") + "</span>",
-				STYLEO: "max-width:110px",
-				TITLE:  trS("tab.custom.tip"),
-				CHECKED: 1
-			},
-			tScanner: {
-				TEXT:   '<i class="fa fa-wrench" aria-hidden="true"></i>' + "<span class='c" + CL_COLLAPSE + "'> " + trS("tab.scanner.text") + "</span>",
-				TITLE:  trS("tab.scanner.tip"),
-				STYLEO: "max-width:110px",
-			},
-			tAbout: {
-				TEXT:   '<i class="fa fa-question-circle" aria-hidden="true"></i>' + "<span class='c" + CL_COLLAPSE + "'> " + trS("tab.about.text") + "</span>",
-				TITLE:  trS("tab.about.tip"),
-				STYLEO: "float:" + dirRight + ";max-width:110px"
-			}
-		}, // pSettings.pTabs
-		pCustom: {
-			CLASS: CL_PANEL,
-			_CLASS: "form-label text",
-			_REVERSE: 1,
-			_ONCHANGE: onUpdateUI,
-			oTemplate1: {
-				TYPE: _THUI.TEXT,
-				TEXT: '&nbsp;' + trS("custom.template.text"),
-				TITLE: trS("custom.template.tip"),
-				PLACEHOLDER: trS("custom.template.example"),
-				CLASS: "form-label text c1",
-				CLASSI: "form-control",
-				AUTOSAVE: AS_CUSTOM1TEMPLATE
-			},
-			oRegExp1: {
-				TYPE: _THUI.TEXT,
-				TEXT: '&nbsp;' + trS("custom.regexp.text"),
-				TITLE: trS("custom.regexp.tip"),
-				PLACEHOLDER: trS("custom.regexp.example"),
-				CLASSI: "form-control",
-				AUTOSAVE: AS_CUSTOM1REGEXP
-			},
-			oTemplate2: {
-				TYPE: _THUI.TEXT,
-				TEXT: '&nbsp;' + trS("custom.template.text"),
-				TITLE: trS("custom.template.tip"),
-				PLACEHOLDER: trS("custom.template.example"),
-				CLASS: "form-label text c2",
-				CLASSI: "form-control",
-				AUTOSAVE: AS_CUSTOM2TEMPLATE
-			},
-			oRegExp2: {
-				TYPE: _THUI.TEXT,
-				TEXT: '&nbsp;' + trS("custom.regexp.text"),
-				TITLE: trS("custom.regexp.tip"),
-				PLACEHOLDER: trS("custom.regexp.example"),
-				CLASSI: "form-control",
-				AUTOSAVE: AS_CUSTOM2REGEXP
-			},
-		}, // pSettings.pCustom
-		pScanner: {
-			NODISPLAY: 1,
-			CLASS: CL_PANEL,
-			_CLASS: "checkbox",
-			_TYPE: _THUI.CHECKBOX,
-			_REVERSE: 1,
-			_ONCHANGE: onUpdateUI,
-			oSlowChecks: {
-				TEXT: trS("scanner.slow.text"),
-				TITLE: trS("scanner.slow.tip"),
-				AUTOSAVE: AS_SLOWCHECKS
-			},
-			oReportExt: {
-				TEXT: trS("scanner.ext.text"),
-				TITLE: trS("scanner.ext.tip"),
-				AUTOSAVE: AS_REPORTEXT
-			},
-			oHLReported: {
-				TEXT: trS("scanner.highlight.text"),
-				TITLE: trS("scanner.highlight.tip"),
-				AUTOSAVE: AS_HLISSUES
-			},
-			oSounds: {
-				TEXT: trS("scanner.sounds.text"),
-				TITLE: trS("scanner.sounds.tip"),
-				NATITLE: trS("scanner.sounds.NA"),
-				AUTOSAVE: AS_SOUNDS
-			},
-		}, // pSettings.pScanner
-		pAbout: {
-			CLASS: CL_PANEL,
-			NODISPLAY: 1,
-			TEXT: '<p><b>WME Validator</b>'
-				+ '<br>Version ' + WV_VERSION + ' <a target="_blank" href="' + PFX_FORUM + FORUM_HOME + '">check for updates</a>'
-				+ '<br>&copy; 2013-2018 Andriy Berestovskyy</p>'
-				+ '<p><b>Built-in localization packs for:</b><br>'
-				+ listOfIntPacks
-				+ '<p><b>External localization packs for:</b><br>'
-				+ listOfPacks
-				+ '</p>'
-				+ '<p><b>Special thanks to:</b><br>OyyoDams, Timbones, paulkok_my, petervdveen, MdSyah, sketch, AlanOfTheBerg, arbaot, Zniwek, orbitc, robindlc, fernandoanguita, BellHouse, vidalnit, Manzareck, gad_m, Zirland and <b>YOU!</b></p>',
+		// global params
+		_TYPE: _THUI.DIV,
+		_ONWARNING: onWarning,
+		pTips: {
+		},
+		pTranslateBanner: {
+			CLASS: CL_TRANSLATETIP,
+			//      NODISPLAY: 1,
+			TEXT: "Please help to "
+				+ '<a target="_blank" href="' + PFX_FORUM + FORUM_LOCAL + '">'
+				+ 'translate Validator!</a>',
 			TITLE: trS("about.tip"),
-			STYLE: 'direction:ltr;text-align:center;white-space:normal'
-		}, // pSettings.pAbout
-		pButtons: {
-			CLASS: CL_BUTTONS,
-			_CLASS: "btn btn-default",
-			_TYPE: _THUI.BUTTON,
-			_ONCLICK: onUpdateUI,
-			bReset: {
-				TEXT:   '<i class="fa fa-undo" aria-hidden="true"></i> ' + trS("button.reset.text"),
-				TITLE:  trS("button.reset.tip"),
-				STYLE:  "float:" + dirLeft + ";max-width:165px",
-			},
-			bList: {
+		},
+		pNoAccess: {
+			CLASS: CL_PANEL,
+			NODISPLAY: 1,
+			STYLE: 'text-align:center',
+			TEXT: trS("noaccess.text"),
+			TITLE: trS("noaccess.tip"),
+		},
+		pMain: {
+			pTabs: {
+				CLASS: CL_TABS,
+				_DISCLOSE: 1,
+				_TYPE: _THUI.RADIO,
+				_ONCLICK: onUpdateUI,
+				tMain: {
+					// text and title update automatically
+					TEXT: '',
+					TITLE: '',
+					DISABLED: 1,
+					STYLEO: "cursor:pointer;max-width:97px",
+					ONCLICKO: onUpdateUI
+				},
+				tFilter: {
+					TEXT: '<i class="fa fa-filter" aria-hidden="true"></i>' + "<span class='c" + CL_COLLAPSE + "'> " + trS("tab.filter.text") + "</span>",
+					TITLE: trS("tab.filter.tip"),
+					CHECKED: 1
+				},
+				tSearch: {
+					TEXT: '<i class="fa fa-search" aria-hidden="true"></i>' + "<span class='c" + CL_COLLAPSE + "'> " + trS("tab.search.text") + "</span>",
+					TITLE: trS("tab.search.tip"),
+				},
+				tHelp: {
+					TEXT: '<i class="fa fa-question-circle" aria-hidden="true"></i>' + "<span class='c" + CL_COLLAPSE + "'> " + trS("tab.help.text") + "</span>",
+					TITLE: trS("tab.help.tip"),
+					STYLEO: "float:" + dirRight
+				},
+			}, // pMain.pTabs
+			pFilter: {
+				CLASS: CL_PANEL,
+				_CLASS: "checkbox",
+				_TYPE: _THUI.CHECKBOX,
+				_REVERSE: 1,
+				_ONCHANGE: onUpdateUI,
+				oExcludeNonEditables: {
+					TEXT: trS("filter.noneditables.text"),
+					TITLE: trS("filter.noneditables.tip"),
+					AUTOSAVE: AS_NONEDITABLES
+				},
+				oExcludeDuplicates: {
+					TEXT: trS("filter.duplicates.text"),
+					TITLE: trS("filter.duplicates.tip"),
+					AUTOSAVE: AS_DUPLICATES
+				},
+				oExcludeStreets: {
+					TEXT: trS("filter.streets.text"),
+					TITLE: trS("filter.streets.tip"),
+					AUTOSAVE: AS_STREETS
+				},
+				oExcludeOther: {
+					TEXT: trS("filter.other.text"),
+					TITLE: trS("filter.other.tip"),
+					AUTOSAVE: AS_OTHERS
+				},
+				oExcludeNotes: {
+					TEXT: trS("filter.notes.text"),
+					TITLE: trS("filter.notes.tip"),
+					AUTOSAVE: AS_NOTES
+				},
+			}, // pMain.pFilter
+			pSearch: {
+				CLASS: CL_PANEL,
 				NODISPLAY: 1,
-				TEXT:   '<i class="fa fa-list" aria-hidden="true"></i> ' + trS("button.list.text"),
-				TITLE:  trS("button.list.tip"),
-				STYLE:  "float:" + dirLeft + ";max-width:165px",
-				ONCLICK: onShowChecks
-			},
-			bWizard: {
+				//          _CLASS: "checkbox",
+				//          _TYPE: _THUI.CHECKBOX,
+				_REVERSE: 1,
+				_ONCHANGE: onUpdateUI,
+				oIncludeYourEdits: {
+					NODISPLAY: 1,
+					TYPE: _THUI.CHECKBOX,
+					TEXT: trS("search.youredits.text"),
+					TITLE: trS("search.youredits.tip"),
+					CLASS: "checkbox",
+					AUTOSAVE: AS_YOUREDITS
+				},
+				oIncludeUpdatedBy: {
+					//              NODISPLAY: 1,
+					TYPE: _THUI.TEXT,
+					TEXT: trS("search.updatedby.text"),
+					TITLE: trS("search.updatedby.tip"),
+					PLACEHOLDER: trS("search.updatedby.example"),
+					CLASS: "form-label text",
+					CLASSI: "form-control",
+					AUTOSAVE: AS_UPDATEDBY
+				},
+				oIncludeUpdatedSince: {
+					TYPE: _THUI.DATE,
+					TEXT: trS("search.updatedsince.text"),
+					TITLE: trS("search.updatedsince.tip"),
+					PLACEHOLDER: trS("search.updatedsince.example"),
+					CLASS: "form-label date",
+					CLASSI: "form-control",
+					AUTOSAVE: AS_UPDATEDSINCE
+				},
+				oIncludeCityName: {
+					TYPE: _THUI.TEXT,
+					TEXT: trS("search.city.text"),
+					TITLE: trS("search.city.tip"),
+					PLACEHOLDER: trS("search.city.example"),
+					CLASS: "form-label text",
+					CLASSI: "form-control",
+					AUTOSAVE: AS_CITYNAME
+				},
+				oIncludeChecks: {
+					TYPE: _THUI.TEXT,
+					TEXT: trS("search.checks.text"),
+					TITLE: trS("search.checks.tip"),
+					PLACEHOLDER: trS("search.checks.example"),
+					CLASS: "form-label text",
+					CLASSI: "form-control",
+					AUTOSAVE: AS_CHECKS
+				},
+			}, // pMain.pSearch
+			pHelp: {
+				CLASS: CL_PANEL,
 				NODISPLAY: 1,
-				TEXT:   '<i class="fa fa-magic" aria-hidden="true"></i>',
-				TITLE:  trS("button.wizard.tip"),
-				STYLE:  "float:" + dirLeft + ";margin-" + dirLeft + ":6px;width:38px",
-				ONCLICK: onCreatePack
-			},
-			bBack: {
-				TEXT:   '<i class="fa fa-angle-double-' + dirLeft + '" aria-hidden="true"></i> ' + trS("button.back.text"),
-				TITLE:  trS("button.back.tip"),
-				STYLE:  "float:" + dirRight + ";max-width:70px"
-			}
-		} // pSettings.pButtons
-	} // pSettings
+				TEXT: trS("help.text"),
+				TITLE: trS("help.tip"),
+			}, // pMain.pHelp
+			pButtons: {
+				CLASS: CL_BUTTONS,
+				_CLASS: "btn btn-default",
+				_TYPE: _THUI.BUTTON,
+				_ONCLICK: onUpdateUI,
+				bScan: {
+					TEXT: "\uf04b",
+					// title updates automatically
+					TITLE: "",
+					STYLE: "float:" + dirLeft + ";width:38px;font-family:FontAwesome"
+				},
+				bPause: {
+					NODISPLAY: 1,
+					TEXT: "\uf04c",
+					TITLE: trS("button.pause.tip"),
+					STYLE: "float:" + dirLeft + ";width:38px;font-family:FontAwesome"
+				},
+				bContinue: {
+					TEXT: "\uf04b",
+					TITLE: trS("button.continue.tip"),
+					NODISPLAY: 1,
+					STYLE: "float:" + dirLeft + ";width:38px;font-family:FontAwesome"
+				},
+				bStop: {
+					TEXT: "\uf04d",
+					TITLE: trS("button.stop.tip"),
+					STYLE: "float:" + dirLeft + ";width:38px;font-family:FontAwesome;margin-" + dirRight + ":10px"
+				},
+				bClear: {
+					//              TEXT:   "\uf016",
+					TEXT: "\u2718",
+					// title updates automatically
+					TITLE: "",
+					NODISPLAY: 1,
+					DISABLED: 1,
+					STYLE: "float:" + dirLeft + ";width:38px;margin-" + dirRight + ":10px"
+				},
+				bReport: {
+					TEXT: trS("button.report.text"),
+					TITLE: trS("button.report.tip"),
+					STYLE: "float:" + dirLeft + ";max-width:110px",
+					ONCLICK: onShowReport
+				},
+				bReportBB: {
+					//              TEXT:   "\uf003",
+					TEXT: "\uf0e0",
+					TITLE: trS("button.BBreport.tip"),
+					ONCLICK: onShareReport,
+					STYLE: "float:" + dirLeft + ";width:38px;font-family:FontAwesome"
+				},
+				bSettings: {
+					TEXT: "\uf013",
+					TITLE: trS("button.settings.tip"),
+					STYLE: "float:" + dirRight + ";width:38px;font-family:FontAwesome"
+				},
+			} // pMain.pButtons
+		}, // pMain
+		pSettings: {
+			NODISPLAY: 1,
+			pTabs: {
+				CLASS: CL_TABS,
+				_DISCLOSE: 1,
+				_TYPE: _THUI.RADIO,
+				_ONCLICK: onUpdateUI,
+				tMain: {
+					TEXT: trS("tab.settings.text") + ':',
+					TITLE: "WME Validator Version " + WV_VERSION,
+					STYLEO: "max-width:85px",
+					DISABLED: 1
+				},
+				tCustom: {
+					TEXT: '<i class="fa fa-user" aria-hidden="true"></i>' + "<span class='c" + CL_COLLAPSE + "'> " + trS("tab.custom.text") + "</span>",
+					STYLEO: "max-width:110px",
+					TITLE: trS("tab.custom.tip"),
+					CHECKED: 1
+				},
+				tScanner: {
+					TEXT: '<i class="fa fa-wrench" aria-hidden="true"></i>' + "<span class='c" + CL_COLLAPSE + "'> " + trS("tab.scanner.text") + "</span>",
+					TITLE: trS("tab.scanner.tip"),
+					STYLEO: "max-width:110px",
+				},
+				tAbout: {
+					TEXT: '<i class="fa fa-question-circle" aria-hidden="true"></i>' + "<span class='c" + CL_COLLAPSE + "'> " + trS("tab.about.text") + "</span>",
+					TITLE: trS("tab.about.tip"),
+					STYLEO: "float:" + dirRight + ";max-width:110px"
+				}
+			}, // pSettings.pTabs
+			pCustom: {
+				CLASS: CL_PANEL,
+				_CLASS: "form-label text",
+				_REVERSE: 1,
+				_ONCHANGE: onUpdateUI,
+				oTemplate1: {
+					TYPE: _THUI.TEXT,
+					TEXT: '&nbsp;' + trS("custom.template.text"),
+					TITLE: trS("custom.template.tip"),
+					PLACEHOLDER: trS("custom.template.example"),
+					CLASS: "form-label text c1",
+					CLASSI: "form-control",
+					AUTOSAVE: AS_CUSTOM1TEMPLATE
+				},
+				oRegExp1: {
+					TYPE: _THUI.TEXT,
+					TEXT: '&nbsp;' + trS("custom.regexp.text"),
+					TITLE: trS("custom.regexp.tip"),
+					PLACEHOLDER: trS("custom.regexp.example"),
+					CLASSI: "form-control",
+					AUTOSAVE: AS_CUSTOM1REGEXP
+				},
+				oTemplate2: {
+					TYPE: _THUI.TEXT,
+					TEXT: '&nbsp;' + trS("custom.template.text"),
+					TITLE: trS("custom.template.tip"),
+					PLACEHOLDER: trS("custom.template.example"),
+					CLASS: "form-label text c2",
+					CLASSI: "form-control",
+					AUTOSAVE: AS_CUSTOM2TEMPLATE
+				},
+				oRegExp2: {
+					TYPE: _THUI.TEXT,
+					TEXT: '&nbsp;' + trS("custom.regexp.text"),
+					TITLE: trS("custom.regexp.tip"),
+					PLACEHOLDER: trS("custom.regexp.example"),
+					CLASSI: "form-control",
+					AUTOSAVE: AS_CUSTOM2REGEXP
+				},
+			}, // pSettings.pCustom
+			pScanner: {
+				NODISPLAY: 1,
+				CLASS: CL_PANEL,
+				_CLASS: "checkbox",
+				_TYPE: _THUI.CHECKBOX,
+				_REVERSE: 1,
+				_ONCHANGE: onUpdateUI,
+				oSlowChecks: {
+					TEXT: trS("scanner.slow.text"),
+					TITLE: trS("scanner.slow.tip"),
+					AUTOSAVE: AS_SLOWCHECKS
+				},
+				oReportExt: {
+					TEXT: trS("scanner.ext.text"),
+					TITLE: trS("scanner.ext.tip"),
+					AUTOSAVE: AS_REPORTEXT
+				},
+				oHLReported: {
+					TEXT: trS("scanner.highlight.text"),
+					TITLE: trS("scanner.highlight.tip"),
+					AUTOSAVE: AS_HLISSUES
+				},
+				oSounds: {
+					TEXT: trS("scanner.sounds.text"),
+					TITLE: trS("scanner.sounds.tip"),
+					NATITLE: trS("scanner.sounds.NA"),
+					AUTOSAVE: AS_SOUNDS
+				},
+			}, // pSettings.pScanner
+			pAbout: {
+				CLASS: CL_PANEL,
+				NODISPLAY: 1,
+				TEXT: '<p><b>WME Validator</b>'
+					+ '<br>Version ' + WV_VERSION + ' <a target="_blank" href="' + PFX_FORUM + FORUM_HOME + '">check for updates</a>'
+					+ '<br>&copy; 2013-2018 Andriy Berestovskyy</p>'
+					+ '<p><b>Built-in localization packs for:</b><br>'
+					+ listOfIntPacks
+					+ '<p><b>External localization packs for:</b><br>'
+					+ listOfPacks
+					+ '</p>'
+					+ '<p><b>Special thanks to:</b><br>OyyoDams, Timbones, paulkok_my, petervdveen, MdSyah, sketch, AlanOfTheBerg, arbaot, Zniwek, orbitc, robindlc, fernandoanguita, BellHouse, vidalnit, Manzareck, gad_m, Zirland and <b>YOU!</b></p>',
+				TITLE: trS("about.tip"),
+				STYLE: 'direction:ltr;text-align:center;white-space:normal'
+			}, // pSettings.pAbout
+			pButtons: {
+				CLASS: CL_BUTTONS,
+				_CLASS: "btn btn-default",
+				_TYPE: _THUI.BUTTON,
+				_ONCLICK: onUpdateUI,
+				bReset: {
+					TEXT: '<i class="fa fa-undo" aria-hidden="true"></i> ' + trS("button.reset.text"),
+					TITLE: trS("button.reset.tip"),
+					STYLE: "float:" + dirLeft + ";max-width:165px",
+				},
+				bList: {
+					NODISPLAY: 1,
+					TEXT: '<i class="fa fa-list" aria-hidden="true"></i> ' + trS("button.list.text"),
+					TITLE: trS("button.list.tip"),
+					STYLE: "float:" + dirLeft + ";max-width:165px",
+					ONCLICK: onShowChecks
+				},
+				bWizard: {
+					NODISPLAY: 1,
+					TEXT: '<i class="fa fa-magic" aria-hidden="true"></i>',
+					TITLE: trS("button.wizard.tip"),
+					STYLE: "float:" + dirLeft + ";margin-" + dirLeft + ":6px;width:38px",
+					ONCLICK: onCreatePack
+				},
+				bBack: {
+					TEXT: '<i class="fa fa-angle-double-' + dirLeft + '" aria-hidden="true"></i> ' + trS("button.back.text"),
+					TITLE: trS("button.back.tip"),
+					STYLE: "float:" + dirRight + ";max-width:70px"
+				}
+			} // pSettings.pButtons
+		} // pSettings
 	}; // _UI
 
 	// init report
 	clearReport();
 
 	// check if user is a country manager
-	if(_RT.$topUser.$isCM)
-	{
+	if (_RT.$topUser.$isCM) {
 		_UI.pMain.pSearch.oIncludeYourEdits.NODISPLAY = 1;
 		_UI.pMain.pSearch.oIncludeUpdatedBy.NODISPLAY = 0;
 	}
-	else
-	{
+	else {
 		_UI.pMain.pSearch.oIncludeYourEdits.NODISPLAY = 0;
 		_UI.pMain.pSearch.oIncludeUpdatedBy.NODISPLAY = 1;
 	}
 
 	// show translate banner
-	if(-1 !== _RT.$untranslatedLngs.indexOf(_RT.$lng.split('-')[0]))
+	if (-1 !== _RT.$untranslatedLngs.indexOf(_RT.$lng.split('-')[0]))
 		_UI.pTranslateBanner.NODISPLAY = 0;
 	else
 		_UI.pTranslateBanner.NODISPLAY = 1;
 
 
 	// check for AudioContext
-	if(!classCodeDefined(UW.AudioContext)
-		&& !classCodeDefined(UW.webkitAudioContext))
-	{
+	if (!classCodeDefined(UW.AudioContext)
+		&& !classCodeDefined(UW.webkitAudioContext)) {
 		_UI.pSettings.pScanner.oSounds.CHECKED = false;
 		_UI.pSettings.pScanner.oSounds.NA = true;
 	}
@@ -1154,21 +1118,17 @@ function F_LOGIN()
 	// load saved values from local storage
 	var storageObj = null;
 	var s = null;
-	try
-	{
+	try {
 		s = window.localStorage.getItem(AS_NAME);
 		storageObj = s ? JSON.parse(s) : null;
-		if (!(AS_PASSWORD in storageObj))
-		{
+		if (!(AS_PASSWORD in storageObj)) {
 			storageObj = null;
 		}
 	}
-	catch (e) {}
+	catch (e) { }
 
-	if(!storageObj || WV_LICENSE_VERSION !== storageObj[AS_LICENSE])
-	{
-		if(!confirm(WV_LICENSE))
-		{
+	if (!storageObj || WV_LICENSE_VERSION !== storageObj[AS_LICENSE]) {
+		if (!confirm(WV_LICENSE)) {
 			// destroy UI
 			_UI = {};
 			// uninstall login/logout handler
@@ -1181,15 +1141,14 @@ function F_LOGIN()
 	}
 
 	var showWhatsNew = false;
-	if(s && !storageObj)
-	{
+	if (s && !storageObj) {
 		warning("\nDue to the major changes in Validator, all filter options\nand settings have been RESET to their DEFAULTS.");
 		showWhatsNew = true;
 	}
-	if(storageObj && WV_VERSION !== storageObj[AS_VERSION])
+	if (storageObj && WV_VERSION !== storageObj[AS_VERSION])
 		showWhatsNew = true;
 
-	if(showWhatsNew)
+	if (showWhatsNew)
 		info(WV_WHATSNEW);
 
 	_THUI.loadValues(_UI, storageObj);
@@ -1249,10 +1208,10 @@ function F_LOGIN()
 		// + '<span class="c' + CL_COLLAPSE + '"> Validator:</span>'
 		+ ' Validator'
 		+ '</a></li>'
-		);
+	);
 	$('#user-tabs+div.tab-content').append(
 		'<div class="tab-pane" id="sidepanel-' + ID_PREFIX + '"></div>'
-		);
+	);
 	// append user interface after the details or ad the bottom
 	_THUI.appendUI(document.getElementById("sidepanel-" + ID_PREFIX),
 		_UI, "i" + ID_PREFIX);
@@ -1279,12 +1238,12 @@ function F_LOGIN()
 
 	// monitor segments and nodes changes
 	WMo.segments.on({
-	    "objectsadded": onSegmentsAdded,
-	    "objectschanged": onSegmentsChanged,
-	    "objectsremoved": onSegmentsRemoved,
+		"objectsadded": onSegmentsAdded,
+		"objectschanged": onSegmentsChanged,
+		"objectsremoved": onSegmentsRemoved,
 	});
 	WMo.nodes.on({
-	    "objectschanged": onNodesChanged,
-	    "objectsremoved": onNodesRemoved,
+		"objectschanged": onNodesChanged,
+		"objectsremoved": onNodesRemoved,
 	});
 }
