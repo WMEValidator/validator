@@ -566,6 +566,7 @@ function F_VALIDATE(disabledHL) {
 			_BARestrictions: { enumerable: false },
 			$BARestrictions: { get: this.getRevRestrictions },
 			$segmentID: { writable: false },
+			$isRoutable: { writable: false },
 			$isTurnALocked: { writable: false },
 			$isTurnBLocked: { writable: false },
 			$isRoundabout: { writable: false },
@@ -2427,26 +2428,31 @@ function F_VALIDATE(disabledHL) {
 				}
 			} // outward connectivity issues
 
+			// GROUP isDrivable.!nodeApartial.!nodeBpartial
 			// check Public connection
 			if (slowChecks
 				&& segment.$isRoutable
-				&& nodeA.$otherSegments.length > 0
-				&& nodeB.$otherSegments.length > 0){
+				&& !nodeA.$isPartial
+				&& !nodeB.$isPartial
+				&& nodeA.$otherSegmentsLen > 0
+				&& nodeB.$otherSegmentsLen > 0){
 				// Check other segments to be a drivable public segment
 				var foundPublicConnection = false;
-				for (var i = 0; i < nodeA.$otherSegments.length; i++) {
+				for (var i = 0; i < nodeA.$otherSegmentsLen; i++) {
 					var otherSegment = nodeA.$otherSegments[i];
 					if (otherSegment.$rawSegment.isRoutable()){
 						foundPublicConnection = true;
 						break;
 					}
 				}
-				// check node B
-				for (var i = 0; i < nodeB.$otherSegments.length; i++) {
-					var otherSegment = nodeB.$otherSegments[i];
-					if (otherSegment.$rawSegment.isRoutable()){
-						foundPublicConnection = true;
-						break;
+				if(!foundPublicConnection){
+					// check node B
+					for (var i = 0; i < nodeB.$otherSegmentsLen; i++) {
+						var otherSegment = nodeB.$otherSegments[i];
+						if (otherSegment.$rawSegment.isRoutable()){
+							foundPublicConnection = true;
+							break;
+						}
 					}
 				}
 				if (!foundPublicConnection
