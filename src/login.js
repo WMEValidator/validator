@@ -1278,14 +1278,13 @@ function F_LOGIN()
 	});
 
 	// monitor segments and nodes changes
-	// TODO: fix me to WMo.segments.on
-	// WMo.segments.events.on({
-	//     "objectsadded": onSegmentsAdded,
-	//     "objectschanged": onSegmentsChanged,
-	//     "objectsremoved": onSegmentsRemoved,
-	// });
-	// WMo.nodes.events.on({
-	//     "objectschanged": onNodesChanged,
-	//     "objectsremoved": onNodesRemoved,
-	// });
+	WMo.segments.on({
+	    "objectsadded": onSegmentsAdded,
+	    "objectschanged": onSegmentsChanged,
+	    "objectsremoved": onSegmentsRemoved,
+	});
+	WMo.nodes.on({
+	    "objectschanged": onNodesChanged,
+	    "objectsremoved": onNodesRemoved,
+	});
 }
