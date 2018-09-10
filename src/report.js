@@ -161,7 +161,7 @@ function F_SHOWREPORT(reportFormat) {
 			+ '?zoom=' + zoom
 			+ '&lat=' + Math.round(c.lat * 1e5) / 1e5
 			+ '&lon=' + Math.round(c.lon * 1e5) / 1e5
-			+ '&env=' + nW.location.code
+			+ '&env=' + nW.app.getAppRegionCode()
 			;
 	}
 
@@ -1136,7 +1136,7 @@ function F_SHOWREPORT(reportFormat) {
 		FR += '&lon=';
 		FR += obj.$segmentCopy.$center.lon;
 		FR += '&env=';
-		FR += nW.location.code;
+		FR += nW.app.getAppRegionCode();
 		FR += '&segments=';
 		FR += obj.$segmentCopy.$segmentID;
 	}
