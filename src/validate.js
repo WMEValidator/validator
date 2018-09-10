@@ -500,6 +500,8 @@ function F_VALIDATE(disabledHL) {
 
 		this.$address = new _WV.SimpleADDRESS(attrs.primaryStreetID);
 
+		this.$isRoutable = this.$rawSegment.isRoutable();
+
 		this.$isTurnALocked = attrs.revTurnsLocked;
 		this.$isTurnBLocked = attrs.fwdTurnsLocked;
 		this.$isRoundabout = classCodeDefined(attrs.junctionID)
@@ -559,6 +561,7 @@ function F_VALIDATE(disabledHL) {
 			_restrictions: { enumerable: false },
 			$restrictions: { get: this.getRestrictions },
 			$segmentID: { writable: false },
+			$isRoutable: { writable: false },
 			$isTurnALocked: { writable: false },
 			$isTurnBLocked: { writable: false },
 			$isRoundabout: { writable: false },
@@ -2404,6 +2407,40 @@ function F_VALIDATE(disabledHL) {
 					} // !nodeB.$outConnectionsLen
 				}
 			} // outward connectivity issues
+
+			// GROUP isDrivable.!nodeApartial.!nodeBpartial
+			// check Public connection
+			if (slowChecks
+				&& segment.$isRoutable
+				&& !nodeA.$isPartial
+				&& !nodeB.$isPartial
+				&& nodeA.$otherSegmentsLen > 0
+				&& nodeB.$otherSegmentsLen > 0){
+				// Check other segments to be a drivable public segment
+				var foundPublicConnection = false;
+				for (var i = 0; i < nodeA.$otherSegmentsLen; i++) {
+					var otherSegment = nodeA.$otherSegments[i];
+					if (otherSegment.$rawSegment.isRoutable()){
+						foundPublicConnection = true;
+						break;
+					}
+				}
+				if(!foundPublicConnection){
+					// check node B
+					for (var i = 0; i < nodeB.$otherSegmentsLen; i++) {
+						var otherSegment = nodeB.$otherSegments[i];
+						if (otherSegment.$rawSegment.isRoutable()){
+							foundPublicConnection = true;
+							break;
+						}
+					}
+				}
+				if (!foundPublicConnection
+					&& isLimitOk(202)
+					&& address.isOkFor(202)){
+						segment.report(202);
+					}
+			}
 
 			// GROUP isDrivable
 			if (DIR_UNKNOWN === direction
