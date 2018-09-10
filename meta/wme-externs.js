@@ -274,6 +274,7 @@ var W = {
 				bind: function(a, b) { },
 			},
 		},
+		getAppRegionCode: function () { },
 	},
 	accelerators: {
 		events: {
