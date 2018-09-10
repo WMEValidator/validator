@@ -2408,14 +2408,16 @@ function F_VALIDATE(disabledHL) {
 				}
 			} // outward connectivity issues
 
-			// GROUP isDrivable.!nodeApartial.!nodeBpartial
+			// GROUP isDrivable
 			// check Public connection
 			if (slowChecks
 				&& segment.$isRoutable
 				&& !nodeA.$isPartial
 				&& !nodeB.$isPartial
 				&& nodeA.$otherSegmentsLen > 0
-				&& nodeB.$otherSegmentsLen > 0){
+				&& nodeB.$otherSegmentsLen > 0
+				&& isLimitOk(202)
+				&& address.isOkFor(202)) {
 				// Check other segments to be a drivable public segment
 				var foundPublicConnection = false;
 				for (var i = 0; i < nodeA.$otherSegmentsLen; i++) {
@@ -2435,12 +2437,9 @@ function F_VALIDATE(disabledHL) {
 						}
 					}
 				}
-				if (!foundPublicConnection
-					&& isLimitOk(202)
-					&& address.isOkFor(202)){
-						segment.report(202);
-					}
-			}
+				if (!foundPublicConnection)
+					segment.report(202);
+			} // public connection
 
 			// GROUP isDrivable
 			if (DIR_UNKNOWN === direction
