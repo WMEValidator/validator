@@ -741,8 +741,10 @@ function F_SHOWREPORT(reportFormat) {
 	}
 	// opens new browser window
 	function openWindow(data) {
-		UW.open("data:text/html;charset=UTF-8," + encodeURIComponent(data),
-			"_blank");
+		var nw = UW.open("", "_blank");
+		nw.document.write(data);
+		// UW.open("data:text/html;charset=UTF-8," + encodeURIComponent(data),
+		// 	"_blank");
 	}
 	// opens new browser window for final report
 	/** @param {string=} title */
