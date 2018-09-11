@@ -2442,6 +2442,34 @@ function F_VALIDATE(disabledHL) {
 			} // public connection
 
 			// GROUP isDrivable
+			// global speed limit check
+			if (RR_SERVICE < typeRank){
+				if (DIR_AB === direction || DIR_TWO === direction) {
+					if (forwardSpeedUnverified
+						&& isLimitOk(210)
+						&& address.isOkFor(210))
+						segment.report(210);
+
+					if ((isNaN(forwardSpeed) || forwardSpeed === null || forwardSpeed === 0)
+						&& isLimitOk(212)
+						&& address.isOkFor(212))
+						segment.report(212);
+				}
+
+				if (DIR_BA === direction || DIR_TWO == direction) {
+					if (reverseSpeedUnverified
+						&& isLimitOk(211)
+						&& address.isOkFor(211))
+						segment.report(211);
+
+					if ((isNaN(reverseSpeed) || reverseSpeed === null || reverseSpeed === 0)
+						&& isLimitOk(213)
+						&& address.isOkFor(213))
+						segment.report(213);
+				}
+			}// global speed limit check
+
+			// GROUP isDrivable
 			if (DIR_UNKNOWN === direction
 				&& isLimitOk(25)
 				&& address.isOkFor(25))
