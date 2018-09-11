@@ -1,5 +1,12 @@
 Current changes:
 
+v2018.09.11:
+- davidakachaos: fix "Show report" and other pop up windows
+- davidakachaos: new check #220 "No connection for public segment"
+- davidakachaos: fix revalidate segment after an edit
+- davidakachaos: fix checks related to restrictions
+- other minor fixes
+
 v2018.08.28:
 - davidakachaos: fix switching to/from event mode
 - davidakachaos: fix "unneeded node" for segments with different speeds

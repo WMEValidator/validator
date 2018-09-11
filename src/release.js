@@ -26,11 +26,18 @@
  * WV RELEASE INFORMATION
  */
 /** WME Validator version @const */
-var WV_VERSION = "2018.08.28";
+var WV_VERSION = "2018.09.11";
 /** Auto-save password. Increase to reset auto-save config. @const */
 var AS_PASSWORD = "v1";
 /** @const */
 var WV_WHATSNEW = ""
+	+ "\nv2018.09.11:"
+	+ "\n- davidakachaos: fix 'Show report' and other pop up windows"
+	+ "\n- davidakachaos: new check #220 'No connection for public segment'"
+	+ "\n- davidakachaos: fix revalidate segment after an edit"
+	+ "\n- davidakachaos: fix checks related to restrictions"
+	+ "\n- other minor fixes"
+	+ "\n"
 	+ "\nv2018.08.28:"
 	+ "\n- davidakachaos: fix switching to/from event mode"
 	+ "\n- davidakachaos: fix 'unneeded node' for segments"
@@ -42,11 +49,8 @@ var WV_WHATSNEW = ""
 	+ "\n- disable #114 and #115 (drivable & non-drivable)"
 	+ "\n"
 	+ "\nv2018.08.01:"
-	+ "\n- Transfer NL translations from Greasyfork"
+	+ "\n- davidakachaos: transfer NL translations from Greasyfork"
 	+ "\n- other minor changes"
-	+ "\n"
-	+ "\nv2018.07.18:"
-	+ "\n- First public open source release"
 	;
 /** @const */
 var WV_LICENSE_VERSION = "1";
