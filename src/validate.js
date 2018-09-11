@@ -1659,6 +1659,18 @@ function F_VALIDATE(disabledHL) {
 		var reverseSpeed = segment.$revMaxSpeed;
 		var forwardSpeedUnverified = segment.$fwdMaxSpeedUnverified;
 		var reverseSpeedUnverified = segment.$fwdMaxSpeedUnverified;
+		var speedConversionFactor = 1;  // default to metric
+		var speedMultipleFactor = 10;   // default to limits being set in multiples of 10
+		// check for MPH countries
+		if ((country == "United Kingdom") ||
+			(country == "Jersey") ||
+			(country == "Guernsey") ||
+			(country == "United States"))
+			speedConversionFactor = 1.609;
+		// countries with multiple of 5
+		if ((country == "United States") ||
+			(country == "Guernsey"))
+			speedMultipleFactor = 5;
 
 		var hasRestrictions = segment.$hasRestrictions;
 
@@ -2454,6 +2466,23 @@ function F_VALIDATE(disabledHL) {
 						&& isLimitOk(212)
 						&& address.isOkFor(212))
 						segment.report(212);
+					// Verify speed limit
+					if(!isNaN(forwardSpeed) && forwardSpeed !== null){
+						var check_speed = Math.round(forwardSpeed / speedConversionFactor);
+						var skip_check = false;
+						if((country === 'Germany' && check_speed === 7)
+							|| (country === 'Netherlands' && check_speed === 15)
+							|| (country === 'Netherlands' && check_speed === 25)){
+							// Handle certain exceptions
+							skip_check = true;
+						}
+						if (!skip_check){
+							if (check_speed % speedMultipleFactor !== 0
+								&& isLimitOk(214)
+								&& address.isOkFor(214))
+								segment.report(214);
+						}
+					}
 				}
 
 				if (DIR_BA === direction || DIR_TWO == direction) {
@@ -2466,6 +2495,23 @@ function F_VALIDATE(disabledHL) {
 						&& isLimitOk(213)
 						&& address.isOkFor(213))
 						segment.report(213);
+					// Verify speed limit
+					if(!isNaN(reverseSpeed) && reverseSpeed !== null){
+						var check_speed = Math.round(reverseSpeed / speedConversionFactor);
+						var skip_check = false;
+						if((country === 'Germany' && check_speed === 7)
+							|| (country === 'Netherlands' && check_speed === 15)
+							|| (country === 'Netherlands' && check_speed === 25)){
+							// Handle certain exceptions
+							skip_check = true;
+						}
+						if (!skip_check){
+							if (check_speed % speedMultipleFactor !== 0
+								&& isLimitOk(215)
+								&& address.isOkFor(215))
+								segment.report(215);
+						}
+					}
 				}
 			}// global speed limit check
 
