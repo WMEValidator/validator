@@ -29,7 +29,7 @@ var I18n = {
 			},
 		},
 	},
-	currentLocale: function(){},
+	currentLocale: function () { },
 }
 
 ///////////////////////////////////////////////////////////////////////////
@@ -218,31 +218,31 @@ Waze.SEGMENT = function () {
 }
 /** @constructor */
 Waze.RESTRICTION = function () {
-	this.getDirection = function () {};
-	this.getDescription = function () {};
-	this.getTimeFrame = function () {};
-	this.getDriveProfileList = function () {};
-	this.isBidi = function () {};
-	this.isForward = function () {};
-	this.isReverse = function () {};
-	this.isEditable = function () {};
-	this.isAllowedModality = function () {};
-	this.isBlockedModality = function () {};
+	this.getDirection = function () { };
+	this.getDescription = function () { };
+	this.getTimeFrame = function () { };
+	this.getDriveProfileList = function () { };
+	this.isBidi = function () { };
+	this.isForward = function () { };
+	this.isReverse = function () { };
+	this.isEditable = function () { };
+	this.isAllowedModality = function () { };
+	this.isBlockedModality = function () { };
 };
 /** @constructor */
 Waze.TIMEFRAME = function () {
-	this.getEndDate = function () {};
-	this.getFromTime = function () {};
-	this.getStartDate = function () {};
-	this.getToTime = function () {};
-	this.getWeekdays = function () {};
-	this.isAllDay = function () {};
-	this.isAllWeek = function () {};
+	this.getEndDate = function () { };
+	this.getFromTime = function () { };
+	this.getStartDate = function () { };
+	this.getToTime = function () { };
+	this.getWeekdays = function () { };
+	this.isAllDay = function () { };
+	this.isAllWeek = function () { };
 }
 /** @constructor */
 Waze.DRIVEPROFILE = function () {
-	this.isAllVehicles = function () {};
-	this.isEmpty = function () {};
+	this.isAllVehicles = function () { };
+	this.isEmpty = function () { };
 }
 
 var CITY = {
@@ -284,9 +284,9 @@ String.prototype.startsWith = function (a) { };
 // W Namespace
 var W = {
 	app: {
-		modeController:{
-			model:{
-				bind: function(a, b) { },
+		modeController: {
+			model: {
+				bind: function (a, b) { },
 			},
 		},
 		getAppRegionCode: function () { },
