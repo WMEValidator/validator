@@ -26,12 +26,12 @@
  * WV RELEASE INFORMATION
  */
 /** WME Validator version @const */
-var WV_VERSION = "2018.09.11";
+var WV_VERSION = "2018.09.12";
 /** Auto-save password. Increase to reset auto-save config. @const */
 var AS_PASSWORD = "v1";
 /** @const */
 var WV_WHATSNEW = ""
-	+ "\nv2018.09.11:"
+	+ "\nv2018.09.12:"
 	+ "\n- davidakachaos: fix 'Show report' and other pop up windows"
 	+ "\n- davidakachaos: new check #220 'No connection for public segment'"
 	+ "\n- davidakachaos: fix revalidate segment after an edit"

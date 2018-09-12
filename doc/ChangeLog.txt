@@ -1,6 +1,6 @@
 Current changes:
 
-v2018.09.11:
+v2018.09.12:
 - davidakachaos: fix "Show report" and other pop up windows
 - davidakachaos: new check #220 "No connection for public segment"
 - davidakachaos: fix revalidate segment after an edit
