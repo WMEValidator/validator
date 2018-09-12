@@ -416,8 +416,9 @@ function F_SHOWREPORT(reportFormat) {
 			+ '// @version             ' + WV_VERSION + Br
 			+ '// @description         This script localizes WME Validator for ' + country
 			+ '. You also need main package (WME Validator) installed.' + Br
-			+ '// @match               https://editor-beta.waze.com/*editor/*' + Br
-			+ '// @match               https://www.waze.com/*editor/*' + Br
+			+ '// @match               https://beta.waze.com/*editor*' + Br
+			+ '// @match               https://www.waze.com/*editor*' + Br
+			+ '// @exclude             https://www.waze.com/*user/*editor/*' + Br
 			+ '// @grant               none' + Br
 			+ '// @run-at              document-start' + Br
 			+ '// ==/UserScript==' + Br
