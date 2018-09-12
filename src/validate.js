@@ -2462,12 +2462,12 @@ function F_VALIDATE(disabledHL) {
 						&& address.isOkFor(210))
 						segment.report(210);
 
-					if ((isNaN(forwardSpeed) || forwardSpeed === null || forwardSpeed === 0)
+					if (!forwardSpeed
 						&& isLimitOk(212)
 						&& address.isOkFor(212))
 						segment.report(212);
 					// Verify speed limit
-					if(!isNaN(forwardSpeed) && forwardSpeed !== null){
+					if(forwardSpeed){
 						var check_speed = Math.round(forwardSpeed / speedConversionFactor);
 						var skip_check = false;
 						if((country === 'Germany' && check_speed === 7)
@@ -2491,12 +2491,12 @@ function F_VALIDATE(disabledHL) {
 						&& address.isOkFor(211))
 						segment.report(211);
 
-					if ((isNaN(reverseSpeed) || reverseSpeed === null || reverseSpeed === 0)
+					if (!reverseSpeed
 						&& isLimitOk(213)
 						&& address.isOkFor(213))
 						segment.report(213);
 					// Verify speed limit
-					if(!isNaN(reverseSpeed) && reverseSpeed !== null){
+					if(reverseSpeed){
 						var check_speed = Math.round(reverseSpeed / speedConversionFactor);
 						var skip_check = false;
 						if((country === 'Germany' && check_speed === 7)
