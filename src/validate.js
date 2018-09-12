@@ -1659,18 +1659,6 @@ function F_VALIDATE(disabledHL) {
 		var reverseSpeed = segment.$revMaxSpeed;
 		var forwardSpeedUnverified = segment.$fwdMaxSpeedUnverified;
 		var reverseSpeedUnverified = segment.$fwdMaxSpeedUnverified;
-		var speedConversionFactor = 1;  // default to metric
-		var speedMultipleFactor = 10;   // default to limits being set in multiples of 10
-		// check for MPH countries
-		if ((country == "United Kingdom") ||
-			(country == "Jersey") ||
-			(country == "Guernsey") ||
-			(country == "United States"))
-			speedConversionFactor = 1.609;
-		// countries with multiple of 5
-		if ((country == "United States") ||
-			(country == "Guernsey"))
-			speedMultipleFactor = 5;
 
 		var hasRestrictions = segment.$hasRestrictions;
 
@@ -2456,6 +2444,9 @@ function F_VALIDATE(disabledHL) {
 			// GROUP isDrivable
 			// global speed limit check
 			if (RR_SERVICE < typeRank){
+				var speedConversionFactor = parseInt(trS("speed.conversionfactor"), 10);
+				var speedMultipleFactor = parseInt(trS("speed.multiplefactor"), 10);
+				var speedExceptions = trS("speed.exceptions").split(",").map(Number);
 				if (DIR_AB === direction || DIR_TWO === direction) {
 					if (forwardSpeedUnverified
 						&& isLimitOk(210)
@@ -2470,12 +2461,9 @@ function F_VALIDATE(disabledHL) {
 					if(forwardSpeed){
 						var check_speed = Math.round(forwardSpeed / speedConversionFactor);
 						var skip_check = false;
-						if((country === 'Germany' && check_speed === 7)
-							|| (country === 'Netherlands' && check_speed === 15)
-							|| (country === 'Netherlands' && check_speed === 25)){
-							// Handle certain exceptions
+						if(speedExceptions.includes(check_speed))
 							skip_check = true;
-						}
+
 						if (!skip_check){
 							if (check_speed % speedMultipleFactor !== 0
 								&& isLimitOk(214)
@@ -2499,12 +2487,9 @@ function F_VALIDATE(disabledHL) {
 					if(reverseSpeed){
 						var check_speed = Math.round(reverseSpeed / speedConversionFactor);
 						var skip_check = false;
-						if((country === 'Germany' && check_speed === 7)
-							|| (country === 'Netherlands' && check_speed === 15)
-							|| (country === 'Netherlands' && check_speed === 25)){
-							// Handle certain exceptions
+						if(speedExceptions.includes(check_speed))
 							skip_check = true;
-						}
+
 						if (!skip_check){
 							if (check_speed % speedMultipleFactor !== 0
 								&& isLimitOk(215)
