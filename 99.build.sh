@@ -1,6 +1,6 @@
 #!/bin/sh
 
-echo "===> Building ${EXT_FILE_NAME}"
+echo "===> Building ${DST_DIR}/${EXT_FILE_NAME}"
 
 if [ -z "${SRC_DIR}" ]; then
 	echo "No config found"
@@ -30,7 +30,7 @@ done
 echo
 cat "${SRC_DIR}/meta/i18n-end.js" >> "${LOC_FILE}"
 
-java -jar "${COMPILER}" \
+"${COMPILER}" \
 	--language_in ECMASCRIPT5 \
 	--js "${SRC_DIR}/src/release.js" \
 	--js "${LOC_FILE}" \
@@ -65,3 +65,5 @@ cat "${SRC_DIR}/meta/meta-begin.js" \
 	"${TMP_DIR}/gen-${EXT_NAME}-compiled.js" \
 	"${SRC_DIR}/meta/meta-end.js" \
 	> "${DST_DIR}/${EXT_FILE_NAME}"
+
+echo "===> Done."
