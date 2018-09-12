@@ -1429,8 +1429,7 @@ function F_SHOWREPORT(reportFormat) {
 			break;
 		case RF_HTML:
 			// open new window
-			if (-1 !== window.navigator.vendor.indexOf("Google"))
-				newWin = UW.open("", "_blank");
+			newWin = UW.open("", "_blank");
 			FR += getHTMLHeader(t);
 			FR += getHeader(t);
 			// save header to insert save button
@@ -1451,8 +1450,7 @@ function F_SHOWREPORT(reportFormat) {
 			break;
 		case RF_BB:
 			// open new window
-			if (-1 !== window.navigator.vendor.indexOf("Google"))
-				newWin = UW.open("", "_blank");
+			newWin = UW.open("", "_blank");
 
 			var tf = t + " " + trS("report.share");
 			FR += getHTMLHeader(tf);
