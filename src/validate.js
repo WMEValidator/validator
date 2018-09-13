@@ -2444,9 +2444,6 @@ function F_VALIDATE(disabledHL) {
 			// GROUP isDrivable
 			// global speed limit check
 			if (RR_SERVICE < typeRank){
-				var speedConversionFactor = parseInt(trS("speed.conversionfactor"), 10);
-				var speedMultipleFactor = parseInt(trS("speed.multiplefactor"), 10);
-				var speedExceptions = trS("speed.exceptions").split(",").map(Number);
 				if (DIR_AB === direction || DIR_TWO === direction) {
 					if (forwardSpeedUnverified
 						&& isLimitOk(210)
@@ -2459,17 +2456,11 @@ function F_VALIDATE(disabledHL) {
 						segment.report(212);
 					// Verify speed limit
 					if(forwardSpeed){
-						var check_speed = Math.round(forwardSpeed / speedConversionFactor);
-						var skip_check = false;
-						if(speedExceptions.includes(check_speed))
-							skip_check = true;
-
-						if (!skip_check){
-							if (check_speed % speedMultipleFactor !== 0
-								&& isLimitOk(214)
-								&& address.isOkFor(214))
-								segment.report(214);
-						}
+						options = getCheckOptions(214, countryCode);
+						if (!options[CO_REGEXP].test(forwardSpeed)
+							&& isLimitOk(214)
+							&& address.isOkFor(214))
+							segment.report(214);
 					}
 				}
 
@@ -2485,17 +2476,11 @@ function F_VALIDATE(disabledHL) {
 						segment.report(213);
 					// Verify speed limit
 					if(reverseSpeed){
-						var check_speed = Math.round(reverseSpeed / speedConversionFactor);
-						var skip_check = false;
-						if(speedExceptions.includes(check_speed))
-							skip_check = true;
-
-						if (!skip_check){
-							if (check_speed % speedMultipleFactor !== 0
-								&& isLimitOk(215)
-								&& address.isOkFor(215))
-								segment.report(215);
-						}
+						options = getCheckOptions(215, countryCode);
+						if (!options[CO_REGEXP].test(reverseSpeed)
+							&& isLimitOk(215)
+							&& address.isOkFor(215))
+							segment.report(215);
 					}
 				}
 			}// global speed limit check
