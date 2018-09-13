@@ -2443,7 +2443,7 @@ function F_VALIDATE(disabledHL) {
 
 			// GROUP isDrivable
 			// global speed limit check
-			if (RR_SERVICE < typeRank){
+			if (RR_SERVICE < typeRank) {
 				if (DIR_AB === direction || DIR_TWO === direction) {
 					if (forwardSpeedUnverified
 						&& isLimitOk(210)
@@ -2455,10 +2455,10 @@ function F_VALIDATE(disabledHL) {
 						&& address.isOkFor(212))
 						segment.report(212);
 					// Verify speed limit
-					if(forwardSpeed){
+					if (forwardSpeed) {
 						options = getCheckOptions(214, countryCode);
 						var check_speed = forwardSpeed;
-						if (Wa.model.isImperial){
+						if (Wa.model.isImperial) {
 							check_speed = Math.round(forwardSpeed / 1.609);
 						}
 						if (!options[CO_REGEXP].test(check_speed)
@@ -2479,10 +2479,10 @@ function F_VALIDATE(disabledHL) {
 						&& address.isOkFor(213))
 						segment.report(213);
 					// Verify speed limit
-					if(reverseSpeed){
+					if (reverseSpeed) {
 						options = getCheckOptions(215, countryCode);
 						var check_speed = reverseSpeed;
-						if (Wa.model.isImperial){
+						if (Wa.model.isImperial) {
 							check_speed = Math.round(reverseSpeed / 1.609);
 						}
 						if (!options[CO_REGEXP].test(check_speed)
