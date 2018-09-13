@@ -1,5 +1,9 @@
 Current changes:
 
+v2018.09.13:
+- davidakachaos: new checks for unverified/unset/wrong speed limit
+- davidakachaos: enabled/adjusted some checks for NL
+
 v2018.09.12:
 - davidakachaos: fix "Show report" and other pop up windows
 - davidakachaos: new check #220 "No connection for public segment"

@@ -26,11 +26,15 @@
  * WV RELEASE INFORMATION
  */
 /** WME Validator version @const */
-var WV_VERSION = "2018.09.12";
+var WV_VERSION = "2018.09.13";
 /** Auto-save password. Increase to reset auto-save config. @const */
 var AS_PASSWORD = "v1";
 /** @const */
 var WV_WHATSNEW = ""
+	+ "\nv2018.09.13:"
+	+ "\n- davidakachaos: new checks for unverified/unset/wrong speed limit"
+	+ "\n- davidakachaos: enabled/adjusted some checks for NL"
+	+ "\n"
 	+ "\nv2018.09.12:"
 	+ "\n- davidakachaos: fix 'Show report' and other pop up windows"
 	+ "\n- davidakachaos: new check #220 'No connection for public segment'"
@@ -47,10 +51,6 @@ var WV_WHATSNEW = ""
 	+ "\nv2018.08.09:"
 	+ "\n- GreasyFork release is live again"
 	+ "\n- disable #114 and #115 (drivable & non-drivable)"
-	+ "\n"
-	+ "\nv2018.08.01:"
-	+ "\n- davidakachaos: transfer NL translations from Greasyfork"
-	+ "\n- other minor changes"
 	;
 /** @const */
 var WV_LICENSE_VERSION = "1";
