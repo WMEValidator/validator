@@ -2442,6 +2442,58 @@ function F_VALIDATE(disabledHL) {
 			} // public connection
 
 			// GROUP isDrivable
+			// global speed limit check
+			if (RR_SERVICE < typeRank){
+				if (DIR_AB === direction || DIR_TWO === direction) {
+					if (forwardSpeedUnverified
+						&& isLimitOk(210)
+						&& address.isOkFor(210))
+						segment.report(210);
+
+					if (!forwardSpeed
+						&& isLimitOk(212)
+						&& address.isOkFor(212))
+						segment.report(212);
+					// Verify speed limit
+					if(forwardSpeed){
+						options = getCheckOptions(214, countryCode);
+						var check_speed = forwardSpeed;
+						if (Wa.model.isImperial){
+							check_speed = Math.round(forwardSpeed / 1.609);
+						}
+						if (!options[CO_REGEXP].test(check_speed)
+							&& isLimitOk(214)
+							&& address.isOkFor(214))
+							segment.report(214);
+					}
+				}
+
+				if (DIR_BA === direction || DIR_TWO == direction) {
+					if (reverseSpeedUnverified
+						&& isLimitOk(211)
+						&& address.isOkFor(211))
+						segment.report(211);
+
+					if (!reverseSpeed
+						&& isLimitOk(213)
+						&& address.isOkFor(213))
+						segment.report(213);
+					// Verify speed limit
+					if(reverseSpeed){
+						options = getCheckOptions(215, countryCode);
+						var check_speed = reverseSpeed;
+						if (Wa.model.isImperial){
+							check_speed = Math.round(reverseSpeed / 1.609);
+						}
+						if (!options[CO_REGEXP].test(check_speed)
+							&& isLimitOk(215)
+							&& address.isOkFor(215))
+							segment.report(215);
+					}
+				}
+			}// global speed limit check
+
+			// GROUP isDrivable
 			if (DIR_UNKNOWN === direction
 				&& isLimitOk(25)
 				&& address.isOkFor(25))
