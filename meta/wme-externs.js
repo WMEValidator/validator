@@ -350,6 +350,7 @@ var W = {
 	}, // selectionManager
 	model: {
 		isLeftHand: false,
+		isImperial: false,
 		events: { on: 0, un: 0 },
 		actionManager: {
 			events: { on: 0, un: 0 },

@@ -2457,7 +2457,11 @@ function F_VALIDATE(disabledHL) {
 					// Verify speed limit
 					if(forwardSpeed){
 						options = getCheckOptions(214, countryCode);
-						if (!options[CO_REGEXP].test(forwardSpeed)
+						var check_speed = forwardSpeed;
+						if (Wa.model.isImperial){
+							check_speed = Math.round(forwardSpeed / 1.609);
+						}
+						if (!options[CO_REGEXP].test(check_speed)
 							&& isLimitOk(214)
 							&& address.isOkFor(214))
 							segment.report(214);
@@ -2477,7 +2481,11 @@ function F_VALIDATE(disabledHL) {
 					// Verify speed limit
 					if(reverseSpeed){
 						options = getCheckOptions(215, countryCode);
-						if (!options[CO_REGEXP].test(reverseSpeed)
+						var check_speed = reverseSpeed;
+						if (Wa.model.isImperial){
+							check_speed = Math.round(reverseSpeed / 1.609);
+						}
+						if (!options[CO_REGEXP].test(check_speed)
 							&& isLimitOk(215)
 							&& address.isOkFor(215))
 							segment.report(215);
