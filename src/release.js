@@ -26,11 +26,17 @@
  * WV RELEASE INFORMATION
  */
 /** WME Validator version @const */
-var WV_VERSION = "2018.09.13";
+var WV_VERSION = "2018.09.15";
 /** Auto-save password. Increase to reset auto-save config. @const */
 var AS_PASSWORD = "v1";
 /** @const */
 var WV_WHATSNEW = ""
+	+ "\nv2018.09.15:"
+	+ "\n- berestovskyy: add custom check variables: speedLimit,"
+	+ "\n  speedLimitAB, speedLimitBA and checkSpeedLimit"
+	+ "\n- berestovskyy: ignore speed limits issues on streets and ramps."
+	+ "\n  Please use custom checks instead."
+	+ "\n"
 	+ "\nv2018.09.13:"
 	+ "\n- davidakachaos: new checks for unverified/unset/wrong speed limit"
 	+ "\n- davidakachaos: enabled/adjusted some checks for NL"
@@ -47,10 +53,6 @@ var WV_WHATSNEW = ""
 	+ "\n- davidakachaos: fix 'unneeded node' for segments"
 	+ "\n  with different speeds"
 	+ "\n- davidakachaos: fix WMECH integration bug"
-	+ "\n"
-	+ "\nv2018.08.09:"
-	+ "\n- GreasyFork release is live again"
-	+ "\n- disable #114 and #115 (drivable & non-drivable)"
 	;
 /** @const */
 var WV_LICENSE_VERSION = "1";

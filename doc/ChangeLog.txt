@@ -1,5 +1,11 @@
 Current changes:
 
+v2018.09.15:
+- berestovskyy: add custom check variables: speedLimit,
+  speedLimitAB, speedLimitBA and checkSpeedLimit
+- berestovskyy: ignore speed limits issues on streets and ramps.
+  Please use custom checks instead.
+
 v2018.09.13:
 - davidakachaos: new checks for unverified/unset/wrong speed limit
 - davidakachaos: enabled/adjusted some checks for NL
