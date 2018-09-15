@@ -369,6 +369,7 @@ function F_SHOWREPORT(reportFormat) {
 	function addTextLabels(pack, label, defSet, oldPack) {
 		var defData = (defSet[label] || '')
 			.replace(new RegExp('^W:'), PFX_WIKI)
+			.replace(new RegExp('^P:'), PFX_PEDIA)
 			.replace(new RegExp('^F:'), PFX_FORUM)
 			;
 		var origData = (oldPack[label] || '');
@@ -376,11 +377,13 @@ function F_SHOWREPORT(reportFormat) {
 			var oldData = origData
 				.replace(new RegExp('^' + GL_TODOMARKER), '')
 				.replace(new RegExp('^W:'), PFX_WIKI)
+				.replace(new RegExp('^P:'), PFX_PEDIA)
 				.replace(new RegExp('^F:'), PFX_FORUM)
 				;
 			// preserve old data
 			var oldDataEN = (oldPack[label + '.en'] || '')
 				.replace(new RegExp('^W:'), PFX_WIKI)
+				.replace(new RegExp('^P:'), PFX_PEDIA)
 				.replace(new RegExp('^F:'), PFX_FORUM)
 				;
 			if (oldDataEN) {

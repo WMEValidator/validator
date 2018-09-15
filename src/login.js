@@ -556,10 +556,11 @@ function F_LOGIN() {
 			if (labelPL in translation) {
 				var l = translation[labelPL]
 					.replace('W:', PFX_WIKI)
+					.replace('P:', PFX_PEDIA)
 					.replace('F:', PFX_FORUM)
 					;
 				check.PROBLEMLINK[ccode] = encodeURI(l);
-				if (-1 !== l.indexOf(PFX_WIKI))
+				if (-1 !== l.indexOf(PFX_WIKI) || -1 !== l.indexOf(PFX_PEDIA))
 					check.PROBLEMLINKTEXT[ccode] = trS('report.link.wiki');
 				else
 					if (-1 !== l.indexOf(PFX_FORUM))
@@ -570,10 +571,11 @@ function F_LOGIN() {
 			if (labelSL in translation) {
 				var l = translation[labelSL]
 					.replace('W:', PFX_WIKI)
+					.replace('P:', PFX_PEDIA)
 					.replace('F:', PFX_FORUM)
 					;
 				check.SOLUTIONLINK[ccode] = encodeURI(l);
-				if (-1 !== l.indexOf(PFX_WIKI))
+				if (-1 !== l.indexOf(PFX_WIKI || -1 !== l.indexOf(PFX_PEDIA)))
 					check.SOLUTIONLINKTEXT[ccode] = trS('report.link.wiki');
 				else
 					if (-1 !== l.indexOf(PFX_FORUM))

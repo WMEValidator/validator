@@ -105,6 +105,8 @@ var MAX_CHECKS = 310;
 /** @const */
 var PFX_WIKI = 'https://www.waze.com/wiki/';
 /** @const */
+var PFX_PEDIA = 'https://wazeopedia.waze.com/wiki/';
+/** @const */
 var PFX_FORUM = 'https://www.waze.com/forum/viewtopic.php?';
 /** @const */
 var FORUM_HOME = 't=76488';
