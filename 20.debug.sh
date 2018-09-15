@@ -8,3 +8,5 @@ EXTRA_PARAMS="--define DEF_DEBUG=true --compilation_level SIMPLE_OPTIMIZATIONS"
 
 . ./99.build.sh
 . ./98.format.sh
+
+echo "===> Done."

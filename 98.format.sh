@@ -1,6 +1,6 @@
 #!/bin/sh
 
-echo "===> Formatting ${EXT_FILE_NAME}..."
+echo "===> Formatting ${DST_DIR}/${EXT_FILE_NAME}..."
 
 clang-format \
 	-style='{BasedOnStyle: Google, UseTab: Always, TabWidth: 4, ColumnLimit: 200}' \
