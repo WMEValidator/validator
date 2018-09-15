@@ -542,9 +542,9 @@ function F_VALIDATE(disabledHL) {
 		});
 		this.$restrictionsLen = attrs.restrictions.length;
 		// set speedlimits
-		this.$fwdMaxSpeed = attrs.fwdMaxSpeed;
+		this.$fwdMaxSpeed = getLocalizedValue(+attrs.fwdMaxSpeed);
 		this.$fwdMaxSpeedUnverified = attrs.fwdMaxSpeedUnverified;
-		this.$revMaxSpeed = attrs.revMaxSpeed;
+		this.$revMaxSpeed = getLocalizedValue(+attrs.revMaxSpeed);
 		this.$revMaxSpeedUnverified = attrs.revMaxSpeedUnverified;
 
 		// mark some properties as readonly
@@ -1921,6 +1921,11 @@ function F_VALIDATE(disabledHL) {
 			"outB": nodeB.$outConnectionsLen,
 			"UturnB": +nodeB.$isUturn,
 			"softTurns": +(!(segment.$isTurnALocked && segment.$isTurnBLocked)),
+
+			"speedLimit": forwardSpeed || reverseSpeed,
+			"speedLimitAB": forwardSpeed,
+			"speedLimitBA": reverseSpeed,
+			"checkSpeedLimit": isDrivable && (reverseSpeedUnverified || forwardSpeedUnverified),
 		};
 		for (var i = CK_MATCHFIRST; i <= CK_MATCHLAST; i++) {
 			if (!isLimitOk(i)
@@ -2443,7 +2448,8 @@ function F_VALIDATE(disabledHL) {
 
 			// GROUP isDrivable
 			// global speed limit check
-			if (RR_SERVICE < typeRank) {
+			// TODO: for now ignore streets and ramps speed limits
+			if (RR_STREET < typeRank && RT_RAMP !== roadType) {
 				if (DIR_AB === direction || DIR_TWO === direction) {
 					if (forwardSpeedUnverified
 						&& isLimitOk(210)
@@ -2457,11 +2463,7 @@ function F_VALIDATE(disabledHL) {
 					// Verify speed limit
 					if (forwardSpeed) {
 						options = getCheckOptions(214, countryCode);
-						var check_speed = forwardSpeed;
-						if (Wa.model.isImperial) {
-							check_speed = Math.round(forwardSpeed / 1.609);
-						}
-						if (!options[CO_REGEXP].test(check_speed)
+						if (!options[CO_REGEXP].test(forwardSpeed)
 							&& isLimitOk(214)
 							&& address.isOkFor(214))
 							segment.report(214);
@@ -2481,11 +2483,7 @@ function F_VALIDATE(disabledHL) {
 					// Verify speed limit
 					if (reverseSpeed) {
 						options = getCheckOptions(215, countryCode);
-						var check_speed = reverseSpeed;
-						if (Wa.model.isImperial) {
-							check_speed = Math.round(reverseSpeed / 1.609);
-						}
-						if (!options[CO_REGEXP].test(check_speed)
+						if (!options[CO_REGEXP].test(reverseSpeed)
 							&& isLimitOk(215)
 							&& address.isOkFor(215))
 							segment.report(215);

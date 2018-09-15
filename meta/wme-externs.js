@@ -36,6 +36,7 @@ var I18n = {
 // OpenLayers Namespace
 /** @type {Object} */
 var OpenLayers = {
+	INCHES_PER_UNIT: {},
 	options: {
 		displayInLayerSwitcher: true,
 		renderers: [],
