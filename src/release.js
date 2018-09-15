@@ -103,7 +103,7 @@ var MAX_CHECKS = 310;
  * URLs
  *************************************************************************/
 /** @const */
-var PFX_WIKI = 'https://wazeopedia.waze.com/wiki/';
+var PFX_WIKI = 'https://www.waze.com/wiki/';
 /** @const */
 var PFX_FORUM = 'https://www.waze.com/forum/viewtopic.php?';
 /** @const */
