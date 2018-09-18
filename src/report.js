@@ -793,6 +793,7 @@ function F_SHOWREPORT(reportFormat) {
 	}
 	// filter helpers
 	var seenSegments = {};
+	var seenVenues = {};
 	var lastCheckID = -1;
 	var lastCityID = -1;
 	var lastStreetID = -1;
@@ -804,6 +805,7 @@ function F_SHOWREPORT(reportFormat) {
 	// reset filter
 	function resetFilter() {
 		seenSegments = {};
+		seenVenues = {};
 		lastCheckID = -1;
 		lastCityID = -1;
 		lastStreetID = -1;
@@ -822,36 +824,65 @@ function F_SHOWREPORT(reportFormat) {
 		FR += '</b></big>';
 		FR += '\n<ol>';
 		traverseReport(function (obj) {
-			if (checkFilter(0, obj.$segmentCopy, seenSegments)
-				&& getFilteredSeverity(obj.$check.SEVERITY, obj.$checkID, false)) {
-				if (obj.$checkID !== lastCheckID) {
-					lastCheckID = obj.$checkID;
-					var check = obj.$check;
+			if (obj.$segmentCopy) {
+				if (checkFilter(0, obj.$segmentCopy, seenSegments)
+					&& getFilteredSeverity(obj.$check.SEVERITY, obj.$checkID, false)) {
+					if (obj.$checkID !== lastCheckID) {
+						lastCheckID = obj.$checkID;
+						var check = obj.$check;
 
-					var strCountry = _REP.$countries[obj.$segmentCopy.$countryID];
-					var ccode = "";
+						var strCountry = _REP.$countries[obj.$segmentCopy.$countryID];
+						var ccode = "";
 
-					if (strCountry)
-						ccode = _I18n.getCountryCode(strCountry.toUpperCase());
-					else {
-						// try top country
-						ccode = _RT.$cachedTopCCode;
+						if (strCountry)
+							ccode = _I18n.getCountryCode(strCountry.toUpperCase());
+						else {
+							// try top country
+							ccode = _RT.$cachedTopCCode;
+						}
+						var options = trO(check.OPTIONS, ccode)
+						FR += '\n<li class="';
+						FR += getTextSeverity(obj.$check.SEVERITY);
+						FR += '"><a href="#a';
+						FR += lastCheckID;
+						FR += '">';
+						FR += exSOS(check.TITLE, options, "titleEN");
+						FR += '</a></li>';
 					}
-					var options = trO(check.OPTIONS, ccode)
-					FR += '\n<li class="';
-					FR += getTextSeverity(obj.$check.SEVERITY);
-					FR += '"><a href="#a';
-					FR += lastCheckID;
-					FR += '">';
-					FR += exSOS(check.TITLE, options, "titleEN");
-					FR += '</a></li>';
-				}
-				// TODO:
-				// bug: TOC item shows duplicate segments
-				// solution: filter, then create the toc and report
+					// TODO:
+					// bug: TOC item shows duplicate segments
+					// solution: filter, then create the toc and report
 
-				// alt solution: remove dublicate checks!
-				//              return RT_NEXTCHECK;
+					// alt solution: remove dublicate checks!
+					//              return RT_NEXTCHECK;
+				}
+			}
+			if (obj.$venueCopy) {
+				if (checkFilterVenue(0, obj.$venueCopy, seenVenues)
+					&& getFilteredSeverity(obj.$check.SEVERITY, obj.$checkID, false)) {
+					if (obj.$checkID !== lastCheckID) {
+						lastCheckID = obj.$checkID;
+						var check = obj.$check;
+
+						var strCountry = _REP.$countries[obj.$venueCopy.$countryID];
+						var ccode = "";
+
+						if (strCountry)
+							ccode = _I18n.getCountryCode(strCountry.toUpperCase());
+						else {
+							// try top country
+							ccode = _RT.$cachedTopCCode;
+						}
+						var options = trO(check.OPTIONS, ccode)
+						FR += '\n<li class="';
+						FR += getTextSeverity(obj.$check.SEVERITY);
+						FR += '"><a href="#a';
+						FR += lastCheckID;
+						FR += '">';
+						FR += exSOS(check.TITLE, options, "titleEN");
+						FR += '</a></li>';
+					}
+				}
 			}
 		});
 
@@ -923,6 +954,32 @@ function F_SHOWREPORT(reportFormat) {
 					});
 			return ret;
 		}
+		// get sorted segments
+		function getSortedVenues(repS) {
+			var ret = repS.$sortedVenueIDs;
+			var repSeg = repS.$venueIDs;
+			if (!ret || ret.length != repS.$unsortedVenueIDs.length)
+				return repS.$sortedVenueIDs
+					= [].concat(repS.$unsortedVenueIDs).sort(function (a, b) {
+						var segA = repSeg[a], segB = repSeg[b];
+						if (segA.$typeRank !== segB.$typeRank)
+							return segB.$typeRank - segA.$typeRank;
+						// if ranks are the same - sort by the distance
+						/** @const */
+						var distAB = getHypot(segA.$center.lat - segB.$center.lat,
+							segA.$center.lon - segB.$center.lon);
+						// the venues are close
+						if (0.002 > distAB) return 0;
+						/** @const */
+						var distA = getHypot(mapCenter.lat - segA.$center.lat,
+							mapCenter.lon - segA.$center.lon);
+						/** @const */
+						var distB = getHypot(mapCenter.lat - segB.$center.lat,
+							mapCenter.lon - segB.$center.lon);
+						return distA - distB;
+					});
+			return ret;
+		}
 
 		///////////////////////////////////////////////////////////////////
 		// For all sorted checks
@@ -951,27 +1008,55 @@ function F_SHOWREPORT(reportFormat) {
 					var repS = repC.$streetIDs[sid];
 
 					// for all segment copies
-					var sortedSegments = getSortedSegments(repS);
-					for (var sorscid = 0; sorscid < sortedSegments.length; sorscid++) {
-						var scid = sortedSegments[sorscid];
-						var sc = repS.$segmentIDs[scid];
-						if (checkID in sc.$reportIDs) {
-							var obj = {
-								$checkID: checkID,
-								$check: check,
-								$param: sc.$reportIDs[checkID],
-								$cityParam: repC.$params[checkID],
-								$streetParam: repS.$params[checkID],
-								$segmentCopy: sc
-							};
-							switch (handler(obj)) {
-								case RT_STOP:
-									return;
-								case RT_NEXTCHECK:
-									continue nextCheck;
-							};
-						} // checkID in reportIDs
+					if (repS.$unsortedSegmentIDs){
+						var sortedSegments = getSortedSegments(repS);
+						for (var sorscid = 0; sorscid < sortedSegments.length; sorscid++) {
+							var scid = sortedSegments[sorscid];
+							var sc = repS.$segmentIDs[scid];
+							if (checkID in sc.$reportIDs) {
+								var obj = {
+									$checkID: checkID,
+									$check: check,
+									$param: sc.$reportIDs[checkID],
+									$cityParam: repC.$params[checkID],
+									$streetParam: repS.$params[checkID],
+									$segmentCopy: sc,
+									$venueCopy: null
+								};
+								switch (handler(obj)) {
+									case RT_STOP:
+										return;
+									case RT_NEXTCHECK:
+										continue nextCheck;
+								};
+							} // checkID in reportIDs
+						}
 					} // for all segmets
+					// for all venues copies
+					if (repS.$unsortedVenueIDs){
+						var sortedVenues = getSortedVenues(repS);
+						for (var sorscid = 0; sorscid < sortedVenues.length; sorscid++) {
+							var scid = sortedVenues[sorscid];
+							var sc = repS.$venueIDs[scid];
+							if (checkID in sc.$reportIDs) {
+								var obj = {
+									$checkID: checkID,
+									$check: check,
+									$param: sc.$reportIDs[checkID],
+									$cityParam: repC.$params[checkID],
+									$streetParam: repS.$params[checkID],
+									$segmentCopy: null,
+									$venueCopy: sc
+								};
+								switch (handler(obj)) {
+									case RT_STOP:
+										return;
+									case RT_NEXTCHECK:
+										continue nextCheck;
+								};
+							} // checkID in reportIDs
+						}
+					} // for all venues
 				} // for all streets
 			} // for all cities
 		} // for all checks
@@ -1090,9 +1175,12 @@ function F_SHOWREPORT(reportFormat) {
 			FR += obj.$checkID;
 			FR += '"></a>';
 		}
-
-		FR += getCheckDescription(obj.$checkID, obj.$segmentCopy.$countryID,
-			Bh2, Eh2);
+		if(obj.$segmentCopy)
+			FR += getCheckDescription(obj.$checkID, obj.$segmentCopy.$countryID,
+				Bh2, Eh2);
+		else
+			FR += getCheckDescription(obj.$checkID, obj.$venueCopy.$countryID,
+				Bh2, Eh2);
 		FR += Br;
 	}
 	// returns report city
@@ -1100,7 +1188,10 @@ function F_SHOWREPORT(reportFormat) {
 		closeReportCity();
 		FR += Bbig;
 		FR += Bb;
-		FR += checkNoCity(_repC[obj.$segmentCopy.$cityID]);
+		if (obj.$segmentCopy)
+			FR += checkNoCity(_repC[obj.$segmentCopy.$cityID]);
+		else
+			FR += checkNoCity(_repC[obj.$venueCopy.$cityID]);
 		FR += Eb;
 		FR += Ebig;
 		if (obj.$cityParam) {
@@ -1113,9 +1204,15 @@ function F_SHOWREPORT(reportFormat) {
 	function getReportStreet(obj) {
 		closeReportStreet();
 		FR += Bli;
-		FR += checkNoStreet(_repS[obj.$segmentCopy.$streetID]);
-		FR += ', ';
-		FR += checkNoCity(_repC[obj.$segmentCopy.$cityID]);
+		if (obj.$segmentCopy) {
+			FR += checkNoStreet(_repS[obj.$segmentCopy.$streetID]);
+			FR += ', ';
+			FR += checkNoCity(_repC[obj.$segmentCopy.$cityID]);
+		} else {
+			FR += checkNoStreet(_repS[obj.$venueCopy.$streetID]);
+			FR += ', ';
+			FR += checkNoCity(_repC[obj.$venueCopy.$cityID]);
+		}
 		if (obj.$streetParam) {
 			FR += Mdash;
 			FR += obj.$streetParam;
@@ -1126,31 +1223,55 @@ function F_SHOWREPORT(reportFormat) {
 	// returns permalink
 	function getPermalink(obj) {
 		var z = SCAN_ZOOM;
-		if (50 > obj.$segmentCopy.$length)
-			z = 7;
-		else if (500 > obj.$segmentCopy.$length) {
-			if (6 > z) z += 1;
-		}
-		else
+		if(obj.$segmentCopy){
+			if (50 > obj.$segmentCopy.$length)
+				z = 7;
+			else if (500 > obj.$segmentCopy.$length) {
+				if (6 > z) z += 1;
+			}
+			else
+				z = 4;
+		} else {
 			z = 4;
+		}
 		FR += window.location.origin;
 		FR += window.location.pathname;
 		FR += '?zoom=';
 		FR += z;
 		FR += '&lat=';
-		FR += obj.$segmentCopy.$center.lat;
-		FR += '&lon=';
-		FR += obj.$segmentCopy.$center.lon;
+		if(obj.$segmentCopy){
+			FR += obj.$segmentCopy.$center.lat;
+			FR += '&lon=';
+			FR += obj.$segmentCopy.$center.lon;
+		} else {
+			FR += obj.$venueCopy.$center.lat;
+			FR += '&lon=';
+			FR += obj.$venueCopy.$center.lon;
+		}
 		FR += '&env=';
 		FR += nW.app.getAppRegionCode();
-		FR += '&segments=';
-		FR += obj.$segmentCopy.$segmentID;
+		if (obj.$segmentCopy) {
+			FR += '&segments=';
+			FR += obj.$segmentCopy.$segmentID;
+		}
+		if (obj.$venueCopy) {
+			FR += '&venues=';
+			FR += obj.$venueCopy.$venueID;
+		}
 	}
 	// report item handler
 	function getReportItem(obj) {
-		if (!checkFilter(0, obj.$segmentCopy, seenSegments)
-			|| !getFilteredSeverity(obj.$check.SEVERITY, obj.$checkID, false))
-			return;
+		var segment_item = true;
+		if (obj.$segmentCopy){
+			if (!checkFilter(0, obj.$segmentCopy, seenSegments)
+				|| !getFilteredSeverity(obj.$check.SEVERITY, obj.$checkID, false))
+				return;
+		}else{
+			segment_item = false;
+			if (!checkFilterVenue(0, obj.$venueCopy, seenVenues)
+				|| !getFilteredSeverity(obj.$check.SEVERITY, obj.$checkID, false))
+				return;
+		}
 
 		// update max severity
 		if (_REP.$maxSeverity < obj.$check.SEVERITY)
@@ -1179,13 +1300,22 @@ function F_SHOWREPORT(reportFormat) {
 				}
 			}
 		}
-		if (obj.$segmentCopy.$cityID !== lastCityID)
-			getReportCity(obj);
-		if (obj.$segmentCopy.$streetID !== lastStreetID)
-			getReportStreet(obj);
+		if (segment_item) {
+			if (obj.$segmentCopy.$cityID !== lastCityID)
+				getReportCity(obj);
+			if (obj.$segmentCopy.$streetID !== lastStreetID)
+				getReportStreet(obj);
+			lastCityID = obj.$segmentCopy.$cityID;
+			lastStreetID = obj.$segmentCopy.$streetID;
+		}else{
+			if (obj.$venueCopy.$cityID !== lastCityID)
+				getReportCity(obj);
+			if (obj.$venueCopy.$streetID !== lastStreetID)
+				getReportStreet(obj);
+			lastCityID = obj.$venueCopy.$cityID;
+			lastStreetID = obj.$venueCopy.$streetID;
+		}
 		lastCheckID = obj.$checkID;
-		lastCityID = obj.$segmentCopy.$cityID;
-		lastStreetID = obj.$segmentCopy.$streetID;
 
 		if (!noFilters) {
 			switch (obj.$check.SEVERITY) {
@@ -1211,7 +1341,16 @@ function F_SHOWREPORT(reportFormat) {
 		getPermalink(obj);
 		FR += Ca
 		if (isBeta) FR += 'B:';
-		FR += obj.$segmentCopy.$segmentID;
+		if (segment_item) {
+			FR += obj.$segmentCopy.$segmentID;
+		} else {
+			// Waarom is  obj.$venueCopy.$venueID hier een NaN???
+			if (obj.$venueCopy.$name){
+				FR += obj.$venueCopy.$name;
+			}else{
+				FR += obj.$venueCopy.$venueID;
+			}
+		}
 		FR += Ea;
 		FR += ' ';
 	}
@@ -1311,7 +1450,13 @@ function F_SHOWREPORT(reportFormat) {
 		_REP.$maxSeverity = 0;
 
 		traverseReport(function (obj) {
-			if (checkFilter(0, obj.$segmentCopy, seenSegments)
+			var copy = obj.$segmentCopy;
+			var seen = seenSegments;
+			if (!obj.$segmentCopy) {
+				copy = obj.$venueCopy;
+				seen = seenVenues;
+			}
+			if (checkFilter(0, copy, seen)
 				&& getFilteredSeverity(obj.$check.SEVERITY, obj.$checkID, false)) {
 				if (_REP.$maxSeverity < obj.$check.SEVERITY)
 					_REP.$maxSeverity = obj.$check.SEVERITY;

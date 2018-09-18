@@ -218,6 +218,58 @@ Waze.SEGMENT = function () {
 	};
 }
 /** @constructor */
+Waze.VENUE = function () {
+	this.getID = function () { };
+	// this.atPoint = function (c, tx, ty) { };
+	this.id = "";
+	this.fid = 0;
+	this.state = "";
+	this.selected = false;
+	this.layer = {};
+	this.arePropertiesEditable = function () { };
+	this.is2D = function () { };
+	/** @type {Object} */
+	this.bounds;
+	this.geometry = {
+		id: "",
+		/** @type {Object} */
+		bounds: {},
+		distanceTo: function (l, o) { },
+		getGeodesicArea: function (p) { },
+	},
+ 	this.getAddress = function () { };
+	this.getNavigationPoints = function () { };
+	this.getMainCategory = function () { };
+	this.getCategorySet = function () { };
+
+	this.attributes = {
+		adLocked: false,
+		aliases: [],
+		approved: false,
+		brand: null,
+		categories: [],
+		createdBy: 0,
+		createdOn: 0,
+		description: null,
+		entryExitPoints: [],
+		externalProviderIDs: [],
+		geometry: {},
+		level: 0,
+		lockRank: 0,
+		name: null,
+		streetID: 0,
+		updatedBy: 0,
+		updatedOn: 0,
+		openingHours: [],
+		permissions: -1,
+		phone: null,
+		residential: false,
+		services: [],
+		url: null,
+		venueUpdateRequests: [],
+	};
+}
+/** @constructor */
 Waze.RESTRICTION = function () {
 	this.getDirection = function () { };
 	this.getDescription = function () { };
@@ -382,7 +434,11 @@ var W = {
 		},
 		users: {
 			getObjectById: function (i) { }
-		}
+		},
+		venues: {
+			objects: {},
+			getObjectById: function (i) { }
+		},
 	},
 	controller: {},
 };
