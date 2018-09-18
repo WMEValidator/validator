@@ -425,6 +425,21 @@ function F_LOGIN() {
 	listOfIntPacks += '.';
 	listOfIntPacks += '<br>* localization pack with translations';
 
+	// add external plugins
+	var listOfPlugins = [];
+	for (var gObject in window) {
+		if (!window.hasOwnProperty(gObject)) continue;
+		if (-1 !== gObject.indexOf("WME_Validator_Plugin_")) {
+			var plugin = window[gObject];
+			log("found plugin: " + gObject.replace('WME_Validator_Plugin_', ''));
+			listOfPlugins += plugin.name;
+		}
+	}
+	listOfPlugins = (listOfPlugins ? listOfPlugins : "No external plugins found");
+	listOfPlugins += '<br><b>See</b> <a target="_blank" href="'
+		+ PFX_FORUM + FORUM_LOCAL + '">'
+		+ 'how to create a plugin</a>';
+
 	// add external translations
 	var listOfPacks = '';
 	for (var gObject in window) {
