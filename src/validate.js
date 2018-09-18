@@ -34,6 +34,7 @@ function F_VALIDATE(disabledHL) {
 
 	var options;
 	var skippedSegment = false;
+	var skippedVenue = false;
 
 	if (disabledHL) {
 		updateSegmentProperties([], true);
@@ -740,6 +741,8 @@ function F_VALIDATE(disabledHL) {
 			rep.$streetIDs[sid].$segmentIDs = {};
 			rep.$streetIDs[sid].$unsortedSegmentIDs = [];
 			rep.$streetIDs[sid].$sortedSegmentIDs = [];
+			rep.$streetIDs[sid].$unsortedVenueIDs = [];
+			rep.$streetIDs[sid].$sortedVenueIDs = [];
 		}
 		rep = rep.$streetIDs[sid];
 		if (params.$streetParam)
@@ -795,6 +798,305 @@ function F_VALIDATE(disabledHL) {
 	 * Increase city counter
 	 */
 	SimpleSEGMENT.prototype.incCityCounter = function () {
+		// shortcuts
+		var rep = _REP.$cityIDs;
+		/** @const */
+		var cid = this.$address.$cityID;
+
+		// city
+		if (!(cid in rep)) {
+			// new city
+			_REP.$countries[this.$address.$countryID] = this.$address.$country;
+			_REP.$unsortedCityIDs.push(cid);
+
+			_repC[cid] = this.$address.$city;
+			_repCC[cid] = 0;
+			rep[cid] = {};
+			rep[cid].$params = {};
+			rep[cid].$streetIDs = {};
+			rep[cid].$unsortedStreetIDs = [];
+			rep[cid].$sortedStreetIDs = [];
+		}
+		// increase city counter
+		_repCC[cid]++;
+		// increase total counter
+		_REP.$counterTotal++;
+	};
+	// Venue
+	/**
+	 * Simple representation of a venue constructor
+	 * @constructor
+	 * @struct
+	 * @param {string} objID
+	 */
+	function SimpleVENUE(objID) {
+		// cached venue
+		/** @type {Waze.VENUE} */
+		this.$rawVenue = null;
+		// cached center
+		/** @type {OpenLayers.LonLat} */
+		this._center = null;
+		this.$center = null;
+		/** @type {string} */
+		this.$name = "";
+		/** @type {string} */
+		this.$brand = "";
+		/** @type {string} */
+		this.$venueID = objID;
+		/** *type {_WV.SimpleADDRESS} */
+		this.$address = null;
+		/** @type {boolean} */
+		this.$is2D = false;
+		/** @type {boolean} */
+		this.$isApproved = false;
+		/** @type {boolean} */
+		this.$isEditable = false;
+		/** @type {boolean} */
+		this.$forceNonEditable = false;
+		/** @type {string} */
+		this.$mainCategory = "";
+		/** @type {Array} */
+		this.$categories = [];
+		/** @type {Array} */
+		this.$openingHours = [];
+		/** @type {Array} */
+		this.$services = [];
+		/** @type {Array} */
+		this.$externalProviders = [];
+		/** @type {number} */
+		this.$lock = 0;
+		/** @type {number} */
+		this.$rank = 0;
+		/** @type {string} */
+		this.$updatedOn = "";
+		/** @type {string} */
+		this.$updatedBy = "";
+		/** @type {number} */
+		this.$updatedByID = 0;
+		/** @type {number} */
+		this.$updatedByLevel = 0;
+		/** @type {string} */
+		this.$createdOn = "";
+		/** @type {string} */
+		this.$createdBy = "";
+		/** @type {number} */
+		this.$createdByID = 0;
+		/** @type {number} */
+		this.$createdByLevel = 0;
+		/** @type {Array} */
+		this.$alts = [];
+
+		var ven = WMo.venues.getObjectById(objID);
+		if (classCodeIs(ven, CC_UNDEFINED) || classCodeIs(ven, CC_NULL))
+			return;
+
+		var attrs = ven.attributes;
+
+		this.$rawVenue = ven;
+
+		this.$id = ven.getID();
+
+		this.$address = new _WV.SimpleADDRESS(attrs.streetID);
+
+		this.$isEditable = ven.arePropertiesEditable();
+		// TODO: this.$isToll = seg.isTollRoad();
+		this.$lock = attrs.lockRank + 1;
+		this.$rank = attrs.rank + 1;
+		this.$name = attrs.name;
+		this.$brand = attrs.brand;
+		this.$isApproved = attrs.approved;
+
+		this.$mainCategory = ven.getMainCategory();
+
+		this.$categories = attrs.categories;
+		this.$openingHours = attrs.openingHours;
+		this.$services = attrs.services;
+		this.$externalProviders = attrs.externalProviderIDs;
+
+		if (attrs.updatedOn)
+			this.$updatedOn = formatDate(attrs.updatedOn);
+		if (0 < attrs.updatedBy) {
+			this.$updatedByID = attrs.updatedBy;
+			this.$updatedBy = getUserName(attrs.updatedBy);
+			this.$updatedByLevel = getUserLevel(attrs.updatedBy);
+		}
+		if (attrs.createdOn)
+			this.$createdOn = formatDate(attrs.createdOn);
+		if (attrs.createdBy) {
+			this.$createdByID = attrs.createdBy;
+			this.$createdBy = getUserName(attrs.createdBy);
+			this.$createdByLevel = getUserLevel(attrs.createdBy);
+		}
+		this.$alts = attrs.aliases;
+
+		// mark some properties as readonly
+		Object.defineProperties(this, {
+			$rawVenue: { enumerable: false },
+			_center: { enumerable: false },
+			$center: { get: this.getCenter },
+			$venueID: { writable: false },
+			$isEditable: { writable: false },
+			$rank: { writable: false },
+			$mainCategory: { writable: false },
+			$updatedOn: { writable: false },
+			$updatedBy: { writable: false },
+			$updatedByID: { writable: false },
+			$updatedByLevel: { writable: false },
+			$createdOn: { writable: false },
+			$createdBy: { writable: false },
+			$createdByID: { writable: false },
+			$createdByLevel: { writable: false },
+		});
+	}
+	/**
+	 * Get center
+	 * @returns {OpenLayers.LonLat}
+	 */
+	SimpleVENUE.prototype.getCenter = function () {
+		if (this._center) return this._center;
+
+		this._center = this.$rawVenue.geometry.bounds.getCenterLonLat().clone()
+			.transform(WM.projection, WM.displayProjection);
+		// round the lon/lat
+		this._center.lon = Math.round(this._center.lon * 1e5) / 1e5;
+		this._center.lat = Math.round(this._center.lat * 1e5) / 1e5;
+		return this._center;
+	};
+	/**
+	 * Report a venue
+	 *
+	 * params is an object or just a check ID:
+	 * params.$checkID - check ID
+	 * params.$param - optional check param
+	 * params.$cityParam - optional report city parameter
+	 * params.$streetParam - optional report street parameter
+	 *
+	 * @param {Object|number} params
+	 */
+	SimpleVENUE.prototype.report = function (params) {
+		if (classCodeIs(params, CC_NUMBER))
+			params = { $checkID: params };
+		var id = params.$checkID;
+		if (!id
+			|| !isLimitOk(id))
+			return;
+
+		/**
+		 * Creates a copy of the venue for the report
+		 * @param {SimpleVENUE} ss
+		 */
+		function getVenueCopy(ss) {
+			/** @struct */
+			return {
+				$venueID: ss.$venueID,
+				$name: ss.$name,
+				$countryID: +ss.$address.$countryID,
+				$cityID: +ss.$address.$cityID,
+				$streetID: +ss.$address.$streetID,
+				$reportIDs: {},
+				$updated: ss.$updatedOn ? ss.$rawVenue.attributes.updatedOn
+					: (ss.$createdOn ? ss.$rawVenue.attributes.createdOn : 0),
+				$userID: ss.$updatedByID ? +ss.$updatedByID
+					: (ss.$createdByID ? +ss.$createdByID : 0),
+				$isEditable: ss.$isEditable,
+				$center: ss.$center,
+			};
+		}
+
+		// shortcuts
+		var rep = _REP.$cityIDs[this.$address.$cityID];
+		if (!rep)
+			return;
+		var check = _RT.$checks[id];
+
+		// increase report counters
+		if (_repRC[id]) _repRC[id]++;
+		else _repRC[id] = 1;
+		if (LIMIT_PERCHECK < _repRC[id]) {
+			_REP.$isLimitPerCheck = true;
+			return;
+		}
+
+		// city
+		if (params.$cityParam)
+			rep.$params[id] = params.$cityParam;
+
+		// check rep.$streetIDs
+		if (!rep.$streetIDs)
+			rep.$streetIDs = {};
+
+		// street
+		/** @const */
+		var sid = this.$address.$streetID;
+		if (!(sid in rep.$streetIDs)) {
+			// new street
+			rep.$unsortedStreetIDs.push(sid)
+			_repS[sid] = this.$address.$street;
+			rep.$streetIDs[sid] = {};
+			rep.$streetIDs[sid].$params = {};
+			rep.$streetIDs[sid].$venueIDs = {};
+			rep.$streetIDs[sid].$unsortedVenueIDs = [];
+			rep.$streetIDs[sid].$sortedVenueIDs = [];
+			rep.$streetIDs[sid].$unsortedSegmentIDs = [];
+			rep.$streetIDs[sid].$sortedSegmentIDs = [];
+		}
+		rep = rep.$streetIDs[sid];
+		if (params.$streetParam)
+			rep.$params[id] = params.$streetParam;
+
+		if (!rep.$venueIDs)
+			rep.$venueIDs = {};
+
+		// segment
+		if (!(this.$venueID in rep.$venueIDs)) {
+			// new segment
+			rep.$unsortedVenueIDs.push(this.$venueID);
+			rep.$venueIDs[this.$venueID] = getVenueCopy(this);
+		}
+		var venueCopy = rep.$venueIDs[this.$venueID];
+
+		// add an user
+		var uid = venueCopy.$userID;
+		if (!(uid in _repU)) {
+			var n = "";
+
+			if (uid === this.$createdByID)
+				n = this.$createdBy;
+			else if (uid === this.$updatedByID)
+				n = this.$updatedBy;
+			_repU[uid] = n;
+		}
+
+		// force segment to be non-editable
+		var seenObj = _RT.$seenVenues[this.$venueID];
+		if (this.$forceNonEditable) {
+			this.$forceNonEditable = false;
+			venueCopy.$isEditable = false;
+			// force update max severity
+			if (_REP.$maxSeverity <= seenObj[I_SEVERITY]
+				|| _REP.$maxSeverity <= check.SEVERITY)
+				bUpdateMaxSeverity = true;
+		}
+
+		// mark segment as reported
+		venueCopy.$reportIDs[id] = params.$param;
+
+		// update max severity
+		if (_REP.$maxSeverity < check.SEVERITY) {
+			if (checkFilter(check.SEVERITY, venueCopy, null)
+				&& getFilteredSeverity(check.SEVERITY, id, true))
+				_REP.$maxSeverity = check.SEVERITY;
+		}
+
+		// mark raw segment as highlighted
+		if (!check.REPORTONLY && seenObj[I_SEVERITY] < check.SEVERITY)
+			seenObj[I_SEVERITY] = check.SEVERITY;
+		seenObj[I_VENUECOPY] = venueCopy;
+	};
+	/**
+	 * Increase city counter
+	 */
+	SimpleVENUE.prototype.incCityCounter = function () {
 		// shortcuts
 		var rep = _REP.$cityIDs;
 		/** @const */
@@ -1071,6 +1373,26 @@ function F_VALIDATE(disabledHL) {
 	}
 
 	/**
+	 * Add HLed Venue to the Layer
+	 */
+	function addHLedVenues() {
+		if (RTStateIs(ST_RUN) || RTStateIs(ST_CONTINUE))
+			return;
+
+		var features = [];
+		for (var i in _RT.$HLedVenues) {
+			if (!_RT.$HLedVenues.hasOwnProperty(i)) continue;
+			var obj = _RT.$HLedVenues[i];
+
+			if (obj.$severity)
+				features.push(new OpenLayers.Feature.Vector(
+					obj.$geometry.clone(), { 0: obj.$severity }
+				));
+		}
+		_RT.$HLlayer.addFeatures(features);
+	}
+
+	/**
 	 * Highlight reported segments
 	 */
 	function HLSegment(rawSegment) {
@@ -1100,6 +1422,37 @@ function F_VALIDATE(disabledHL) {
 		};
 		_RT.$HLedObjects[segmentID] = obj;
 	}
+
+	/**
+	 * Highlight reported venues
+	 */
+	function HLVenue(rawVenue) {
+		if (RTStateIs(ST_RUN) || RTStateIs(ST_CONTINUE))
+			return;
+		var venueID = rawVenue.getID();
+		var seenObj = _RT.$seenVenues[venueID];
+		var severity = seenObj[I_SEVERITY];
+		var venueCopy = seenObj[I_VENUECOPY];
+
+		// check filter
+		if (!severity || !venueCopy
+			|| !checkFilterVenue(severity, venueCopy, null))
+			return;
+
+		var filteredSeverity = getFilteredSeverityObj(severity,
+			venueCopy.$reportIDs, true);
+		if (!filteredSeverity)
+			return;
+
+		// add HL object
+		/** @struct */
+		var obj = {
+			$severity: filteredSeverity,
+			$geometry: rawVenue.geometry,
+		};
+		_RT.$HLedVenues[venueID] = obj;
+	}
+
 	/**
 	 * Rehighlight reported segments
 	 */
@@ -1120,6 +1473,27 @@ function F_VALIDATE(disabledHL) {
 			hlObj.$severity = newSeverity;
 		}
 	}
+	/**
+	 * Rehighlight reported venues
+	 */
+	function reHLVenueID(venueID, newSeverity) {
+		if (RTStateIs(ST_RUN) || RTStateIs(ST_CONTINUE))
+			return;
+
+		// force update max severity
+		if (_REP.$maxSeverity !== newSeverity)
+			bUpdateMaxSeverity = true;
+
+		// check for exclude notes option
+		if (oExcludeNotes && RS_NOTE === newSeverity)
+			newSeverity = 0;
+
+		if (venueID in _RT.$HLedVenues) {
+			var hlObj = _RT.$HLedVenues[venueID];
+			hlObj.$severity = newSeverity;
+		}
+	}
+
 	/**
 	 * Delete seen segment
 	 * _REP->$cityIDs->streetIDs->$segmentIDs->$reportIDs
@@ -1194,6 +1568,79 @@ function F_VALIDATE(disabledHL) {
 	}
 
 	/**
+	 * Delete seen segment
+	 * _REP->$cityIDs->streetIDs->$segmentIDs->$reportIDs
+	 */
+	function deleteSeenVenue(venueID) {
+		// set no severity
+		reHLVenueID(venueID, 0);
+		var seen = null;
+		if (venueID in _RT.$seenVenues)
+			seen = _RT.$seenVenues[venueID];
+		if (!seen)
+			return;
+
+		// force update max severity
+		// use <= because it might be the last venue
+		if (_REP.$maxSeverity <= seen[I_SEVERITY])
+			bUpdateMaxSeverity = true;
+
+		var venueCopy = seen[I_VENUECOPY];
+		var cityID = seen[I_CITYID];
+		delete _RT.$seen[venueID];
+
+		// uncount total counter
+		if (0 < _REP.$counterTotal)
+			_REP.$counterTotal--;
+		// uncount city counter
+		if (0 < _repCC[cityID])
+			_repCC[cityID]--;
+		if (!venueCopy)
+			return;
+
+		var repC = _REP.$cityIDs;
+		for (var cid in repC) {
+			if (!repC.hasOwnProperty(cid)) continue;
+
+			var repS = repC[cid].$streetIDs
+			for (var sid in repS) {
+				if (!repS.hasOwnProperty(sid)) continue;
+
+				var repSG = repS[sid].$venueIDs;
+				for (var sgid in repSG) {
+					if (!repSG.hasOwnProperty(sgid)
+						|| +sgid !== venueID)
+						continue;
+
+					/** @const */
+					var reportIDs = repSG[sgid].$reportIDs;
+
+					// uncount report counters
+					/** @const */
+					for (var repID in reportIDs) {
+						if (!reportIDs.hasOwnProperty(repID)) continue;
+
+						if (0 < _repRC[repID])
+							_repRC[repID]--;
+					}
+
+					// delete reported venue
+					delete repSG[sgid];
+
+					// delete the venue from unsorted array
+					var repUSG = repS[sid].$unsortedVenueIDs;
+					repUSG.splice(repUSG.indexOf(+sgid), 1);
+
+					// clear sorted array
+					repS[sid].$sortedVenueIDs = [];
+
+					return;
+				} // for all venues
+			} // for all streets
+		} // for all cities
+	}
+
+	/**
 	 * Update segment properties
 	 */
 	function updateSegmentProperties(selectedSegments, disabledHL) {
@@ -1229,13 +1676,23 @@ function F_VALIDATE(disabledHL) {
 		if (prop)
 			prop.innerHTML = defHTML;
 		else {
-			var segmentProperties = document.getElementsByClassName("selection-icon")[0];
+			var segmentProperties = document.getElementsByClassName("segment")[0];
 			if (segmentProperties) {
-				var d = document.createElement("div");
-				d.innerHTML = defHTML;
-				d.id = "i" + defID;
-				d.style.cssText = "text-transform: none; padding: 5px;"
-				prop = segmentProperties.appendChild(d)
+				var refElement = null;
+				for (var i = 0; i < segmentProperties.children.length; i++) {
+					var c = segmentProperties.children[i];
+					if ("selection-text" === c.className)
+						continue;
+
+					refElement = c;
+					break;
+				}
+				if (refElement) {
+					var d = document.createElement("div");
+					d.innerHTML = defHTML;
+					d.id = "i" + defID;
+					prop = segmentProperties.insertBefore(d, refElement);
+				}
 			} // if segmentProperties
 		} // if prop
 
@@ -1451,6 +1908,275 @@ function F_VALIDATE(disabledHL) {
 		if (prop)
 			prop.innerHTML = newProp;
 	} // updateSegmentProperties
+
+	/**
+	 * Update venue properties
+	 */
+	function updateVenueProperties(selectedVenues, disabledHL) {
+		if (RTStateIs(ST_RUN) || RTStateIs(ST_CONTINUE))
+			return;
+
+		// remove WV properties
+		var prop = document.getElementById("i" + ID_PROPERTY)
+		var propDis = document.getElementById("i" + ID_PROPERTY_DISABLED)
+
+		var defID = ID_PROPERTY;
+		var defHTML = '';
+		if (disabledHL) {
+			defID = ID_PROPERTY_DISABLED;
+			defHTML = '<div class="direction-message">'
+				+ '<i class="fa fa-info-circle" aria-hidden="true"></i> '
+				+ trS("props.disabled")
+				+ '</div> '
+				;
+			// remove prop
+			if (prop) {
+				prop.parentNode.removeChild(prop);
+			}
+			prop = propDis;
+		}
+		else {
+			// remove propDis
+			if (propDis) {
+				propDis.parentNode.removeChild(propDis);
+			}
+		}
+
+		if (prop)
+			prop.innerHTML = defHTML;
+		else {
+			var venueProperties = document.getElementsByClassName("landmark")[0];
+			if (venueProperties) {
+				var refElement = null;
+				for (var i = 0; i < venueProperties.children.length; i++) {
+					var c = venueProperties.children[i];
+					if ("selection-text" === c.className)
+						continue;
+
+					refElement = c;
+					break;
+				}
+				if (refElement) {
+					var d = document.createElement("div");
+					d.innerHTML = defHTML;
+					d.id = "i" + defID;
+					prop = venueProperties.insertBefore(d, refElement);
+				}
+			} // if venueProperties
+		} // if prop
+
+		if (disabledHL)
+			return;
+
+		// check if there are any venue selected
+		if (!selectedVenues.length)
+			return;
+
+		// find selected issues
+		var selectedIssues = [];
+		for (var i = 0; i < selectedVenues.length; i++) {
+			var venueID = selectedVenues[i];
+			if (venueID in _RT.$seenVenues) {
+				var venueCopy = _RT.$seenVenues[venueID][I_VENUECOPY];
+				if (!venueCopy) continue;
+				// venue is selected and highlighted
+				for (var cid in venueCopy.$reportIDs) {
+					if (venueCopy.$reportIDs.hasOwnProperty(cid)) {
+						var check = _RT.$checks[cid];
+						if (check.REPORTONLY)
+							continue;
+
+						selectedIssues.push([check, venueCopy, cid]);
+					}
+				}
+			}
+		} // for all selected venues
+
+		var newProp = '<b style="display:block"><a target="_blank" href="' + PFX_FORUM + FORUM_HOME + '">WME Validator</a> ' + trS("props.reports") + ':</b>'
+			;
+		if (_REP.$isLimitPerCheck) {
+			newProp += '<div class="c' + CL_RIGHTTIP + ' c' + CL_NOTE + '">'
+				+ '<span><i class="fa fa-info-circle" aria-hidden="true"></i>'
+				+ ' <a class="c' + CL_NOTE + '" href="#">'
+				+ trS("props.limit.title")
+				+ '</a></span>'
+				+ '<div class="c' + CL_RIGHTTIPPOPUP + '">'
+				+ '<i class="fa fa-times-circle fa-lg fa-pull-left" style="margin-top:0.3em" aria-hidden="true"></i>'
+				+ '<div class="c' + CL_RIGHTTIPDESCR + '">'
+				+ trS("props.limit.problem")
+				+ '.</div>'
+				+ '<i class="fa fa-check-square-o fa-lg fa-pull-left" style="color:black;margin-top:0.8em" aria-hidden="true"></i>'
+				+ '<div class="c' + CL_RIGHTTIPDESCR + '">'
+				+ '<p>' + trS("props.limit.solution") + '.</p>'
+				+ '</div></div><br></div>'
+				;
+		} // limit per check
+
+		// exceptions note
+		if (skippedVenue) {
+			newProp += '<div class="c' + CL_RIGHTTIP + ' c' + CL_NOTE + '">'
+				+ '<span><i class="fa fa-info-circle" aria-hidden="true"></i>'
+				+ ' <a class="c' + CL_NOTE + '" href="#">'
+				+ trS("props.skipped.title")
+				+ '</a></span>'
+				+ '<div class="c' + CL_RIGHTTIPPOPUP + '">'
+				+ '<i class="fa fa-times-circle fa-lg fa-pull-left" style="margin-top:0.3em" aria-hidden="true"></i>'
+				+ '<div class="c' + CL_RIGHTTIPDESCR + '">'
+				+ trS("props.skipped.problem")
+				+ '.</div>'
+				+ '</div><br></div>'
+				;
+		}
+
+
+		if (!selectedIssues.length) {
+			// update properties
+			if (prop && (_REP.$isLimitPerCheck || skippedVenue))
+				prop.innerHTML = newProp;
+			return;
+		}
+
+		// sort the issues
+		selectedIssues.sort(function (a, b) { return cmpCheckIDs(a[2], b[2]) });
+
+		// only unique issues
+		var selectedCounters = {};
+		selectedIssues = selectedIssues.filter(function (e, i, arr) {
+			var checkID = e[2];
+			// skip first element
+			if (i && arr[i - 1][2] === checkID) {
+				selectedCounters[checkID]++;
+				return false;
+			}
+			selectedCounters[checkID] = 1;
+			return true;
+		});
+		// create a list of issues
+		selectedIssues.forEach(function (e) {
+			var check = e[0];
+			var venueCopy = e[1];
+			var checkID = e[2];
+			var checkCounter = selectedCounters[checkID];
+			var sevClass = 0;
+			var sevIcon = "";
+			var sevBG = "";
+			var strCountry = _REP.$countries[venueCopy.$countryID];
+			var ccode = "";
+
+			if (strCountry)
+				ccode = _I18n.getCountryCode(strCountry.toUpperCase());
+			else {
+				// try top country
+				ccode = _RT.$cachedTopCCode;
+			}
+			options = trO(check.OPTIONS, ccode);
+
+			switch (check.SEVERITY) {
+				case RS_NOTE:
+					sevClass = CL_NOTE;
+					sevIcon = "info-circle";
+					sevBG = GL_NOTEBGCOLOR;
+					break;
+				case RS_WARNING:
+					sevClass = CL_WARNING;
+					sevIcon = "exclamation-triangle";
+					sevBG = GL_WARNINGBGCOLOR;
+					break;
+				case RS_ERROR:
+					sevClass = CL_ERROR;
+					sevIcon = "times-circle";
+					sevBG = GL_ERRORBGCOLOR;
+					break;
+				case RS_CUSTOM1:
+					sevClass = CL_CUSTOM1;
+					sevIcon = "user";
+					sevBG = GL_CUSTOM1BGCOLOR;
+					break;
+				case RS_CUSTOM2:
+					sevClass = CL_CUSTOM2;
+					sevIcon = "user";
+					sevBG = GL_CUSTOM2BGCOLOR;
+					break;
+			}
+			var shortTitle = exSOS(check.TITLE, options, "titleEN")
+				.replace("WME Color Highlights", "WMECH")
+				.replace("WME Toolbox", "WMETB");
+			newProp += '<div class="c' + CL_RIGHTTIP + ' c' + sevClass + '">'
+				+ '<span><i class="fa fa-' + sevIcon + '" aria-hidden="true"></i>'
+				+ ' <a class="c' + sevClass + '" href="#">'
+				+ shortTitle
+				+ (1 < checkCounter ? ' (' + checkCounter + ')' : '')
+				+ '</a></span>'
+				+ '<div class="c' + CL_RIGHTTIPPOPUP + '">'
+				+ '<i class="fa fa-' + sevIcon + ' fa-lg fa-pull-left" style="margin-top:0.3em" aria-hidden="true"></i>'
+				+ '<div class="c' + CL_RIGHTTIPDESCR + '">'
+				+ '#' + checkID + ' '
+				+ exSOS(check.PROBLEM, options, "problemEN")
+				;
+			var pl = trO(check.PROBLEMLINK, ccode);
+			if (pl) {
+				newProp += ': <a target="_blank" href="'
+					+ pl
+					+ '">'
+					+ trO(check.PROBLEMLINKTEXT, ccode)
+					+ '</a>'
+					;
+			}
+			else
+				newProp += '.';
+
+			newProp += '</div>';
+
+			// show howto
+			if (venueCopy.$isEditable) {
+				newProp += '<i class="fa fa-check-square-o fa-pull-left fa-lg" style="color:black;margin-top:0.8em" aria-hidden="true"></i>'
+					+ '<div class="c' + CL_RIGHTTIPDESCR + '">'
+					;
+				if (check.SOLUTION) {
+					newProp += '<p>' + exSOS(check.SOLUTION, options, "solutionEN");
+
+					var sl = trO(check.SOLUTIONLINK, ccode);
+					if (sl) {
+						newProp += ': <a target="_blank" href="'
+							+ sl
+							+ '">'
+							+ trO(check.SOLUTIONLINKTEXT, ccode)
+							+ '</a>'
+							;
+					}
+					else
+						newProp += '.';
+
+					newProp += '</p>';
+				}
+			}
+			else {
+				newProp += '<i class="fa fa-ban fa-pull-left fa-lg" style="color:black;margin-top:0.8em" aria-hidden="true"></i>'
+					+ '<div class="c' + CL_RIGHTTIPDESCR + '">'
+					+ '<p>' + trS("props.noneditable") + '.</p>';
+				;
+			}
+
+			// show params
+			var cityID = venueCopy.$cityID;
+			var cityParam = _REP.$cityIDs[cityID].$params[checkID];
+			if (cityParam)
+				newProp += '<p>' + cityParam + '</p>';
+			var streetID = venueCopy.$streetID;
+			var streetParam = _REP.$cityIDs[cityID]
+				.$streetIDs[streetID].$params[checkID];
+
+			if (streetParam)
+				newProp += '<p>' + streetParam + '</p>';
+
+			newProp += '</div></div><br></div>'
+				;
+		}); // forEach
+
+		// update properties
+		if (prop)
+			prop.innerHTML = newProp;
+	} // updateVenueProperties
 
 	/**
 	 * Match regular expression
@@ -3069,6 +3795,91 @@ function F_VALIDATE(disabledHL) {
 		HLSegment(rawSegment);
 	} // for all segments
 
+	var selectedVenues = [];
+	for (var venueKey in WMo.venues.objects) {
+		// check the venues
+		var rawVenue = WMo.venues.objects[venueKey];
+		var venueID = rawVenue.getID();
+		// skip unrendered features
+		if (rawVenue.layer
+			&& rawVenue.id in rawVenue.layer.unrenderedFeatures)
+			continue;
+
+		if ("Delete" === rawVenue.state) continue;
+		// not in scope of current view.
+		if (rawVenue.outOfScope && rawVenue.outOfScope === true) continue;
+
+		var seen = null;
+		// check if the venue was already seen
+		if (venueID in _RT.$seenVenues)
+			seen = _RT.$seenVenues[venueID];
+
+		// always re-check selected venues
+		if (rawVenue.selected) {
+			// add selected venue to the array
+			selectedVenues.push(venueID);
+
+			// mark venue to revalidate
+			_RT.$revalidateVenues[venueID] = true;
+			// recheck selected venue
+			if (seen) {
+				deleteSeenVenue(venueID);
+				seen = null;
+			}
+		}
+		else {
+			// recheck the venue to revalidate
+			if (segmentID in _RT.$revalidateVenues) {
+				deleteSeenVenue(venueID);
+				seen = null;
+				// unmark venue
+				delete _RT.$revalidateVenues[segmentID];
+			}
+		}
+
+		// check if the venue was already seen
+		if (seen) {
+			HLVenue(rawVenue);
+			continue;
+		}
+
+		///////////////////////////////////////////////////////////////////
+		// Prepare simple objects
+		var venue = new SimpleVENUE(venueID);
+		Object.seal(venue);
+
+		// mark venue as seen
+		_RT.$seenVenues[venueID] = seen = [0, null, false, false,
+			4 > currentZoom,
+			cityID];
+
+		// increase city counter
+		venue.incCityCounter();
+
+		// shortcuts
+		var address = venue.$address;
+		var country = address.$country;
+		var countryLen = country.length;
+		var countryCode = country ? _I18n.getCountryCode(country.toUpperCase())
+			: _RT.$cachedTopCCode;
+		var city = address.$city;
+		var cityLen = city.length;
+		var cityID = address.$cityID;
+		var street = address.$street;
+		var state = address.$state;
+		var streetLen = street.length;
+		var alts = venue.$alts;
+
+		var exceptedCategories ='BRIDGE|ISLAND|FOREST_GROVE|SEA_LAKE_POOL|RIVER_STREAM|CANAL|DAM|TUNNEL|JUNCTION_INTERCHANGE'.split('|');
+
+		if (!cityLen
+			&& exceptedCategories.indexOf(venue.$categories[0]) === -1
+			&& isLimitOk(250)
+			&& address.isOkFor(250))
+			venue.report(250);
+
+	} // for all venues
+
 	// update severity if needed
 	if (bUpdateMaxSeverity
 		&& (RTStateIs(ST_STOP) || RTStateIs(ST_PAUSE)))
@@ -3077,6 +3888,12 @@ function F_VALIDATE(disabledHL) {
 	// update segment properties
 	updateSegmentProperties(selectedSegments, false);
 
+	// update venue properties
+	updateVenueProperties(selectedVenues, false);
+
 	// add HLed segments to the layer
 	addHLedSegments();
+
+	// add HLed venues to the layer
+	addHLedVenues();
 }
