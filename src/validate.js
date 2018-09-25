@@ -2448,8 +2448,8 @@ function F_VALIDATE(disabledHL) {
 
 			// GROUP isDrivable
 			// global speed limit check
-			// TODO: for now ignore streets and ramps speed limits
-			if (RR_STREET < typeRank && RT_RAMP !== roadType) {
+			// TODO: for now ignore streets, roundabout, short segments and ramps speed limits
+			if (RR_STREET < typeRank && RT_RAMP !== roadType && !segment.$isRoundabout && segmentLen > 5) {
 				if (DIR_AB === direction || DIR_TWO === direction) {
 					if (forwardSpeedUnverified
 						&& isLimitOk(210)
