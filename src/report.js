@@ -831,20 +831,36 @@ function F_SHOWREPORT(reportFormat) {
 					var strCountry = _REP.$countries[obj.$objectCopy.$countryID];
 					var ccode = "";
 
-					if (strCountry)
-						ccode = _I18n.getCountryCode(strCountry.toUpperCase());
-					else {
-						// try top country
-						ccode = _RT.$cachedTopCCode;
+
+					// alt solution: remove dublicate checks!
+					//              return RT_NEXTCHECK;
+				}
+			}
+			if (obj.$venueCopy) {
+				if (checkFilterVenue(0, obj.$venueCopy, seenVenues)
+					&& getFilteredSeverity(obj.$check.SEVERITY, obj.$checkID, false)) {
+					if (obj.$checkID !== lastCheckID) {
+						lastCheckID = obj.$checkID;
+						var check = obj.$check;
+
+						var strCountry = _REP.$countries[obj.$venueCopy.$countryID];
+						var ccode = "";
+
+						if (strCountry)
+							ccode = _I18n.getCountryCode(strCountry.toUpperCase());
+						else {
+							// try top country
+							ccode = _RT.$cachedTopCCode;
+						}
+						var options = trO(check.OPTIONS, ccode)
+						FR += '\n<li class="';
+						FR += getTextSeverity(obj.$check.SEVERITY);
+						FR += '"><a href="#a';
+						FR += lastCheckID;
+						FR += '">';
+						FR += exSOS(check.TITLE, options, "titleEN");
+						FR += '</a></li>';
 					}
-					var options = trO(check.OPTIONS, ccode)
-					FR += '\n<li class="';
-					FR += getTextSeverity(obj.$check.SEVERITY);
-					FR += '"><a href="#a';
-					FR += lastCheckID;
-					FR += '">';
-					FR += exSOS(check.TITLE, options, "titleEN");
-					FR += '</a></li>';
 				}
 				// TODO:
 				// bug: TOC item shows duplicate objects
@@ -923,6 +939,32 @@ function F_SHOWREPORT(reportFormat) {
 					});
 			return ret;
 		}
+		// get sorted segments
+		function getSortedVenues(repS) {
+			var ret = repS.$sortedVenueIDs;
+			var repSeg = repS.$venueIDs;
+			if (!ret || ret.length != repS.$unsortedVenueIDs.length)
+				return repS.$sortedVenueIDs
+					= [].concat(repS.$unsortedVenueIDs).sort(function (a, b) {
+						var segA = repSeg[a], segB = repSeg[b];
+						if (segA.$typeRank !== segB.$typeRank)
+							return segB.$typeRank - segA.$typeRank;
+						// if ranks are the same - sort by the distance
+						/** @const */
+						var distAB = getHypot(segA.$center.lat - segB.$center.lat,
+							segA.$center.lon - segB.$center.lon);
+						// the venues are close
+						if (0.002 > distAB) return 0;
+						/** @const */
+						var distA = getHypot(mapCenter.lat - segA.$center.lat,
+							mapCenter.lon - segA.$center.lon);
+						/** @const */
+						var distB = getHypot(mapCenter.lat - segB.$center.lat,
+							mapCenter.lon - segB.$center.lon);
+						return distA - distB;
+					});
+			return ret;
+		}
 
 		///////////////////////////////////////////////////////////////////
 		// For all sorted checks
@@ -949,6 +991,7 @@ function F_SHOWREPORT(reportFormat) {
 				for (var sorsid = 0; sorsid < sortedStreets.length; sorsid++) {
 					var sid = sortedStreets[sorsid];
 					var repS = repC.$streetIDs[sid];
+
 
 					// for all object copies
 					if (repS.$unsortedObjectIDs){

@@ -495,6 +495,8 @@ var I_ISWMECHCOLOR = 3;
 var I_ISPARTIAL = 4;
 /** @const */
 var I_CITYID = 5;
+/** @const */
+var I_VENUECOPY = 6;
 
 /**
  * Check options

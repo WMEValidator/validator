@@ -189,7 +189,9 @@ function setRTState(nstate) {
  */
 function clearReport() {
 	_RT.$seen = {};
+	_RT.$seenVenues = {};
 	_RT.$revalidate = {};
+	_RT.$revalidateVenues = {};
 	_REP = {
 		// debug counter
 		$debugCounter: LIMIT_DEBUG,
@@ -527,6 +529,114 @@ function checkFilter(severity, objectCopy, seenObjects) {
 	return true;
 }
 
+
+/**
+ * Check filter Venues
+ */
+function checkFilterVenue(severity, venueCopy, seenVenues) {
+	if (seenVenues) {
+		if (venueCopy.$venueID in seenVenues
+			&& _UI.pMain.pFilter.oExcludeDuplicates.CHECKED)
+			return false;
+		seenVenues[venueCopy.$venueID] = null;
+	}
+
+	if (!venueCopy.$isEditable
+		&& _UI.pMain.pFilter.oExcludeNonEditables.CHECKED)
+		return false;
+	if (RS_NOTE === severity
+		&& _UI.pMain.pFilter.oExcludeNotes.CHECKED)
+		return false;
+
+	if (venueCopy.$userID !== _RT.$topUser.$userID
+		&& !_UI.pMain.pSearch.oIncludeYourEdits.NODISPLAY
+		&& _UI.pMain.pSearch.oIncludeYourEdits.CHECKED)
+		return false;
+
+	if (!_UI.pMain.pSearch.oIncludeUpdatedBy.NODISPLAY
+		&& _UI.pMain.pSearch.oIncludeUpdatedBy.VALUE) {
+		var cache = _RT.$includeUpdatedByCache;
+		var hash = venueCopy.$userID;
+
+		if (hash in cache) {
+			if (!cache[hash])
+				return false;
+		}
+		else {
+			var forUser = _UI.pMain.pSearch.oIncludeUpdatedBy.VALUE;
+			var curUser = _REP.$users[venueCopy.$userID];
+			try {
+				cache[hash] = false;
+				// check if the user tries to match another user
+				if (curUser !== _RT.$topUser.$userName
+					&& !_RT.$topUser.$isCM)
+					return false;
+				// check if CM match country ID
+				if (_RT.$topUser.$isCM
+					&& -1 === _RT.$topUser.$countryIDs.indexOf(venueCopy.$countryID))
+					return false;
+				if (!_WV.checkAccessFor(forUser,
+					function (e) {
+						// escape user input
+						e = escRE(e);
+						// substitute 'me'
+						e = e.replace(/(^|\b)(me|i)($|\b)/gi, _RT.$topUser.$userName);
+
+						var r = new RegExp("^" + e + "$", "i");
+						return r.test(curUser);
+					})
+				)
+					return false;
+				cache[hash] = true;
+			}
+			catch (e) { }
+		}
+	}
+
+	if (venueCopy.$updated && _UI.pMain.pSearch.oIncludeUpdatedSince.VALUE) {
+		try {
+			if (!_RT.$includeUpdatedSinceTime)
+				_RT.$includeUpdatedSinceTime =
+					new Date(_UI.pMain.pSearch.oIncludeUpdatedSince.VALUE).getTime();
+			if (venueCopy.$updated < _RT.$includeUpdatedSinceTime)
+				return false;
+		}
+		catch (e) { }
+	}
+
+	if (_UI.pMain.pSearch.oIncludeCityName.VALUE) {
+		if (!venueCopy.$cityID)
+			return false;
+
+		var cache = _RT.$includeCityNameCache;
+		var hash = venueCopy.$cityID;
+
+		if (hash in cache) {
+			if (!cache[hash])
+				return false;
+		}
+		else {
+			var forCity = _UI.pMain.pSearch.oIncludeCityName.VALUE;
+			var curCity = _REP.$cities[venueCopy.$cityID];
+			try {
+				cache[hash] = false;
+				if (!_WV.checkAccessFor(forCity,
+					function (e) {
+						// escape user input
+						e = escRE(e);
+						var r = new RegExp("^" + e + "$", "i");
+						return r.test(curCity);
+					})
+				)
+					return false;
+				cache[hash] = true;
+			}
+			catch (e) { }
+		}
+	}
+
+	return true;
+}
 
 /**
  * Translate object by country code
