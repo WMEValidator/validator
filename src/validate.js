@@ -357,7 +357,8 @@ function F_VALIDATE(disabledHL) {
 		this.$isInThePast = false;
 		if (timeFrame.getEndDate() === null) {
 			this.$isInThePast = false;
-		} else if (timeFrame.getEndDate() > new Date) {
+		// getEndDate() returns a date String! Not a Date object
+		} else if (Date.parse(timeFrame.getEndDate()) > new Date) {
 			this.$isInThePast = false;
 		} else {
 			this.$isInThePast = true;
