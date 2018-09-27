@@ -136,8 +136,6 @@ function F_LOGIN() {
 		$HLlayer: null,
 		// array of objects to animate
 		$HLedObjects: {},
-		// array of venues to animate
-		$HLedVenues: {},
 		// global access flag
 		$isGlobalAccess: false,
 		// timer to measure ETA
@@ -179,10 +177,8 @@ function F_LOGIN() {
 		$moveEndCenter: null,
 		// map of seen object IDs
 		$seen: {},
-		$seenVenues: {},
 		// map of segment IDs to revalidate
 		$revalidate: {},
-		$revalidateVenues: {},
 		// current user
 		$curUserName: WLM.user.userName,
 		// error flag

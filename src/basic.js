@@ -189,9 +189,7 @@ function setRTState(nstate) {
  */
 function clearReport() {
 	_RT.$seen = {};
-	_RT.$seenVenues = {};
 	_RT.$revalidate = {};
-	_RT.$revalidateVenues = {};
 	_REP = {
 		// debug counter
 		$debugCounter: LIMIT_DEBUG,
@@ -417,29 +415,29 @@ function getFilteredSeverityObj(oldSeverity, checkIDs, checkToHL) {
 /**
  * Check filter
  */
-function checkFilter(severity, segmentCopy, seenSegments) {
-	if (seenSegments) {
-		if (segmentCopy.$segmentID in seenSegments
+function checkFilter(severity, objectCopy, seenObjects) {
+	if (seenObjects) {
+		if (objectCopy.$objectID in seenObjects
 			&& _UI.pMain.pFilter.oExcludeDuplicates.CHECKED)
 			return false;
-		seenSegments[segmentCopy.$segmentID] = null;
+		seenObjects[objectCopy.$objectID] = null;
 	}
 
-	if ((RR_STREET === segmentCopy.$typeRank
-		|| RR_SERVICE === segmentCopy.$typeRank)
+	if ((RR_STREET === objectCopy.$typeRank
+		|| RR_SERVICE === objectCopy.$typeRank)
 		&& _UI.pMain.pFilter.oExcludeStreets.CHECKED)
 		return false;
-	if (RR_SERVICE > segmentCopy.$typeRank
+	if (RR_SERVICE > objectCopy.$typeRank
 		&& _UI.pMain.pFilter.oExcludeOther.CHECKED)
 		return false;
-	if (!segmentCopy.$isEditable
+	if (!objectCopy.$isEditable
 		&& _UI.pMain.pFilter.oExcludeNonEditables.CHECKED)
 		return false;
 	if (RS_NOTE === severity
 		&& _UI.pMain.pFilter.oExcludeNotes.CHECKED)
 		return false;
 
-	if (segmentCopy.$userID !== _RT.$topUser.$userID
+	if (objectCopy.$userID !== _RT.$topUser.$userID
 		&& !_UI.pMain.pSearch.oIncludeYourEdits.NODISPLAY
 		&& _UI.pMain.pSearch.oIncludeYourEdits.CHECKED)
 		return false;
@@ -447,7 +445,7 @@ function checkFilter(severity, segmentCopy, seenSegments) {
 	if (!_UI.pMain.pSearch.oIncludeUpdatedBy.NODISPLAY
 		&& _UI.pMain.pSearch.oIncludeUpdatedBy.VALUE) {
 		var cache = _RT.$includeUpdatedByCache;
-		var hash = segmentCopy.$userID;
+		var hash = objectCopy.$userID;
 
 		if (hash in cache) {
 			if (!cache[hash])
@@ -455,7 +453,7 @@ function checkFilter(severity, segmentCopy, seenSegments) {
 		}
 		else {
 			var forUser = _UI.pMain.pSearch.oIncludeUpdatedBy.VALUE;
-			var curUser = _REP.$users[segmentCopy.$userID];
+			var curUser = _REP.$users[objectCopy.$userID];
 			try {
 				cache[hash] = false;
 				// check if the user tries to match another user
@@ -464,7 +462,7 @@ function checkFilter(severity, segmentCopy, seenSegments) {
 					return false;
 				// check if CM match country ID
 				if (_RT.$topUser.$isCM
-					&& -1 === _RT.$topUser.$countryIDs.indexOf(segmentCopy.$countryID))
+					&& -1 === _RT.$topUser.$countryIDs.indexOf(objectCopy.$countryID))
 					return false;
 				if (!_WV.checkAccessFor(forUser,
 					function (e) {
@@ -484,23 +482,23 @@ function checkFilter(severity, segmentCopy, seenSegments) {
 		}
 	}
 
-	if (segmentCopy.$updated && _UI.pMain.pSearch.oIncludeUpdatedSince.VALUE) {
+	if (objectCopy.$updated && _UI.pMain.pSearch.oIncludeUpdatedSince.VALUE) {
 		try {
 			if (!_RT.$includeUpdatedSinceTime)
 				_RT.$includeUpdatedSinceTime =
 					new Date(_UI.pMain.pSearch.oIncludeUpdatedSince.VALUE).getTime();
-			if (segmentCopy.$updated < _RT.$includeUpdatedSinceTime)
+			if (objectCopy.$updated < _RT.$includeUpdatedSinceTime)
 				return false;
 		}
 		catch (e) { }
 	}
 
 	if (_UI.pMain.pSearch.oIncludeCityName.VALUE) {
-		if (!segmentCopy.$cityID)
+		if (!objectCopy.$cityID)
 			return false;
 
 		var cache = _RT.$includeCityNameCache;
-		var hash = segmentCopy.$cityID;
+		var hash = objectCopy.$cityID;
 
 		if (hash in cache) {
 			if (!cache[hash])
@@ -508,7 +506,7 @@ function checkFilter(severity, segmentCopy, seenSegments) {
 		}
 		else {
 			var forCity = _UI.pMain.pSearch.oIncludeCityName.VALUE;
-			var curCity = _REP.$cities[segmentCopy.$cityID];
+			var curCity = _REP.$cities[objectCopy.$cityID];
 			try {
 				cache[hash] = false;
 				if (!_WV.checkAccessFor(forCity,
@@ -529,113 +527,6 @@ function checkFilter(severity, segmentCopy, seenSegments) {
 	return true;
 }
 
-/**
- * Check filter Venues
- */
-function checkFilterVenue(severity, venueCopy, seenVenues) {
-	if (seenVenues) {
-		if (venueCopy.$venueID in seenVenues
-			&& _UI.pMain.pFilter.oExcludeDuplicates.CHECKED)
-			return false;
-		seenVenues[venueCopy.$venueID] = null;
-	}
-
-	if (!venueCopy.$isEditable
-		&& _UI.pMain.pFilter.oExcludeNonEditables.CHECKED)
-		return false;
-	if (RS_NOTE === severity
-		&& _UI.pMain.pFilter.oExcludeNotes.CHECKED)
-		return false;
-
-	if (venueCopy.$userID !== _RT.$topUser.$userID
-		&& !_UI.pMain.pSearch.oIncludeYourEdits.NODISPLAY
-		&& _UI.pMain.pSearch.oIncludeYourEdits.CHECKED)
-		return false;
-
-	if (!_UI.pMain.pSearch.oIncludeUpdatedBy.NODISPLAY
-		&& _UI.pMain.pSearch.oIncludeUpdatedBy.VALUE) {
-		var cache = _RT.$includeUpdatedByCache;
-		var hash = venueCopy.$userID;
-
-		if (hash in cache) {
-			if (!cache[hash])
-				return false;
-		}
-		else {
-			var forUser = _UI.pMain.pSearch.oIncludeUpdatedBy.VALUE;
-			var curUser = _REP.$users[venueCopy.$userID];
-			try {
-				cache[hash] = false;
-				// check if the user tries to match another user
-				if (curUser !== _RT.$topUser.$userName
-					&& !_RT.$topUser.$isCM)
-					return false;
-				// check if CM match country ID
-				if (_RT.$topUser.$isCM
-					&& -1 === _RT.$topUser.$countryIDs.indexOf(venueCopy.$countryID))
-					return false;
-				if (!_WV.checkAccessFor(forUser,
-					function (e) {
-						// escape user input
-						e = escRE(e);
-						// substitute 'me'
-						e = e.replace(/(^|\b)(me|i)($|\b)/gi, _RT.$topUser.$userName);
-
-						var r = new RegExp("^" + e + "$", "i");
-						return r.test(curUser);
-					})
-				)
-					return false;
-				cache[hash] = true;
-			}
-			catch (e) { }
-		}
-	}
-
-	if (venueCopy.$updated && _UI.pMain.pSearch.oIncludeUpdatedSince.VALUE) {
-		try {
-			if (!_RT.$includeUpdatedSinceTime)
-				_RT.$includeUpdatedSinceTime =
-					new Date(_UI.pMain.pSearch.oIncludeUpdatedSince.VALUE).getTime();
-			if (venueCopy.$updated < _RT.$includeUpdatedSinceTime)
-				return false;
-		}
-		catch (e) { }
-	}
-
-	if (_UI.pMain.pSearch.oIncludeCityName.VALUE) {
-		if (!venueCopy.$cityID)
-			return false;
-
-		var cache = _RT.$includeCityNameCache;
-		var hash = venueCopy.$cityID;
-
-		if (hash in cache) {
-			if (!cache[hash])
-				return false;
-		}
-		else {
-			var forCity = _UI.pMain.pSearch.oIncludeCityName.VALUE;
-			var curCity = _REP.$cities[venueCopy.$cityID];
-			try {
-				cache[hash] = false;
-				if (!_WV.checkAccessFor(forCity,
-					function (e) {
-						// escape user input
-						e = escRE(e);
-						var r = new RegExp("^" + e + "$", "i");
-						return r.test(curCity);
-					})
-				)
-					return false;
-				cache[hash] = true;
-			}
-			catch (e) { }
-		}
-	}
-
-	return true;
-}
 
 /**
  * Translate object by country code

@@ -486,7 +486,7 @@ var HL_OPACITY = 0.4;
 /** @const */
 var I_SEVERITY = 0;
 /** @const */
-var I_SEGMENTCOPY = 1;
+var I_OBJECTCOPY = 1;
 /** @const */
 var I_ISTBCOLOR = 2;
 /** @const */
@@ -495,8 +495,6 @@ var I_ISWMECHCOLOR = 3;
 var I_ISPARTIAL = 4;
 /** @const */
 var I_CITYID = 5;
-/** @const */
-var I_VENUECOPY = 6;
 
 /**
  * Check options
