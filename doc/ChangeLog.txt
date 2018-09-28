@@ -1,5 +1,12 @@
 Current changes:
 
+v2018.09.28:
+- davidakachaos: add exceptions for speed limit checks
+- davidakachaos: adjust reports in segment properties
+- davidakachaos: fix restrictions bug
+- carloslaso: add Mexico localization
+- other minor changes
+
 v2018.09.15:
 - berestovskyy: add custom check variables: speedLimit,
   speedLimitAB, speedLimitBA and checkSpeedLimit
