@@ -148,3 +148,31 @@ function getLocalizedValue(val) {
 	return W.model.isImperial ?
 		Math.round(val * ipu["km"] / ipu["mi"]) : val;
 }
+
+function checkPublicConnection(seg, ignoreSegment){
+	var foundPublicConnection = false;
+	if (!seg.$nodeA.$isPartial && seg.$nodeA.$otherSegmentsLen > 0){
+		for (var i = 0; i < seg.$nodeA.$otherSegmentsLen; i++){
+			var otherSegment = seg.$nodeA.$otherSegments[i];
+			if (ignoreSegment && otherSegment === ignoreSegment)
+				continue;
+			if (otherSegment.$rawSegment.isRoutable()) {
+				foundPublicConnection = true;
+				break;
+			}
+		}
+	}
+	if (!seg.$nodeB.$isPartial && seg.$nodeB.$otherSegmentsLen > 0){
+		for (var i = 0; i < seg.$nodeB.$otherSegmentsLen; i++){
+			var otherSegment = seg.$nodeB.$otherSegments[i];
+			if (ignoreSegment && otherSegment === ignoreSegment)
+				continue;
+			if (otherSegment.$rawSegment.isRoutable()) {
+				foundPublicConnection = true;
+				break;
+			}
+		}
+	}
+
+	return foundPublicConnection;
+}

@@ -2415,21 +2415,20 @@ function F_VALIDATE(disabledHL) {
 				&& isLimitOk(202)
 				&& address.isOkFor(202)) {
 				// Check other segments to be a drivable public segment
-				var foundPublicConnection = false;
-				for (var i = 0; i < nodeA.$otherSegmentsLen; i++) {
-					var otherSegment = nodeA.$otherSegments[i];
-					if (otherSegment.$rawSegment.isRoutable()) {
-						foundPublicConnection = true;
-						break;
-					}
-				}
-				if (!foundPublicConnection) {
-					// check node B
-					for (var i = 0; i < nodeB.$otherSegmentsLen; i++) {
-						var otherSegment = nodeB.$otherSegments[i];
-						if (otherSegment.$rawSegment.isRoutable()) {
+				// Second param is a segment to ignore as a valid public connection
+				var foundPublicConnection = checkPublicConnection(segment, null);
+				if(!foundPublicConnection){
+					// We might have a isolated segment. Could be a Restricted Gate
+					// See https://wazeopedia.waze.com/wiki/USA/Private_Installations#Specialty_Gate:_Restricted_Gate
+					if(nodeA.$otherSegmentsLen == 1 && nodeB.$otherSegmentsLen == 1){
+						// both sides are connected to just one private segment
+						var nodeASegment = nodeA.$otherSegments[0];
+						var nodeBSegment = nodeB.$otherSegments[0];
+						if (checkPublicConnection(nodeASegment, segment)
+							&& checkPublicConnection(nodeBSegment, segment)) {
+							// the private segments are connected to a routable segment beside the isolated one!
+							// This is a gate most likely, so don't report as isolated!
 							foundPublicConnection = true;
-							break;
 						}
 					}
 				}
