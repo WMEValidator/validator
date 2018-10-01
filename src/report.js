@@ -1217,7 +1217,7 @@ function F_SHOWREPORT(reportFormat) {
 		getPermalink(obj);
 		FR += Ca
 		if (isBeta) FR += 'B:';
-		if (obj.$objectCopy.$model === WMo.venues) {
+		if (obj.$objectCopy.$model === WMo.segments) {
 			FR += obj.$objectCopy.$objectID;
 		} else {
 			// Use the name of a venue, when set.
