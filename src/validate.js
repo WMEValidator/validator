@@ -545,11 +545,14 @@ function F_VALIDATE(disabledHL) {
 			this.$isApproved = attrs.approved;
 			this.$mainCategory = raw.getMainCategory();
 			this.$categories = attrs.categories;
+			this.$categoryAttributes = attrs.categoryAttributes;
 			this.$openingHours = attrs.openingHours;
 			this.$services = attrs.services;
 			this.$externalProviders = attrs.externalProviderIDs;
+			this.$entryExitPoints = attrs.entryExitPoints;
 			this.$alts = attrs.aliases;
 			this.$address = new _WV.SimpleADDRESS(attrs.streetID);
+			this.$geometry = attrs.geometry;
 		}
 
 		this.$isEditable = raw.arePropertiesEditable();
@@ -3173,6 +3176,7 @@ function F_VALIDATE(disabledHL) {
 		var state = address.$state;
 		var streetLen = street.length;
 		var alts = venue.$alts;
+		var lock = venue.$lock;
 
 		var exceptedCategories ='BRIDGE|ISLAND|FOREST_GROVE|SEA_LAKE_POOL|RIVER_STREAM|CANAL|DAM|TUNNEL|JUNCTION_INTERCHANGE'.split('|');
 
@@ -3182,6 +3186,84 @@ function F_VALIDATE(disabledHL) {
 			&& address.isOkFor(250))
 			venue.report(250);
 
+		// GROUP name.length
+		if (!venue.$name.length) {
+			if (venue.$categories[0] === "PARK" && !cityLen
+				&& isLimitOk(258)
+				&& address.isOkFor(258))
+				venue.report(258);
+		}
+		// GROUP name.length
+		// Check for last update by bots
+		var botNamesAndIDs = [
+			'^waze-maint', '^105774162$',
+			'^waze3rdparty$', '^361008095$',
+			'^WazeParking1$', '^338475699$',
+			'^admin$', '^-1$',
+			'^avsus$', '^107668852$'
+		];
+		var re = new RegExp(botNamesAndIDs.join('|'),'i');
+
+		if ((re.test(venue.$updatedByID.toString()) || re.test(venue.$updatedBy))
+			&& isLimitOk(251)
+			&& address.isOkFor(251))
+			venue.report(251);
+
+		// GROUP isParkingLot
+		if (venue.$rawObject.isParkingLot()){
+			var catAttr = venue.$categoryAttributes;
+			var parkAttr = catAttr ? catAttr.PARKING_LOT : undefined;
+			// missing parking lot type
+			if ((!parkAttr || !parkAttr.parkingType)
+				&& isLimitOk(252)
+				&& address.isOkFor(252))
+				venue.report(252);
+			// missing cost type
+			if ((!parkAttr || !parkAttr.costType || parkAttr.costType === 'UNKNOWN')
+				&& isLimitOk(253)
+				&& address.isOkFor(253))
+				venue.report(253);
+			// missing payment types
+			if ((parkAttr && parkAttr.costType && parkAttr.costType !== 'FREE'
+				&& parkAttr.costType !== 'UNKNOWN'
+				&& (!parkAttr.paymentType || !parkAttr.paymentType.length))
+				&& isLimitOk(254)
+				&& address.isOkFor(254))
+				venue.report(254);
+			//check elevation of the parking lot
+			if ((!parkAttr || !parkAttr.lotType || parkAttr.lotType.length === 0)
+				&& isLimitOk(255)
+				&& address.isOkFor(255))
+				venue.report(255)
+			if ((!venue.$entryExitPoints || !venue.$entryExitPoints.length)
+				&& isLimitOk(257)
+				&& address.isOkFor(257))
+				venue.report(257)
+		}// GROUP isParkingLot
+
+		// GROUP isGasStation
+		if (venue.$rawObject.isGasStation()) {
+			// check if brand in name
+			if (venue.$name.indexOf(venue.$brand) === -1
+				&& isLimitOk(259)
+				&& address.isOkFor(259))
+				venue.report(259);
+			//check lock level
+			options = getCheckOptions(260, countryCode);
+			if (options[CO_NUMBER] > lock
+				&& isLimitOk(260)
+				&& address.isOkFor(260))
+				segment.report(260);
+		}// GROUP isGasStation
+
+		if(venue.$entryExitPoints && venue.$entryExitPoints.length){
+			var stopPoint = venue.$entryExitPoints[0].getPoint();
+			var areaCenter = venue.$geometry.getCentroid();
+			if (stopPoint.equals(areaCenter)
+				&& isLimitOk(256)
+				&& address.isOkFor(256))
+				venue.report(256)
+		}
 	} // for all venues
 
 	// update severity if needed
