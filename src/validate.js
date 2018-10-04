@@ -33,11 +33,10 @@ function F_VALIDATE(disabledHL) {
 		beep(10);
 
 	var options;
-	var skippedSegment = false;
-	var skippedVenue = false;
+	var skippedObject = false;
 
 	if (disabledHL) {
-		updateSegmentProperties([], true);
+		updateObjectProperties([], true);
 		return;
 	}
 	if (LIMIT_TOTAL < _REP.$counterTotal && !isErrorFlag()) {
@@ -138,7 +137,7 @@ function F_VALIDATE(disabledHL) {
 	 * @constructor
 	 * @struct
 	 * @param {number} objID
-	 * @param {number} segID
+	 * @param {string} segID
 	 */
 	function SimpleNODE(objID, segID) {
 		// cached node
@@ -203,7 +202,7 @@ function F_VALIDATE(disabledHL) {
 					continue;
 				var _con = k.split(',');
 				var con0 = +_con[0];
-				if (segID === con0) {
+				if (+segID === con0) {
 					var con1 = +_con[1];
 					var cok = co[k];
 					for (var j = 0, l = cok.length; j < l; j++) {
@@ -218,7 +217,7 @@ function F_VALIDATE(disabledHL) {
 			for (var i = 0; i < n.attributes.segIDs.length; i++) {
 				var si = n.attributes.segIDs[i];
 				// TODO: workaround for hangs at new segment save / 20150105
-				if (segID === si || !WMo.segments.getObjectById(si))
+				if (+segID === +si || !WMo.segments.getObjectById(si))
 					continue;
 				this._rawOtherSegments.push(si);
 			}
@@ -232,15 +231,15 @@ function F_VALIDATE(disabledHL) {
 				var con0 = +_con[0];
 				var con1 = +_con[1];
 
-				if (segID === con0 && segID === con1) {
+				if (+segID === con0 && +segID === con1) {
 					this.$isUturn = true;
 					continue;
 				}
 				// out connection
-				if (segID === con0)
+				if (+segID === con0)
 					this._rawOutConnections.push(con1);
 				// in connection
-				if (segID === con1)
+				if (+segID === con1)
 					this._rawInConnections.push(con0);
 			}
 		}
@@ -306,30 +305,30 @@ function F_VALIDATE(disabledHL) {
 	}
 	/**
 	 * Get outward connection
-	 * *returns {SimpleSEGMENT}
+	 * *returns {SimpleOBJECT}
 	 */
 	SimpleNODE.prototype.getOutConnections = function () {
 		return this._outConnections ? this._outConnections :
 			this._outConnections = this._rawOutConnections.map(
-				function (e) { return new SimpleSEGMENT(e) });
+				function (e) { return new SimpleOBJECT(e, WMo.segments) });
 	}
 	/**
 	 * Get inward connection
-	 * *returns {SimpleSEGMENT}
+	 * *returns {SimpleOBJECT}
 	 */
 	SimpleNODE.prototype.getInConnections = function () {
 		return this._inConnections ? this._inConnections :
 			this._inConnections = this._rawInConnections.map(
-				function (e) { return new SimpleSEGMENT(e) });
+				function (e) { return new SimpleOBJECT(e, WMo.segments) });
 	}
 	/**
 	 * Get another segment
-	 * *returns {SimpleSEGMENT}
+	 * *returns {SimpleOBJECT}
 	 */
 	SimpleNODE.prototype.getOtherSegments = function () {
 		return this._otherSegments ? this._otherSegments :
 			this._otherSegments = this._rawOtherSegments.map(
-				function (e) { return new SimpleSEGMENT(e) });
+				function (e) { return new SimpleOBJECT(e, WMo.segments) });
 	}
 
 
@@ -343,7 +342,7 @@ function F_VALIDATE(disabledHL) {
 	function SimpleRESTRICTION(obj, segID) {
 		var timeFrame = obj.getTimeFrame();
 		// cached node
-		/** *type {SimpleSEGMENT} */
+		/** *type {SimpleOBJECT} */
 		this._to = null;
 		this.$to = null;
 		/** @type {number} */
@@ -391,23 +390,24 @@ function F_VALIDATE(disabledHL) {
 	}
 	/**
 	 * Get to segment
-	 * *returns {SimpleSEGMENT}
+	 * *returns {SimpleOBJECT}
 	 */
 	SimpleRESTRICTION.prototype.getTo = function () {
 		return this._to ? this._to :
-			this._to = new SimpleSEGMENT(this.$toID);
+			this._to = new SimpleOBJECT('' + this.$toID, WMo.segments);
 	};
 
 	/**
 	 * Simple representation of a segment constructor
 	 * @constructor
 	 * @struct
-	 * @param {number} objID
+	 * @param {string} objID
 	 */
-	function SimpleSEGMENT(objID) {
-		// cached segment
-		/** @type {Waze.SEGMENT} */
-		this.$rawSegment = null;
+	function SimpleOBJECT(objID, model) {
+		this.$model = model;
+		var raw = this.$model.getObjectById(objID);
+		// cached object
+		this.$rawObject = raw;
 		// cached node
 		/** *type {SimpleNODE} */
 		this._nodeA = null;
@@ -428,8 +428,12 @@ function F_VALIDATE(disabledHL) {
 		/** @type {Array.<SimpleRESTRICTION>} */
 		this.$restrictions = null;
 
-		/** @type {number} */
-		this.$segmentID = objID;
+		/** @type {string} */
+		this.$name = "";
+		/** @type {string} */
+		this.$brand = "";
+		/** @type {string} */
+		this.$objectID = objID;
 		/** *type {_WV.SimpleADDRESS} */
 		this.$address = null;
 		/** @type {boolean} */
@@ -444,6 +448,16 @@ function F_VALIDATE(disabledHL) {
 		this.$isEditable = false;
 		/** @type {boolean} */
 		this.$forceNonEditable = false;
+		/** @type {string} */
+		this.$mainCategory = "";
+		/** @type {Array} */
+		this.$categories = [];
+		/** @type {Array} */
+		this.$openingHours = [];
+		/** @type {Array} */
+		this.$services = [];
+		/** @type {Array} */
+		this.$externalProviders = [];
 		/** @type {number} */
 		this.$type = 0;
 		/** @type {number} */
@@ -489,40 +503,59 @@ function F_VALIDATE(disabledHL) {
 		/** @type {boolean} */
 		this.$revMaxSpeedUnverified = false;
 
-		var seg = WMo.segments.getObjectById(objID);
-		if (classCodeIs(seg, CC_UNDEFINED) || classCodeIs(seg, CC_NULL))
+		if (classCodeIs(raw, CC_UNDEFINED) || classCodeIs(raw, CC_NULL))
 			return;
 
-		var attrs = seg.attributes;
+		var attrs = raw.attributes;
+		// Set segment only properties
+		if (this.$model === WMo.segments) {
+			this.$nodeAID = attrs.fromNodeID;
+			this.$nodeBID = attrs.toNodeID;
+			this.$isRoutable = this.$rawObject.isRoutable();
+			this.$isTurnALocked = attrs.revTurnsLocked;
+			this.$isTurnBLocked = attrs.fwdTurnsLocked;
+			this.$isRoundabout = classCodeDefined(attrs.junctionID)
+				&& null !== attrs.junctionID;
+			this.$hasHNs = attrs.hasHNs;
+			this.$hasRestrictions = raw.hasRestrictions();
+			this.$restrictions = attrs.restrictions;
+			this.$type = attrs.roadType;
+			this.$typeRank = this.getTypeRank(attrs.roadType);
+			this.$direction = getDirection(raw);
+			this.$elevation = attrs.level;
+			if ("length" in attrs)
+				this.$length = attrs.length;
+			else
+				this.$length = Math.round(raw.geometry.getGeodesicLength(WM.projection));
+			// TODO: this.$isToll = raw.isTollRoad();
+			this.$restrictionsLen = attrs.restrictions.length;
+			// set speedlimits
+			this.$fwdMaxSpeed = getLocalizedValue(+attrs.fwdMaxSpeed);
+			this.$fwdMaxSpeedUnverified = attrs.fwdMaxSpeedUnverified;
+			this.$revMaxSpeed = getLocalizedValue(+attrs.revMaxSpeed);
+			this.$revMaxSpeedUnverified = attrs.revMaxSpeedUnverified;
+			this.$alts = attrs.streetIDs.map(function (objID) {
+				return new _WV.SimpleADDRESS(objID);
+			});
+			this.$address = new _WV.SimpleADDRESS(attrs.primaryStreetID);
+		} else {
+			// Set venue only properties
+			this.$name = attrs.name;
+			this.$brand = attrs.brand;
+			this.$isApproved = attrs.approved;
+			this.$mainCategory = raw.getMainCategory();
+			this.$categories = attrs.categories;
+			this.$openingHours = attrs.openingHours;
+			this.$services = attrs.services;
+			this.$externalProviders = attrs.externalProviderIDs;
+			this.$alts = attrs.aliases;
+			this.$address = new _WV.SimpleADDRESS(attrs.streetID);
+		}
 
-		this.$rawSegment = seg;
-		this.$nodeAID = attrs.fromNodeID;
-		this.$nodeBID = attrs.toNodeID;
+		this.$isEditable = raw.arePropertiesEditable();
 
-		this.$address = new _WV.SimpleADDRESS(attrs.primaryStreetID);
-
-		this.$isRoutable = this.$rawSegment.isRoutable();
-
-		this.$isTurnALocked = attrs.revTurnsLocked;
-		this.$isTurnBLocked = attrs.fwdTurnsLocked;
-		this.$isRoundabout = classCodeDefined(attrs.junctionID)
-			&& null !== attrs.junctionID;
-		this.$hasHNs = attrs.hasHNs;
-		this.$isEditable = seg.arePropertiesEditable();
-		this.$hasRestrictions = seg.hasRestrictions();
-		this.$restrictions = attrs.restrictions;
-		this.$type = attrs.roadType;
-		this.$typeRank = this.getTypeRank(attrs.roadType);
-
-		this.$direction = getDirection(seg);
-		// TODO: this.$isToll = seg.isTollRoad();
-		this.$elevation = attrs.level;
 		this.$lock = attrs.lockRank + 1;
 		this.$rank = attrs.rank + 1;
-		if ("length" in attrs)
-			this.$length = attrs.length;
-		else
-			this.$length = Math.round(seg.geometry.getGeodesicLength(WM.projection));
 
 		if (attrs.updatedOn)
 			this.$updatedOn = formatDate(attrs.updatedOn);
@@ -538,15 +571,6 @@ function F_VALIDATE(disabledHL) {
 			this.$createdBy = getUserName(attrs.createdBy);
 			this.$createdByLevel = getUserLevel(attrs.createdBy);
 		}
-		this.$alts = attrs.streetIDs.map(function (objID) {
-			return new _WV.SimpleADDRESS(objID);
-		});
-		this.$restrictionsLen = attrs.restrictions.length;
-		// set speedlimits
-		this.$fwdMaxSpeed = getLocalizedValue(+attrs.fwdMaxSpeed);
-		this.$fwdMaxSpeedUnverified = attrs.fwdMaxSpeedUnverified;
-		this.$revMaxSpeed = getLocalizedValue(+attrs.revMaxSpeed);
-		this.$revMaxSpeedUnverified = attrs.revMaxSpeedUnverified;
 
 		// mark some properties as readonly
 		Object.defineProperties(this, {
@@ -571,6 +595,7 @@ function F_VALIDATE(disabledHL) {
 			$isEditable: { writable: false },
 			$rank: { writable: false },
 			$length: { writable: false },
+			$mainCategory: { writable: false },
 			$updatedOn: { writable: false },
 			$updatedBy: { writable: false },
 			$updatedByID: { writable: false },
@@ -585,7 +610,7 @@ function F_VALIDATE(disabledHL) {
 	/**
 	 * Get road type rank
 	 */
-	SimpleSEGMENT.prototype.getTypeRank = function (typeID) {
+	SimpleOBJECT.prototype.getTypeRank = function (typeID) {
 		return {
 			// RT_RUNWAY = 19;
 			19: 1,
@@ -626,28 +651,27 @@ function F_VALIDATE(disabledHL) {
 	 * Get Node A
 	 * *returns {SimpleNODE}
 	 */
-	SimpleSEGMENT.prototype.getNodeA = function () {
+	SimpleOBJECT.prototype.getNodeA = function () {
 		return this._nodeA ? this._nodeA :
 			this._nodeA = new SimpleNODE(this.$nodeAID,
-				this.$segmentID)
+				this.$objectID)
 	};
 	/**
 	 * Get Node B
 	 * *returns {SimpleNODE}
 	 */
-	SimpleSEGMENT.prototype.getNodeB = function () {
+	SimpleOBJECT.prototype.getNodeB = function () {
 		return this._nodeB ? this._nodeB :
 			this._nodeB = new SimpleNODE(this.$nodeBID,
-				this.$segmentID)
+				this.$objectID)
 	};
 	/**
 	 * Get center
 	 * @returns {OpenLayers.LonLat}
 	 */
-	SimpleSEGMENT.prototype.getCenter = function () {
+	SimpleOBJECT.prototype.getCenter = function () {
 		if (this._center) return this._center;
-
-		this._center = this.$rawSegment.geometry.bounds.getCenterLonLat().clone()
+		this._center = this.$rawObject.geometry.bounds.getCenterLonLat().clone()
 			.transform(WM.projection, WM.displayProjection);
 		// round the lon/lat
 		this._center.lon = Math.round(this._center.lon * 1e5) / 1e5;
@@ -658,13 +682,13 @@ function F_VALIDATE(disabledHL) {
 	 * Get restrictions
 	 * *returns {SimpleRESTRICTION}
 	 */
-	SimpleSEGMENT.prototype.getRestrictions = function () {
+	SimpleOBJECT.prototype.getRestrictions = function () {
 		var t;
 		return this._restrictions ? this._restrictions :
-			this._restrictions =
-			(t = this, this.$rawSegment.attributes.restrictions.map(
+			this._restrictions = this.$model == WMo.venues? [] :
+			(t = this, this.$rawObject.attributes.restrictions.map(
 				function (e) {
-					return new SimpleRESTRICTION(e, t.$segmentID)
+					return new SimpleRESTRICTION(e, t.$objectID)
 				})
 			);
 	}
@@ -679,7 +703,7 @@ function F_VALIDATE(disabledHL) {
 	 *
 	 * @param {Object|number} params
 	 */
-	SimpleSEGMENT.prototype.report = function (params) {
+	SimpleOBJECT.prototype.report = function (params) {
 		if (classCodeIs(params, CC_NUMBER))
 			params = { $checkID: params };
 		var id = params.$checkID;
@@ -689,18 +713,20 @@ function F_VALIDATE(disabledHL) {
 
 		/**
 		 * Creates a copy of the segment for the report
-		 * @param {SimpleSEGMENT} ss
+		 * @param {SimpleOBJECT} ss
 		 */
-		function getSegmentCopy(ss) {
+		function getObjectCopy(ss) {
 			/** @struct */
 			return {
-				$segmentID: +ss.$segmentID,
+				$objectID: ss.$objectID,
+				$model: ss.$model,
+				$name: ss.$name,
 				$countryID: +ss.$address.$countryID,
 				$cityID: +ss.$address.$cityID,
 				$streetID: +ss.$address.$streetID,
 				$reportIDs: {},
-				$updated: ss.$updatedOn ? ss.$rawSegment.attributes.updatedOn
-					: (ss.$createdOn ? ss.$rawSegment.attributes.createdOn : 0),
+				$updated: ss.$updatedOn ? ss.$rawObject.attributes.updatedOn
+					: (ss.$createdOn ? ss.$rawObject.attributes.createdOn : 0),
 				$userID: ss.$updatedByID ? +ss.$updatedByID
 					: (ss.$createdByID ? +ss.$createdByID : 0),
 				$isEditable: ss.$isEditable
@@ -738,26 +764,24 @@ function F_VALIDATE(disabledHL) {
 			_repS[sid] = this.$address.$street;
 			rep.$streetIDs[sid] = {};
 			rep.$streetIDs[sid].$params = {};
-			rep.$streetIDs[sid].$segmentIDs = {};
-			rep.$streetIDs[sid].$unsortedSegmentIDs = [];
-			rep.$streetIDs[sid].$sortedSegmentIDs = [];
-			rep.$streetIDs[sid].$unsortedVenueIDs = [];
-			rep.$streetIDs[sid].$sortedVenueIDs = [];
+			rep.$streetIDs[sid].$objectIDs = {};
+			rep.$streetIDs[sid].$unsortedObjectIDs = [];
+			rep.$streetIDs[sid].$sortedObjectIDs = [];
 		}
 		rep = rep.$streetIDs[sid];
 		if (params.$streetParam)
 			rep.$params[id] = params.$streetParam;
 
 		// segment
-		if (!(this.$segmentID in rep.$segmentIDs)) {
+		if (!(this.$objectID in rep.$objectIDs)) {
 			// new segment
-			rep.$unsortedSegmentIDs.push(this.$segmentID);
-			rep.$segmentIDs[this.$segmentID] = getSegmentCopy(this);
+			rep.$unsortedObjectIDs.push(this.$objectID);
+			rep.$objectIDs[this.$objectID] = getObjectCopy(this);
 		}
-		var segmentCopy = rep.$segmentIDs[this.$segmentID];
+		var objectCopy = rep.$objectIDs[this.$objectID];
 
 		// add an user
-		var uid = segmentCopy.$userID;
+		var uid = objectCopy.$userID;
 		if (!(uid in _repU)) {
 			var n = "";
 
@@ -769,10 +793,10 @@ function F_VALIDATE(disabledHL) {
 		}
 
 		// force segment to be non-editable
-		var seenObj = _RT.$seen[this.$segmentID];
+		var seenObj = _RT.$seen[this.$objectID];
 		if (this.$forceNonEditable) {
 			this.$forceNonEditable = false;
-			segmentCopy.$isEditable = false;
+			objectCopy.$isEditable = false;
 			// force update max severity
 			if (_REP.$maxSeverity <= seenObj[I_SEVERITY]
 				|| _REP.$maxSeverity <= check.SEVERITY)
@@ -780,11 +804,11 @@ function F_VALIDATE(disabledHL) {
 		}
 
 		// mark segment as reported
-		segmentCopy.$reportIDs[id] = params.$param;
+		objectCopy.$reportIDs[id] = params.$param;
 
 		// update max severity
 		if (_REP.$maxSeverity < check.SEVERITY) {
-			if (checkFilter(check.SEVERITY, segmentCopy, null)
+			if (checkFilter(check.SEVERITY, objectCopy, null)
 				&& getFilteredSeverity(check.SEVERITY, id, true))
 				_REP.$maxSeverity = check.SEVERITY;
 		}
@@ -792,311 +816,12 @@ function F_VALIDATE(disabledHL) {
 		// mark raw segment as highlighted
 		if (!check.REPORTONLY && seenObj[I_SEVERITY] < check.SEVERITY)
 			seenObj[I_SEVERITY] = check.SEVERITY;
-		seenObj[I_SEGMENTCOPY] = segmentCopy;
+		seenObj[I_OBJECTCOPY] = objectCopy;
 	};
 	/**
 	 * Increase city counter
 	 */
-	SimpleSEGMENT.prototype.incCityCounter = function () {
-		// shortcuts
-		var rep = _REP.$cityIDs;
-		/** @const */
-		var cid = this.$address.$cityID;
-
-		// city
-		if (!(cid in rep)) {
-			// new city
-			_REP.$countries[this.$address.$countryID] = this.$address.$country;
-			_REP.$unsortedCityIDs.push(cid);
-
-			_repC[cid] = this.$address.$city;
-			_repCC[cid] = 0;
-			rep[cid] = {};
-			rep[cid].$params = {};
-			rep[cid].$streetIDs = {};
-			rep[cid].$unsortedStreetIDs = [];
-			rep[cid].$sortedStreetIDs = [];
-		}
-		// increase city counter
-		_repCC[cid]++;
-		// increase total counter
-		_REP.$counterTotal++;
-	};
-	// Venue
-	/**
-	 * Simple representation of a venue constructor
-	 * @constructor
-	 * @struct
-	 * @param {string} objID
-	 */
-	function SimpleVENUE(objID) {
-		// cached venue
-		/** @type {Waze.VENUE} */
-		this.$rawVenue = null;
-		// cached center
-		/** @type {OpenLayers.LonLat} */
-		this._center = null;
-		this.$center = null;
-		/** @type {string} */
-		this.$name = "";
-		/** @type {string} */
-		this.$brand = "";
-		/** @type {string} */
-		this.$venueID = objID;
-		/** *type {_WV.SimpleADDRESS} */
-		this.$address = null;
-		/** @type {boolean} */
-		this.$is2D = false;
-		/** @type {boolean} */
-		this.$isApproved = false;
-		/** @type {boolean} */
-		this.$isEditable = false;
-		/** @type {boolean} */
-		this.$forceNonEditable = false;
-		/** @type {string} */
-		this.$mainCategory = "";
-		/** @type {Array} */
-		this.$categories = [];
-		/** @type {Array} */
-		this.$openingHours = [];
-		/** @type {Array} */
-		this.$services = [];
-		/** @type {Array} */
-		this.$externalProviders = [];
-		/** @type {number} */
-		this.$lock = 0;
-		/** @type {number} */
-		this.$rank = 0;
-		/** @type {string} */
-		this.$updatedOn = "";
-		/** @type {string} */
-		this.$updatedBy = "";
-		/** @type {number} */
-		this.$updatedByID = 0;
-		/** @type {number} */
-		this.$updatedByLevel = 0;
-		/** @type {string} */
-		this.$createdOn = "";
-		/** @type {string} */
-		this.$createdBy = "";
-		/** @type {number} */
-		this.$createdByID = 0;
-		/** @type {number} */
-		this.$createdByLevel = 0;
-		/** @type {Array} */
-		this.$alts = [];
-
-		var ven = WMo.venues.getObjectById(objID);
-		if (classCodeIs(ven, CC_UNDEFINED) || classCodeIs(ven, CC_NULL))
-			return;
-
-		var attrs = ven.attributes;
-
-		this.$rawVenue = ven;
-
-		this.$id = ven.getID();
-
-		this.$address = new _WV.SimpleADDRESS(attrs.streetID);
-
-		this.$isEditable = ven.arePropertiesEditable();
-		// TODO: this.$isToll = seg.isTollRoad();
-		this.$lock = attrs.lockRank + 1;
-		this.$rank = attrs.rank + 1;
-		this.$name = attrs.name;
-		this.$brand = attrs.brand;
-		this.$isApproved = attrs.approved;
-
-		this.$mainCategory = ven.getMainCategory();
-
-		this.$categories = attrs.categories;
-		this.$openingHours = attrs.openingHours;
-		this.$services = attrs.services;
-		this.$externalProviders = attrs.externalProviderIDs;
-
-		if (attrs.updatedOn)
-			this.$updatedOn = formatDate(attrs.updatedOn);
-		if (0 < attrs.updatedBy) {
-			this.$updatedByID = attrs.updatedBy;
-			this.$updatedBy = getUserName(attrs.updatedBy);
-			this.$updatedByLevel = getUserLevel(attrs.updatedBy);
-		}
-		if (attrs.createdOn)
-			this.$createdOn = formatDate(attrs.createdOn);
-		if (attrs.createdBy) {
-			this.$createdByID = attrs.createdBy;
-			this.$createdBy = getUserName(attrs.createdBy);
-			this.$createdByLevel = getUserLevel(attrs.createdBy);
-		}
-		this.$alts = attrs.aliases;
-
-		// mark some properties as readonly
-		Object.defineProperties(this, {
-			$rawVenue: { enumerable: false },
-			_center: { enumerable: false },
-			$center: { get: this.getCenter },
-			$venueID: { writable: false },
-			$isEditable: { writable: false },
-			$rank: { writable: false },
-			$mainCategory: { writable: false },
-			$updatedOn: { writable: false },
-			$updatedBy: { writable: false },
-			$updatedByID: { writable: false },
-			$updatedByLevel: { writable: false },
-			$createdOn: { writable: false },
-			$createdBy: { writable: false },
-			$createdByID: { writable: false },
-			$createdByLevel: { writable: false },
-		});
-	}
-	/**
-	 * Get center
-	 * @returns {OpenLayers.LonLat}
-	 */
-	SimpleVENUE.prototype.getCenter = function () {
-		if (this._center) return this._center;
-
-		this._center = this.$rawVenue.geometry.bounds.getCenterLonLat().clone()
-			.transform(WM.projection, WM.displayProjection);
-		// round the lon/lat
-		this._center.lon = Math.round(this._center.lon * 1e5) / 1e5;
-		this._center.lat = Math.round(this._center.lat * 1e5) / 1e5;
-		return this._center;
-	};
-	/**
-	 * Report a venue
-	 *
-	 * params is an object or just a check ID:
-	 * params.$checkID - check ID
-	 * params.$param - optional check param
-	 * params.$cityParam - optional report city parameter
-	 * params.$streetParam - optional report street parameter
-	 *
-	 * @param {Object|number} params
-	 */
-	SimpleVENUE.prototype.report = function (params) {
-		if (classCodeIs(params, CC_NUMBER))
-			params = { $checkID: params };
-		var id = params.$checkID;
-		if (!id
-			|| !isLimitOk(id))
-			return;
-
-		/**
-		 * Creates a copy of the venue for the report
-		 * @param {SimpleVENUE} ss
-		 */
-		function getVenueCopy(ss) {
-			/** @struct */
-			return {
-				$venueID: ss.$venueID,
-				$name: ss.$name,
-				$countryID: +ss.$address.$countryID,
-				$cityID: +ss.$address.$cityID,
-				$streetID: +ss.$address.$streetID,
-				$reportIDs: {},
-				$updated: ss.$updatedOn ? ss.$rawVenue.attributes.updatedOn
-					: (ss.$createdOn ? ss.$rawVenue.attributes.createdOn : 0),
-				$userID: ss.$updatedByID ? +ss.$updatedByID
-					: (ss.$createdByID ? +ss.$createdByID : 0),
-				$isEditable: ss.$isEditable,
-				$center: ss.$center,
-			};
-		}
-
-		// shortcuts
-		var rep = _REP.$cityIDs[this.$address.$cityID];
-		if (!rep)
-			return;
-		var check = _RT.$checks[id];
-
-		// increase report counters
-		if (_repRC[id]) _repRC[id]++;
-		else _repRC[id] = 1;
-		if (LIMIT_PERCHECK < _repRC[id]) {
-			_REP.$isLimitPerCheck = true;
-			return;
-		}
-
-		// city
-		if (params.$cityParam)
-			rep.$params[id] = params.$cityParam;
-
-		// check rep.$streetIDs
-		if (!rep.$streetIDs)
-			rep.$streetIDs = {};
-
-		// street
-		/** @const */
-		var sid = this.$address.$streetID;
-		if (!(sid in rep.$streetIDs)) {
-			// new street
-			rep.$unsortedStreetIDs.push(sid)
-			_repS[sid] = this.$address.$street;
-			rep.$streetIDs[sid] = {};
-			rep.$streetIDs[sid].$params = {};
-			rep.$streetIDs[sid].$venueIDs = {};
-			rep.$streetIDs[sid].$unsortedVenueIDs = [];
-			rep.$streetIDs[sid].$sortedVenueIDs = [];
-			rep.$streetIDs[sid].$unsortedSegmentIDs = [];
-			rep.$streetIDs[sid].$sortedSegmentIDs = [];
-		}
-		rep = rep.$streetIDs[sid];
-		if (params.$streetParam)
-			rep.$params[id] = params.$streetParam;
-
-		if (!rep.$venueIDs)
-			rep.$venueIDs = {};
-
-		// segment
-		if (!(this.$venueID in rep.$venueIDs)) {
-			// new segment
-			rep.$unsortedVenueIDs.push(this.$venueID);
-			rep.$venueIDs[this.$venueID] = getVenueCopy(this);
-		}
-		var venueCopy = rep.$venueIDs[this.$venueID];
-
-		// add an user
-		var uid = venueCopy.$userID;
-		if (!(uid in _repU)) {
-			var n = "";
-
-			if (uid === this.$createdByID)
-				n = this.$createdBy;
-			else if (uid === this.$updatedByID)
-				n = this.$updatedBy;
-			_repU[uid] = n;
-		}
-
-		// force segment to be non-editable
-		var seenObj = _RT.$seenVenues[this.$venueID];
-		if (this.$forceNonEditable) {
-			this.$forceNonEditable = false;
-			venueCopy.$isEditable = false;
-			// force update max severity
-			if (_REP.$maxSeverity <= seenObj[I_SEVERITY]
-				|| _REP.$maxSeverity <= check.SEVERITY)
-				bUpdateMaxSeverity = true;
-		}
-
-		// mark segment as reported
-		venueCopy.$reportIDs[id] = params.$param;
-
-		// update max severity
-		if (_REP.$maxSeverity < check.SEVERITY) {
-			if (checkFilter(check.SEVERITY, venueCopy, null)
-				&& getFilteredSeverity(check.SEVERITY, id, true))
-				_REP.$maxSeverity = check.SEVERITY;
-		}
-
-		// mark raw segment as highlighted
-		if (!check.REPORTONLY && seenObj[I_SEVERITY] < check.SEVERITY)
-			seenObj[I_SEVERITY] = check.SEVERITY;
-		seenObj[I_VENUECOPY] = venueCopy;
-	};
-	/**
-	 * Increase city counter
-	 */
-	SimpleVENUE.prototype.incCityCounter = function () {
+	SimpleOBJECT.prototype.incCityCounter = function () {
 		// shortcuts
 		var rep = _REP.$cityIDs;
 		/** @const */
@@ -1130,7 +855,7 @@ function F_VALIDATE(disabledHL) {
 		for (var sid in repS) {
 			if (!repS.hasOwnProperty(sid)) continue;
 
-			var repSG = repS[sid].$segmentIDs;
+			var repSG = repS[sid].$objectIDs;
 			for (var sgid in repSG) {
 				if (!repSG.hasOwnProperty(sgid)) continue;
 
@@ -1164,7 +889,7 @@ function F_VALIDATE(disabledHL) {
 				}
 				seen[I_SEVERITY] = maxSev;
 				// rehighlight segment
-				reHLSegmentID(+sgid, filSev);
+				reHLObjectID(+sgid, filSev);
 			} // for all segments
 		} // for all streets
 	}
@@ -1352,9 +1077,9 @@ function F_VALIDATE(disabledHL) {
 	} // setCmpObjLimits
 
 	/**
-	 * Add HLed Segments to the Layer
+	 * Add HLed Objects to the Layer
 	 */
-	function addHLedSegments() {
+	function addHLedObjects() {
 		if (RTStateIs(ST_RUN) || RTStateIs(ST_CONTINUE))
 			return;
 
@@ -1373,44 +1098,24 @@ function F_VALIDATE(disabledHL) {
 	}
 
 	/**
-	 * Add HLed Venue to the Layer
-	 */
-	function addHLedVenues() {
-		if (RTStateIs(ST_RUN) || RTStateIs(ST_CONTINUE))
-			return;
-
-		var features = [];
-		for (var i in _RT.$HLedVenues) {
-			if (!_RT.$HLedVenues.hasOwnProperty(i)) continue;
-			var obj = _RT.$HLedVenues[i];
-
-			if (obj.$severity)
-				features.push(new OpenLayers.Feature.Vector(
-					obj.$geometry.clone(), { 0: obj.$severity }
-				));
-		}
-		_RT.$HLlayer.addFeatures(features);
-	}
-
-	/**
 	 * Highlight reported segments
 	 */
-	function HLSegment(rawSegment) {
+	function HLObject(rawObject) {
 		if (RTStateIs(ST_RUN) || RTStateIs(ST_CONTINUE))
 			return;
 
-		var segmentID = rawSegment.getID();
-		var seenObj = _RT.$seen[segmentID];
+		var objectID = rawObject.getID();
+		var seenObj = _RT.$seen[objectID];
 		var severity = seenObj[I_SEVERITY];
-		var segmentCopy = seenObj[I_SEGMENTCOPY];
+		var objectCopy = seenObj[I_OBJECTCOPY];
 
 		// check filter
-		if (!severity || !segmentCopy
-			|| !checkFilter(severity, segmentCopy, null))
+		if (!severity || !objectCopy
+			|| !checkFilter(severity, objectCopy, null))
 			return;
 
 		var filteredSeverity = getFilteredSeverityObj(severity,
-			segmentCopy.$reportIDs, true);
+			objectCopy.$reportIDs, true);
 		if (!filteredSeverity)
 			return;
 
@@ -1418,45 +1123,15 @@ function F_VALIDATE(disabledHL) {
 		/** @struct */
 		var obj = {
 			$severity: filteredSeverity,
-			$geometry: rawSegment.geometry,
+			$geometry: rawObject.geometry,
 		};
-		_RT.$HLedObjects[segmentID] = obj;
-	}
-
-	/**
-	 * Highlight reported venues
-	 */
-	function HLVenue(rawVenue) {
-		if (RTStateIs(ST_RUN) || RTStateIs(ST_CONTINUE))
-			return;
-		var venueID = rawVenue.getID();
-		var seenObj = _RT.$seenVenues[venueID];
-		var severity = seenObj[I_SEVERITY];
-		var venueCopy = seenObj[I_VENUECOPY];
-
-		// check filter
-		if (!severity || !venueCopy
-			|| !checkFilterVenue(severity, venueCopy, null))
-			return;
-
-		var filteredSeverity = getFilteredSeverityObj(severity,
-			venueCopy.$reportIDs, true);
-		if (!filteredSeverity)
-			return;
-
-		// add HL object
-		/** @struct */
-		var obj = {
-			$severity: filteredSeverity,
-			$geometry: rawVenue.geometry,
-		};
-		_RT.$HLedVenues[venueID] = obj;
+		_RT.$HLedObjects[objectID] = obj;
 	}
 
 	/**
 	 * Rehighlight reported segments
 	 */
-	function reHLSegmentID(segmentID, newSeverity) {
+	function reHLObjectID(objectID, newSeverity) {
 		if (RTStateIs(ST_RUN) || RTStateIs(ST_CONTINUE))
 			return;
 
@@ -1468,28 +1143,8 @@ function F_VALIDATE(disabledHL) {
 		if (oExcludeNotes && RS_NOTE === newSeverity)
 			newSeverity = 0;
 
-		if (segmentID in _RT.$HLedObjects) {
-			var hlObj = _RT.$HLedObjects[segmentID];
-			hlObj.$severity = newSeverity;
-		}
-	}
-	/**
-	 * Rehighlight reported venues
-	 */
-	function reHLVenueID(venueID, newSeverity) {
-		if (RTStateIs(ST_RUN) || RTStateIs(ST_CONTINUE))
-			return;
-
-		// force update max severity
-		if (_REP.$maxSeverity !== newSeverity)
-			bUpdateMaxSeverity = true;
-
-		// check for exclude notes option
-		if (oExcludeNotes && RS_NOTE === newSeverity)
-			newSeverity = 0;
-
-		if (venueID in _RT.$HLedVenues) {
-			var hlObj = _RT.$HLedVenues[venueID];
+		if (objectID in _RT.$HLedObjects) {
+			var hlObj = _RT.$HLedObjects[objectID];
 			hlObj.$severity = newSeverity;
 		}
 	}
@@ -1498,23 +1153,23 @@ function F_VALIDATE(disabledHL) {
 	 * Delete seen segment
 	 * _REP->$cityIDs->streetIDs->$segmentIDs->$reportIDs
 	 */
-	function deleteSeenSegment(segmentID) {
+	function deleteSeenObject(objectID) {
 		// set no severity
-		reHLSegmentID(segmentID, 0);
+		reHLObjectID(objectID, 0);
 		var seen = null;
-		if (segmentID in _RT.$seen)
-			seen = _RT.$seen[segmentID];
+		if (objectID in _RT.$seen)
+			seen = _RT.$seen[objectID];
 		if (!seen)
 			return;
 
 		// force update max severity
-		// use <= because it might be the last segment
+		// use <= because it might be the last object
 		if (_REP.$maxSeverity <= seen[I_SEVERITY])
 			bUpdateMaxSeverity = true;
 
-		var segmentCopy = seen[I_SEGMENTCOPY];
+		var objectCopy = seen[I_OBJECTCOPY];
 		var cityID = seen[I_CITYID];
-		delete _RT.$seen[segmentID];
+		delete _RT.$seen[objectID];
 
 		// uncount total counter
 		if (0 < _REP.$counterTotal)
@@ -1522,7 +1177,7 @@ function F_VALIDATE(disabledHL) {
 		// uncount city counter
 		if (0 < _repCC[cityID])
 			_repCC[cityID]--;
-		if (!segmentCopy)
+		if (!objectCopy)
 			return;
 
 		var repC = _REP.$cityIDs;
@@ -1533,10 +1188,10 @@ function F_VALIDATE(disabledHL) {
 			for (var sid in repS) {
 				if (!repS.hasOwnProperty(sid)) continue;
 
-				var repSG = repS[sid].$segmentIDs;
+				var repSG = repS[sid].$objectIDs;
 				for (var sgid in repSG) {
 					if (!repSG.hasOwnProperty(sgid)
-						|| +sgid !== segmentID)
+						|| sgid !== objectID)
 						continue;
 
 					/** @const */
@@ -1551,99 +1206,25 @@ function F_VALIDATE(disabledHL) {
 							_repRC[repID]--;
 					}
 
-					// delete reported segment
+					// delete reported object
 					delete repSG[sgid];
 
-					// delete the segment from unsorted array
-					var repUSG = repS[sid].$unsortedSegmentIDs;
-					repUSG.splice(repUSG.indexOf(+sgid), 1);
+					// delete the object from unsorted array
+					var repUSG = repS[sid].$unsortedObjectIDs;
+					repUSG.splice(repUSG.indexOf(sgid), 1);
 
 					// clear sorted array
-					repS[sid].$sortedSegmentIDs = [];
+					repS[sid].$sortedObjectIDs = [];
 
 					return;
-				} // for all segments
+				} // for all objects
 			} // for all streets
 		} // for all cities
 	}
-
 	/**
-	 * Delete seen segment
-	 * _REP->$cityIDs->streetIDs->$segmentIDs->$reportIDs
+	 * Update object properties
 	 */
-	function deleteSeenVenue(venueID) {
-		// set no severity
-		reHLVenueID(venueID, 0);
-		var seen = null;
-		if (venueID in _RT.$seenVenues)
-			seen = _RT.$seenVenues[venueID];
-		if (!seen)
-			return;
-
-		// force update max severity
-		// use <= because it might be the last venue
-		if (_REP.$maxSeverity <= seen[I_SEVERITY])
-			bUpdateMaxSeverity = true;
-
-		var venueCopy = seen[I_VENUECOPY];
-		var cityID = seen[I_CITYID];
-		delete _RT.$seen[venueID];
-
-		// uncount total counter
-		if (0 < _REP.$counterTotal)
-			_REP.$counterTotal--;
-		// uncount city counter
-		if (0 < _repCC[cityID])
-			_repCC[cityID]--;
-		if (!venueCopy)
-			return;
-
-		var repC = _REP.$cityIDs;
-		for (var cid in repC) {
-			if (!repC.hasOwnProperty(cid)) continue;
-
-			var repS = repC[cid].$streetIDs
-			for (var sid in repS) {
-				if (!repS.hasOwnProperty(sid)) continue;
-
-				var repSG = repS[sid].$venueIDs;
-				for (var sgid in repSG) {
-					if (!repSG.hasOwnProperty(sgid)
-						|| +sgid !== venueID)
-						continue;
-
-					/** @const */
-					var reportIDs = repSG[sgid].$reportIDs;
-
-					// uncount report counters
-					/** @const */
-					for (var repID in reportIDs) {
-						if (!reportIDs.hasOwnProperty(repID)) continue;
-
-						if (0 < _repRC[repID])
-							_repRC[repID]--;
-					}
-
-					// delete reported venue
-					delete repSG[sgid];
-
-					// delete the venue from unsorted array
-					var repUSG = repS[sid].$unsortedVenueIDs;
-					repUSG.splice(repUSG.indexOf(+sgid), 1);
-
-					// clear sorted array
-					repS[sid].$sortedVenueIDs = [];
-
-					return;
-				} // for all venues
-			} // for all streets
-		} // for all cities
-	}
-
-	/**
-	 * Update segment properties
-	 */
-	function updateSegmentProperties(selectedSegments, disabledHL) {
+	function updateObjectProperties(selectedObjects, disabledHL) {
 		if (RTStateIs(ST_RUN) || RTStateIs(ST_CONTINUE))
 			return;
 
@@ -1676,52 +1257,45 @@ function F_VALIDATE(disabledHL) {
 		if (prop)
 			prop.innerHTML = defHTML;
 		else {
-			var segmentProperties = document.getElementsByClassName("segment")[0];
-			if (segmentProperties) {
-				var refElement = null;
-				for (var i = 0; i < segmentProperties.children.length; i++) {
-					var c = segmentProperties.children[i];
-					if ("selection-text" === c.className)
-						continue;
+			var objectProperties = document.getElementsByClassName("selection-icon")[0];
+			if (!objectProperties)
+				objectProperties = document.getElementsByClassName("landmark")[0];
 
-					refElement = c;
-					break;
-				}
-				if (refElement) {
-					var d = document.createElement("div");
-					d.innerHTML = defHTML;
-					d.id = "i" + defID;
-					prop = segmentProperties.insertBefore(d, refElement);
-				}
-			} // if segmentProperties
+			if (objectProperties) {
+				var d = document.createElement("div");
+				d.innerHTML = defHTML;
+				d.id = "i" + defID;
+				d.style.cssText = "text-transform: none; padding: 5px;"
+				prop = objectProperties.appendChild(d)
+			} // if objectProperties
 		} // if prop
 
 		if (disabledHL)
 			return;
 
-		// check if there are any segment selected
-		if (!selectedSegments.length)
+		// check if there are any object selected
+		if (!selectedObjects.length)
 			return;
 
 		// find selected issues
 		var selectedIssues = [];
-		for (var i = 0; i < selectedSegments.length; i++) {
-			var segmentID = selectedSegments[i];
-			if (segmentID in _RT.$seen) {
-				var segmentCopy = _RT.$seen[segmentID][I_SEGMENTCOPY];
-				if (!segmentCopy) continue;
-				// segment is selected and highlighted
-				for (var cid in segmentCopy.$reportIDs) {
-					if (segmentCopy.$reportIDs.hasOwnProperty(cid)) {
+		for (var i = 0; i < selectedObjects.length; i++) {
+			var objectID = selectedObjects[i];
+			if (objectID in _RT.$seen) {
+				var objectCopy = _RT.$seen[objectID][I_OBJECTCOPY];
+				if (!objectCopy) continue;
+				// object is selected and highlighted
+				for (var cid in objectCopy.$reportIDs) {
+					if (objectCopy.$reportIDs.hasOwnProperty(cid)) {
 						var check = _RT.$checks[cid];
 						if (check.REPORTONLY)
 							continue;
 
-						selectedIssues.push([check, segmentCopy, cid]);
+						selectedIssues.push([check, objectCopy, cid]);
 					}
 				}
 			}
-		} // for all selected segments
+		} // for all selected objects
 
 		var newProp = '<b style="display:block"><a target="_blank" href="' + PFX_FORUM + FORUM_HOME + '">WME Validator</a> ' + trS("props.reports") + ':</b>'
 			;
@@ -1744,7 +1318,7 @@ function F_VALIDATE(disabledHL) {
 		} // limit per check
 
 		// exceptions note
-		if (skippedSegment) {
+		if (skippedObject) {
 			newProp += '<div class="c' + CL_RIGHTTIP + ' c' + CL_NOTE + '">'
 				+ '<span><i class="fa fa-info-circle" aria-hidden="true"></i>'
 				+ ' <a class="c' + CL_NOTE + '" href="#">'
@@ -1762,7 +1336,7 @@ function F_VALIDATE(disabledHL) {
 
 		if (!selectedIssues.length) {
 			// update properties
-			if (prop && (_REP.$isLimitPerCheck || skippedSegment))
+			if (prop && (_REP.$isLimitPerCheck || skippedObject))
 				prop.innerHTML = newProp;
 			return;
 		}
@@ -1785,13 +1359,13 @@ function F_VALIDATE(disabledHL) {
 		// create a list of issues
 		selectedIssues.forEach(function (e) {
 			var check = e[0];
-			var segmentCopy = e[1];
+			var objectCopy = e[1];
 			var checkID = e[2];
 			var checkCounter = selectedCounters[checkID];
 			var sevClass = 0;
 			var sevIcon = "";
 			var sevBG = "";
-			var strCountry = _REP.$countries[segmentCopy.$countryID];
+			var strCountry = _REP.$countries[objectCopy.$countryID];
 			var ccode = "";
 
 			if (strCountry)
@@ -1859,7 +1433,7 @@ function F_VALIDATE(disabledHL) {
 			newProp += '</div>';
 
 			// show howto
-			if (segmentCopy.$isEditable) {
+			if (objectCopy.$isEditable) {
 				newProp += '<i class="fa fa-check-square-o fa-pull-left fa-lg" style="color:black;margin-top:0.8em" aria-hidden="true"></i>'
 					+ '<div class="c' + CL_RIGHTTIPDESCR + '">'
 					;
@@ -1889,11 +1463,11 @@ function F_VALIDATE(disabledHL) {
 			}
 
 			// show params
-			var cityID = segmentCopy.$cityID;
+			var cityID = objectCopy.$cityID;
 			var cityParam = _REP.$cityIDs[cityID].$params[checkID];
 			if (cityParam)
 				newProp += '<p>' + cityParam + '</p>';
-			var streetID = segmentCopy.$streetID;
+			var streetID = objectCopy.$streetID;
 			var streetParam = _REP.$cityIDs[cityID]
 				.$streetIDs[streetID].$params[checkID];
 
@@ -1907,281 +1481,12 @@ function F_VALIDATE(disabledHL) {
 		// update properties
 		if (prop)
 			prop.innerHTML = newProp;
-	} // updateSegmentProperties
-
-	/**
-	 * Update venue properties
-	 */
-	function updateVenueProperties(selectedVenues, disabledHL) {
-		if (RTStateIs(ST_RUN) || RTStateIs(ST_CONTINUE))
-			return;
-
-		// remove WV properties
-		var prop = document.getElementById("i" + ID_PROPERTY)
-		var propDis = document.getElementById("i" + ID_PROPERTY_DISABLED)
-
-		var defID = ID_PROPERTY;
-		var defHTML = '';
-		if (disabledHL) {
-			defID = ID_PROPERTY_DISABLED;
-			defHTML = '<div class="direction-message">'
-				+ '<i class="fa fa-info-circle" aria-hidden="true"></i> '
-				+ trS("props.disabled")
-				+ '</div> '
-				;
-			// remove prop
-			if (prop) {
-				prop.parentNode.removeChild(prop);
-			}
-			prop = propDis;
-		}
-		else {
-			// remove propDis
-			if (propDis) {
-				propDis.parentNode.removeChild(propDis);
-			}
-		}
-
-		if (prop)
-			prop.innerHTML = defHTML;
-		else {
-			var venueProperties = document.getElementsByClassName("landmark")[0];
-			if (venueProperties) {
-				var refElement = null;
-				for (var i = 0; i < venueProperties.children.length; i++) {
-					var c = venueProperties.children[i];
-					if ("selection-text" === c.className)
-						continue;
-
-					refElement = c;
-					break;
-				}
-				if (refElement) {
-					var d = document.createElement("div");
-					d.innerHTML = defHTML;
-					d.id = "i" + defID;
-					prop = venueProperties.insertBefore(d, refElement);
-				}
-			} // if venueProperties
-		} // if prop
-
-		if (disabledHL)
-			return;
-
-		// check if there are any venue selected
-		if (!selectedVenues.length)
-			return;
-
-		// find selected issues
-		var selectedIssues = [];
-		for (var i = 0; i < selectedVenues.length; i++) {
-			var venueID = selectedVenues[i];
-			if (venueID in _RT.$seenVenues) {
-				var venueCopy = _RT.$seenVenues[venueID][I_VENUECOPY];
-				if (!venueCopy) continue;
-				// venue is selected and highlighted
-				for (var cid in venueCopy.$reportIDs) {
-					if (venueCopy.$reportIDs.hasOwnProperty(cid)) {
-						var check = _RT.$checks[cid];
-						if (check.REPORTONLY)
-							continue;
-
-						selectedIssues.push([check, venueCopy, cid]);
-					}
-				}
-			}
-		} // for all selected venues
-
-		var newProp = '<b style="display:block"><a target="_blank" href="' + PFX_FORUM + FORUM_HOME + '">WME Validator</a> ' + trS("props.reports") + ':</b>'
-			;
-		if (_REP.$isLimitPerCheck) {
-			newProp += '<div class="c' + CL_RIGHTTIP + ' c' + CL_NOTE + '">'
-				+ '<span><i class="fa fa-info-circle" aria-hidden="true"></i>'
-				+ ' <a class="c' + CL_NOTE + '" href="#">'
-				+ trS("props.limit.title")
-				+ '</a></span>'
-				+ '<div class="c' + CL_RIGHTTIPPOPUP + '">'
-				+ '<i class="fa fa-times-circle fa-lg fa-pull-left" style="margin-top:0.3em" aria-hidden="true"></i>'
-				+ '<div class="c' + CL_RIGHTTIPDESCR + '">'
-				+ trS("props.limit.problem")
-				+ '.</div>'
-				+ '<i class="fa fa-check-square-o fa-lg fa-pull-left" style="color:black;margin-top:0.8em" aria-hidden="true"></i>'
-				+ '<div class="c' + CL_RIGHTTIPDESCR + '">'
-				+ '<p>' + trS("props.limit.solution") + '.</p>'
-				+ '</div></div><br></div>'
-				;
-		} // limit per check
-
-		// exceptions note
-		if (skippedVenue) {
-			newProp += '<div class="c' + CL_RIGHTTIP + ' c' + CL_NOTE + '">'
-				+ '<span><i class="fa fa-info-circle" aria-hidden="true"></i>'
-				+ ' <a class="c' + CL_NOTE + '" href="#">'
-				+ trS("props.skipped.title")
-				+ '</a></span>'
-				+ '<div class="c' + CL_RIGHTTIPPOPUP + '">'
-				+ '<i class="fa fa-times-circle fa-lg fa-pull-left" style="margin-top:0.3em" aria-hidden="true"></i>'
-				+ '<div class="c' + CL_RIGHTTIPDESCR + '">'
-				+ trS("props.skipped.problem")
-				+ '.</div>'
-				+ '</div><br></div>'
-				;
-		}
-
-
-		if (!selectedIssues.length) {
-			// update properties
-			if (prop && (_REP.$isLimitPerCheck || skippedVenue))
-				prop.innerHTML = newProp;
-			return;
-		}
-
-		// sort the issues
-		selectedIssues.sort(function (a, b) { return cmpCheckIDs(a[2], b[2]) });
-
-		// only unique issues
-		var selectedCounters = {};
-		selectedIssues = selectedIssues.filter(function (e, i, arr) {
-			var checkID = e[2];
-			// skip first element
-			if (i && arr[i - 1][2] === checkID) {
-				selectedCounters[checkID]++;
-				return false;
-			}
-			selectedCounters[checkID] = 1;
-			return true;
-		});
-		// create a list of issues
-		selectedIssues.forEach(function (e) {
-			var check = e[0];
-			var venueCopy = e[1];
-			var checkID = e[2];
-			var checkCounter = selectedCounters[checkID];
-			var sevClass = 0;
-			var sevIcon = "";
-			var sevBG = "";
-			var strCountry = _REP.$countries[venueCopy.$countryID];
-			var ccode = "";
-
-			if (strCountry)
-				ccode = _I18n.getCountryCode(strCountry.toUpperCase());
-			else {
-				// try top country
-				ccode = _RT.$cachedTopCCode;
-			}
-			options = trO(check.OPTIONS, ccode);
-
-			switch (check.SEVERITY) {
-				case RS_NOTE:
-					sevClass = CL_NOTE;
-					sevIcon = "info-circle";
-					sevBG = GL_NOTEBGCOLOR;
-					break;
-				case RS_WARNING:
-					sevClass = CL_WARNING;
-					sevIcon = "exclamation-triangle";
-					sevBG = GL_WARNINGBGCOLOR;
-					break;
-				case RS_ERROR:
-					sevClass = CL_ERROR;
-					sevIcon = "times-circle";
-					sevBG = GL_ERRORBGCOLOR;
-					break;
-				case RS_CUSTOM1:
-					sevClass = CL_CUSTOM1;
-					sevIcon = "user";
-					sevBG = GL_CUSTOM1BGCOLOR;
-					break;
-				case RS_CUSTOM2:
-					sevClass = CL_CUSTOM2;
-					sevIcon = "user";
-					sevBG = GL_CUSTOM2BGCOLOR;
-					break;
-			}
-			var shortTitle = exSOS(check.TITLE, options, "titleEN")
-				.replace("WME Color Highlights", "WMECH")
-				.replace("WME Toolbox", "WMETB");
-			newProp += '<div class="c' + CL_RIGHTTIP + ' c' + sevClass + '">'
-				+ '<span><i class="fa fa-' + sevIcon + '" aria-hidden="true"></i>'
-				+ ' <a class="c' + sevClass + '" href="#">'
-				+ shortTitle
-				+ (1 < checkCounter ? ' (' + checkCounter + ')' : '')
-				+ '</a></span>'
-				+ '<div class="c' + CL_RIGHTTIPPOPUP + '">'
-				+ '<i class="fa fa-' + sevIcon + ' fa-lg fa-pull-left" style="margin-top:0.3em" aria-hidden="true"></i>'
-				+ '<div class="c' + CL_RIGHTTIPDESCR + '">'
-				+ '#' + checkID + ' '
-				+ exSOS(check.PROBLEM, options, "problemEN")
-				;
-			var pl = trO(check.PROBLEMLINK, ccode);
-			if (pl) {
-				newProp += ': <a target="_blank" href="'
-					+ pl
-					+ '">'
-					+ trO(check.PROBLEMLINKTEXT, ccode)
-					+ '</a>'
-					;
-			}
-			else
-				newProp += '.';
-
-			newProp += '</div>';
-
-			// show howto
-			if (venueCopy.$isEditable) {
-				newProp += '<i class="fa fa-check-square-o fa-pull-left fa-lg" style="color:black;margin-top:0.8em" aria-hidden="true"></i>'
-					+ '<div class="c' + CL_RIGHTTIPDESCR + '">'
-					;
-				if (check.SOLUTION) {
-					newProp += '<p>' + exSOS(check.SOLUTION, options, "solutionEN");
-
-					var sl = trO(check.SOLUTIONLINK, ccode);
-					if (sl) {
-						newProp += ': <a target="_blank" href="'
-							+ sl
-							+ '">'
-							+ trO(check.SOLUTIONLINKTEXT, ccode)
-							+ '</a>'
-							;
-					}
-					else
-						newProp += '.';
-
-					newProp += '</p>';
-				}
-			}
-			else {
-				newProp += '<i class="fa fa-ban fa-pull-left fa-lg" style="color:black;margin-top:0.8em" aria-hidden="true"></i>'
-					+ '<div class="c' + CL_RIGHTTIPDESCR + '">'
-					+ '<p>' + trS("props.noneditable") + '.</p>';
-				;
-			}
-
-			// show params
-			var cityID = venueCopy.$cityID;
-			var cityParam = _REP.$cityIDs[cityID].$params[checkID];
-			if (cityParam)
-				newProp += '<p>' + cityParam + '</p>';
-			var streetID = venueCopy.$streetID;
-			var streetParam = _REP.$cityIDs[cityID]
-				.$streetIDs[streetID].$params[checkID];
-
-			if (streetParam)
-				newProp += '<p>' + streetParam + '</p>';
-
-			newProp += '</div></div><br></div>'
-				;
-		}); // forEach
-
-		// update properties
-		if (prop)
-			prop.innerHTML = newProp;
-	} // updateVenueProperties
+	} // updateObjectProperties
 
 	/**
 	 * Match regular expression
 	 */
-	function matchRegExp(checkID, segmentID, expandedString, options) {
+	function matchRegExp(checkID, objectID, expandedString, options) {
 		var optRegExp = options[CO_REGEXP];
 		if (!optRegExp) return false;
 		var optString = options[CO_STRING];
@@ -2196,7 +1501,7 @@ function F_VALIDATE(disabledHL) {
 				(optBool ? false : true)
 				: (optBool ? true : false));
 			_REP.$debugCounter--;
-			log(getMsg("debug log for segment " + segmentID + ", check #" + checkID,
+			log(getMsg("debug log for segment " + objectID + ", check #" + checkID,
 				'\n1. '
 				+ (optString ?
 					'Expand template: ' + optString + ' -> '
@@ -2239,7 +1544,7 @@ function F_VALIDATE(disabledHL) {
 		&& 3 < currentZoom;
 	var oExcludeNotes = _UI.pMain.pFilter.oExcludeNotes.CHECKED;
 
-	var selectedSegments = [];
+	var selectedObjects = [];
 	_RT.$HLedObjects = {};
 	for (var segmentKey in WMo.segments.objects) {
 		var rawSegment = WMo.segments.objects[segmentKey];
@@ -2251,10 +1556,10 @@ function F_VALIDATE(disabledHL) {
 			&& rawSegment.attributes.updatedOn
 			&& 1398902400000 < rawSegment.attributes.updatedOn) {
 			if (rawSegment.selected) {
-				skippedSegment = true;
+				skippedObject = true;
 				// add selected segment to the array
 				if (!DEF_DEBUG)
-					selectedSegments.push(segmentID);
+					selectedObjects.push(segmentID);
 			}
 			if (!DEF_DEBUG)
 				continue;
@@ -2275,20 +1580,20 @@ function F_VALIDATE(disabledHL) {
 		// always re-check selected segments
 		if (rawSegment.selected) {
 			// add selected segment to the array
-			selectedSegments.push(segmentID);
+			selectedObjects.push(segmentID);
 
 			// mark segment to revalidate
 			_RT.$revalidate[segmentID] = true;
 			// recheck selected segment if it's not highlighted by WMECH
 			if (seen && !seen[I_ISWMECHCOLOR]) {
-				deleteSeenSegment(segmentID);
+				deleteSeenObject(segmentID);
 				seen = null;
 			}
 		}
 		else {
 			// recheck the segment to revalidate
 			if (segmentID in _RT.$revalidate) {
-				deleteSeenSegment(segmentID);
+				deleteSeenObject(segmentID);
 				seen = null;
 				// unmark segment
 				delete _RT.$revalidate[segmentID];
@@ -2321,7 +1626,7 @@ function F_VALIDATE(disabledHL) {
 				&& (isTBColor === seen[I_ISTBCOLOR])
 				&& (isWMECHColor === seen[I_ISWMECHCOLOR])
 			) {
-				HLSegment(rawSegment);
+				HLObject(rawSegment);
 				continue;
 			}
 		}
@@ -2335,7 +1640,7 @@ function F_VALIDATE(disabledHL) {
 
 		///////////////////////////////////////////////////////////////////
 		// Prepare simple objects
-		var segment = new SimpleSEGMENT(segmentID);
+		var segment = new SimpleOBJECT(segmentID, WMo.segments);
 		Object.seal(segment);
 
 		// shortcuts
@@ -2384,11 +1689,11 @@ function F_VALIDATE(disabledHL) {
 		if (seen) {
 			// if the segment is still partial
 			if (seen[I_ISPARTIAL] && isPartial) {
-				HLSegment(rawSegment);
+				HLObject(rawSegment);
 				continue;
 			}
 			// otherwise remove, recheck the segment and reanimate
-			deleteSeenSegment(segmentID);
+			deleteSeenObject(segmentID);
 			seen = null;
 		}
 
@@ -2414,7 +1719,7 @@ function F_VALIDATE(disabledHL) {
 
 		// SPECIAL CASE - skip all the checks if there are no street ID
 		if (GL_NOID === street) {
-			deleteSeenSegment(segmentID);
+			deleteSeenObject(segmentID);
 			continue;
 		}
 
@@ -2479,7 +1784,7 @@ function F_VALIDATE(disabledHL) {
 			if (address.isOkFor(23)) {
 				// report and highlight the segment
 				segment.report(23);
-				HLSegment(rawSegment);
+				HLObject(rawSegment);
 			}
 			continue;
 		}
@@ -2490,7 +1795,7 @@ function F_VALIDATE(disabledHL) {
 			options = getCheckOptions(101, countryCode);
 			if (options[CO_REGEXP].test(street)) {
 				segment.report(101);
-				HLSegment(rawSegment);
+				HLObject(rawSegment);
 				continue;
 			}
 		}
@@ -3143,7 +2448,7 @@ function F_VALIDATE(disabledHL) {
 				var foundPublicConnection = false;
 				for (var i = 0; i < nodeA.$otherSegmentsLen; i++) {
 					var otherSegment = nodeA.$otherSegments[i];
-					if (otherSegment.$rawSegment.isRoutable()) {
+					if (otherSegment.$rawObject.isRoutable()) {
 						foundPublicConnection = true;
 						break;
 					}
@@ -3152,7 +2457,7 @@ function F_VALIDATE(disabledHL) {
 					// check node B
 					for (var i = 0; i < nodeB.$otherSegmentsLen; i++) {
 						var otherSegment = nodeB.$otherSegments[i];
-						if (otherSegment.$rawSegment.isRoutable()) {
+						if (otherSegment.$rawObject.isRoutable()) {
 							foundPublicConnection = true;
 							break;
 						}
@@ -3291,7 +2596,7 @@ function F_VALIDATE(disabledHL) {
 						if ("Delete" === seg.state) continue;
 						// only for drivable segments
 						if (RR_TRAIL
-							>= SimpleSEGMENT.prototype.getTypeRank(seg.attributes.roadType))
+							>= SimpleOBJECT.prototype.getTypeRank(seg.attributes.roadType))
 							continue;
 
 						// check if node A is not connected to the segment
@@ -3474,7 +2779,7 @@ function F_VALIDATE(disabledHL) {
 						if ("Delete" === seg.state) continue;
 						// only for drivable segments
 						if (RR_TRAIL
-							>= SimpleSEGMENT.prototype.getTypeRank(seg.attributes.roadType))
+							>= SimpleOBJECT.prototype.getTypeRank(seg.attributes.roadType))
 							continue;
 
 						if (LIMIT_TOLERANCE > seg.geometry.distanceTo(pt, null)) {
@@ -3792,10 +3097,9 @@ function F_VALIDATE(disabledHL) {
 
 
 		// highlight reported segments
-		HLSegment(rawSegment);
+		HLObject(rawSegment);
 	} // for all segments
 
-	var selectedVenues = [];
 	for (var venueKey in WMo.venues.objects) {
 		// check the venues
 		var rawVenue = WMo.venues.objects[venueKey];
@@ -3811,45 +3115,45 @@ function F_VALIDATE(disabledHL) {
 
 		var seen = null;
 		// check if the venue was already seen
-		if (venueID in _RT.$seenVenues)
-			seen = _RT.$seenVenues[venueID];
+		if (venueID in _RT.$seen)
+			seen = _RT.$seen[venueID];
 
 		// always re-check selected venues
 		if (rawVenue.selected) {
 			// add selected venue to the array
-			selectedVenues.push(venueID);
+			selectedObjects.push(venueID);
 
 			// mark venue to revalidate
-			_RT.$revalidateVenues[venueID] = true;
+			_RT.$revalidate[venueID] = true;
 			// recheck selected venue
 			if (seen) {
-				deleteSeenVenue(venueID);
+				deleteSeenObject(venueID);
 				seen = null;
 			}
 		}
 		else {
 			// recheck the venue to revalidate
-			if (segmentID in _RT.$revalidateVenues) {
-				deleteSeenVenue(venueID);
+			if (segmentID in _RT.$revalidate) {
+				deleteSeenObject(venueID);
 				seen = null;
 				// unmark venue
-				delete _RT.$revalidateVenues[segmentID];
+				delete _RT.$revalidate[segmentID];
 			}
 		}
 
 		// check if the venue was already seen
 		if (seen) {
-			HLVenue(rawVenue);
+			HLObject(rawVenue);
 			continue;
 		}
 
 		///////////////////////////////////////////////////////////////////
 		// Prepare simple objects
-		var venue = new SimpleVENUE(venueID);
+		var venue = new SimpleOBJECT(venueID, WMo.venues);
 		Object.seal(venue);
 
 		// mark venue as seen
-		_RT.$seenVenues[venueID] = seen = [0, null, false, false,
+		_RT.$seen[venueID] = seen = [0, null, false, false,
 			4 > currentZoom,
 			cityID];
 
@@ -3885,15 +3189,9 @@ function F_VALIDATE(disabledHL) {
 		&& (RTStateIs(ST_STOP) || RTStateIs(ST_PAUSE)))
 		async(F_SHOWREPORT, RF_UPDATEMAXSEVERITY);
 
-	// update segment properties
-	updateSegmentProperties(selectedSegments, false);
-
-	// update venue properties
-	updateVenueProperties(selectedVenues, false);
+	// update object properties
+	updateObjectProperties(selectedObjects, false);
 
 	// add HLed segments to the layer
-	addHLedSegments();
-
-	// add HLed venues to the layer
-	addHLedVenues();
+	addHLedObjects();
 }
