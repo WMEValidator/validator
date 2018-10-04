@@ -1649,7 +1649,7 @@ function F_VALIDATE(disabledHL) {
 		var forwardSpeed = segment.$fwdMaxSpeed;
 		var reverseSpeed = segment.$revMaxSpeed;
 		var forwardSpeedUnverified = segment.$fwdMaxSpeedUnverified;
-		var reverseSpeedUnverified = segment.$fwdMaxSpeedUnverified;
+		var reverseSpeedUnverified = segment.$revMaxSpeedUnverified;
 
 		var hasRestrictions = segment.$hasRestrictions;
 
