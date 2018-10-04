@@ -488,6 +488,8 @@ function F_VALIDATE(disabledHL) {
 		this.$revMaxSpeed = 0;
 		/** @type {boolean} */
 		this.$revMaxSpeedUnverified = false;
+		/** @type {Object} */
+		this.$flags = null;
 
 		var seg = WMo.segments.getObjectById(objID);
 		if (classCodeIs(seg, CC_UNDEFINED) || classCodeIs(seg, CC_NULL))
@@ -547,6 +549,8 @@ function F_VALIDATE(disabledHL) {
 		this.$fwdMaxSpeedUnverified = attrs.fwdMaxSpeedUnverified;
 		this.$revMaxSpeed = getLocalizedValue(+attrs.revMaxSpeed);
 		this.$revMaxSpeedUnverified = attrs.revMaxSpeedUnverified;
+
+		this.$flags = seg.getFlagAttributes();
 
 		// mark some properties as readonly
 		Object.defineProperties(this, {
@@ -1653,6 +1657,8 @@ function F_VALIDATE(disabledHL) {
 
 		var hasRestrictions = segment.$hasRestrictions;
 
+		var flags = segment.$flags;
+
 		var now = Date.now();
 
 		// check partial segment
@@ -2000,6 +2006,7 @@ function F_VALIDATE(disabledHL) {
 					&& otherSegment.$type === roadType
 					&& otherSegment.$isToll === isToll
 					&& otherSegment.$hasRestrictions === hasRestrictions
+					&& otherSegment.$flags === flags
 					// 2 & 2 || !2 && !2
 					&& (
 						DIR_TWO === otherSegment.$direction && DIR_TWO === direction
@@ -2066,6 +2073,7 @@ function F_VALIDATE(disabledHL) {
 					&& otherSegment.$type === roadType
 					&& otherSegment.$isToll === isToll
 					&& otherSegment.$hasRestrictions === hasRestrictions
+					&& otherSegment.$flags === flags
 					// 2 & 2 || !2 && !2
 					&& (
 						DIR_TWO === otherSegment.$direction && DIR_TWO === direction
