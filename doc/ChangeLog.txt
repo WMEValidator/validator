@@ -1,5 +1,9 @@
 Current changes:
 
+v2018.10.04:
+- davidakachaos: fix 220 for Restricted Gates
+- davidakachaos: minor fixed for unverified speed limits
+
 v2018.09.28:
 - davidakachaos: add exceptions for speed limit checks
 - davidakachaos: adjust reports in segment properties
