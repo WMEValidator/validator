@@ -354,16 +354,6 @@ function F_VALIDATE(disabledHL) {
 		/** @type {string} */
 		this.$description = (obj.getDescription() || "");
 		/** @type {boolean} */
-		this.$isInThePast = false;
-		if (timeFrame.getEndDate() === null) {
-			this.$isInThePast = false;
-		// getEndDate() returns a date String! Not a Date object
-		} else if (Date.parse(timeFrame.getEndDate()) > new Date) {
-			this.$isInThePast = false;
-		} else {
-			this.$isInThePast = true;
-		}
-		/** @type {boolean} */
 		this.$isEnabled = true; //obj.enabled || false;
 		/** @type {string} */
 		this.$fromDate = (timeFrame.getStartDate() || "");
@@ -373,6 +363,9 @@ function F_VALIDATE(disabledHL) {
 		this.$toDate = (timeFrame.getEndDate() || "");
 		/** @type {string} */
 		this.$toTime = (timeFrame.getToTime() || "");
+		/** @type {boolean} */
+		this.$isInThePast = new Date(this.$toDate +
+			" " + this.$toTime) < new Date();
 
 		Object.defineProperties(this, {
 			_to: { enumerable: false },
