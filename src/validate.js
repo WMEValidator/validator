@@ -2006,7 +2006,7 @@ function F_VALIDATE(disabledHL) {
 					&& otherSegment.$type === roadType
 					&& otherSegment.$isToll === isToll
 					&& otherSegment.$hasRestrictions === hasRestrictions
-					&& otherSegment.$flags === flags
+					&& deepCompare(otherSegment.$flags, flags)
 					// 2 & 2 || !2 && !2
 					&& (
 						DIR_TWO === otherSegment.$direction && DIR_TWO === direction
@@ -2073,7 +2073,7 @@ function F_VALIDATE(disabledHL) {
 					&& otherSegment.$type === roadType
 					&& otherSegment.$isToll === isToll
 					&& otherSegment.$hasRestrictions === hasRestrictions
-					&& otherSegment.$flags === flags
+					&& deepCompare(otherSegment.$flags, flags)
 					// 2 & 2 || !2 && !2
 					&& (
 						DIR_TWO === otherSegment.$direction && DIR_TWO === direction
