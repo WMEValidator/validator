@@ -175,6 +175,7 @@ Waze.SEGMENT = function () {
 	this.layer = {};
 	this.arePropertiesEditable = function () { };
 	this.hasRestrictions = function () { };
+	this.getFlagAttributes = function () { };
 	/** @type {Object} */
 	this.bounds;
 	this.geometry = {
@@ -254,6 +255,14 @@ var CITY = {
 		isEmpty: true,
 		name: ""
 	}
+}
+
+var FLAGS = {
+	tunnel: false,
+	unpaved: false,
+	headlights: false,
+	nearbyHOV: false,
+	fwdSpeedCamera: false
 }
 
 var STREET = {
