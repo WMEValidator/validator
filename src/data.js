@@ -395,6 +395,8 @@ var AS_NONEDITABLES = "non_editables";
 /** @const */
 var AS_DUPLICATES = "duplicates";
 /** @const */
+var AS_VENUES = "venues";
+/** @const */
 var AS_STREETS = "streets";
 /** @const */
 var AS_OTHERS = "others";
