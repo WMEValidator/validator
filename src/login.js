@@ -429,10 +429,12 @@ function F_LOGIN() {
 	var listOfPlugins = [];
 	for (var gObject in window) {
 		if (!window.hasOwnProperty(gObject)) continue;
-		if (-1 !== gObject.indexOf("WME_Validator_Plugin_")) {
+		if (-1 !== gObject.indexOf("WMEValidator_Plugin_")) {
 			var plugin = window[gObject];
-			log("found plugin: " + gObject.replace('WME_Validator_Plugin_', ''));
+			log("found plugin: " + gObject.replace('WMEValidator_Plugin_', ''));
 			listOfPlugins += plugin.name;
+			var pluginId = Math.ceil(Math.random() * 1000);
+			_PLUGS[pluginId] = plugin;
 		}
 	}
 	listOfPlugins = (listOfPlugins ? listOfPlugins : "No external plugins found");

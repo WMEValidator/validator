@@ -3182,6 +3182,12 @@ function F_VALIDATE(disabledHL) {
 
 		} // GROUP isRoundabout
 
+		for(var key in _PLUGS){
+			var plugin = _PLUGS[key];
+			if (plugin.active && plugin.checkSegment)
+				plugin.checkSegment(segment);
+		};
+
 
 		// highlight reported segments
 		HLSegment(rawSegment);
