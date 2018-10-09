@@ -390,6 +390,30 @@ function F_LOGIN() {
 			"regexp": streetRegExp,
 		};
 	}
+	// add external plugins
+	var listOfPlugins = [];
+	for (var gObject in window) {
+		if (!window.hasOwnProperty(gObject)) continue;
+		if (-1 !== gObject.indexOf("WMEValidator_Plugin_")) {
+			var plugin = window[gObject];
+			log("found plugin: " + gObject.replace('WMEValidator_Plugin_', ''));
+			listOfPlugins += plugin.name;
+			var pluginId = Math.ceil(Math.random() * 1000);
+			_PLUGS[pluginId] = plugin;
+			// load the checks from the plugin
+			if (plugin.customChecks) {
+				var customChecks = plugin.customChecks();
+				for (var label in customChecks) {
+					defTranslation[label] = customChecks[label];
+				}
+			}
+		}
+	}
+	listOfPlugins = (listOfPlugins ? listOfPlugins : "No external plugins found");
+	listOfPlugins += '<br><b>See</b> <a target="_blank" href="'
+		+ PFX_FORUM + FORUM_LOCAL + '">'
+		+ 'how to create a plugin</a>';
+
 	// Generate mirror checks
 	mirrorChecks(defTranslation);
 
@@ -424,23 +448,6 @@ function F_LOGIN() {
 	}
 	listOfIntPacks += '.';
 	listOfIntPacks += '<br>* localization pack with translations';
-
-	// add external plugins
-	var listOfPlugins = [];
-	for (var gObject in window) {
-		if (!window.hasOwnProperty(gObject)) continue;
-		if (-1 !== gObject.indexOf("WMEValidator_Plugin_")) {
-			var plugin = window[gObject];
-			log("found plugin: " + gObject.replace('WMEValidator_Plugin_', ''));
-			listOfPlugins += plugin.name;
-			var pluginId = Math.ceil(Math.random() * 1000);
-			_PLUGS[pluginId] = plugin;
-		}
-	}
-	listOfPlugins = (listOfPlugins ? listOfPlugins : "No external plugins found");
-	listOfPlugins += '<br><b>See</b> <a target="_blank" href="'
-		+ PFX_FORUM + FORUM_LOCAL + '">'
-		+ 'how to create a plugin</a>';
 
 	// add external translations
 	var listOfPacks = '';
