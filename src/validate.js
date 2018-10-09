@@ -3116,7 +3116,7 @@ function F_VALIDATE(disabledHL) {
 
 			if ("Delete" === rawVenue.state) continue;
 			// not in scope of current view.
-			if (rawVenue.outOfScope && rawVenue.outOfScope === true) continue;
+			if (rawVenue.outOfScope) continue;
 
 			var seen = null;
 			// check if the venue was already seen
@@ -3217,28 +3217,23 @@ function F_VALIDATE(disabledHL) {
 				var parkAttr = catAttr ? catAttr.PARKING_LOT : undefined;
 				// missing parking lot type
 				if ((!parkAttr || !parkAttr.parkingType)
-					&& isLimitOk(252)
 					&& address.isOkFor(252))
 					venue.report(252);
 				// missing cost type
 				if ((!parkAttr || !parkAttr.costType || parkAttr.costType === 'UNKNOWN')
-					&& isLimitOk(253)
 					&& address.isOkFor(253))
 					venue.report(253);
 				// missing payment types
 				if ((parkAttr && parkAttr.costType && parkAttr.costType !== 'FREE'
 					&& parkAttr.costType !== 'UNKNOWN'
 					&& (!parkAttr.paymentType || !parkAttr.paymentType.length))
-					&& isLimitOk(254)
 					&& address.isOkFor(254))
 					venue.report(254);
 				//check elevation of the parking lot
 				if ((!parkAttr || !parkAttr.lotType || parkAttr.lotType.length === 0)
-					&& isLimitOk(255)
 					&& address.isOkFor(255))
 					venue.report(255)
 				if ((!venue.$entryExitPoints || !venue.$entryExitPoints.length)
-					&& isLimitOk(257)
 					&& address.isOkFor(257))
 					venue.report(257)
 			}// GROUP isParkingLot
@@ -3247,13 +3242,11 @@ function F_VALIDATE(disabledHL) {
 			if (venue.$rawObject.isGasStation()) {
 				// check if brand in name
 				if (venue.$name.indexOf(venue.$brand) === -1
-					&& isLimitOk(259)
 					&& address.isOkFor(259))
 					venue.report(259);
 				//check lock level
 				options = getCheckOptions(260, countryCode);
 				if (options[CO_NUMBER] > lock
-					&& isLimitOk(260)
 					&& address.isOkFor(260))
 					segment.report(260);
 			}// GROUP isGasStation
@@ -3262,7 +3255,6 @@ function F_VALIDATE(disabledHL) {
 				var stopPoint = venue.$entryExitPoints[0].getPoint();
 				var areaCenter = venue.$geometry.getCentroid();
 				if (stopPoint.equals(areaCenter)
-					&& isLimitOk(256)
 					&& address.isOkFor(256))
 					venue.report(256)
 			}
