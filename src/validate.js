@@ -3230,7 +3230,7 @@ function F_VALIDATE(disabledHL) {
 					&& address.isOkFor(254))
 					venue.report(254);
 				//check elevation of the parking lot
-				if ((!parkAttr || !parkAttr.lotType || parkAttr.lotType.length === 0)
+				if ((!parkAttr || !parkAttr.lotType)
 					&& address.isOkFor(255))
 					venue.report(255)
 				if ((!venue.$entryExitPoints || !venue.$entryExitPoints.length)
