@@ -148,3 +148,61 @@ function getLocalizedValue(val) {
 	return W.model.isImperial ?
 		Math.round(val * ipu["km"] / ipu["mi"]) : val;
 }
+
+function getLinkInfo(id) {
+    var link = VenueLinkCache[id];
+	if (link) {
+		return link;
+	} else {
+		$.getJSON(window.location.origin + '/maps/api/place/details/json?&key=' + W.apiKeys.googleMapsApiKey + '&placeid=' + id, function(json){
+			if (json.status==='NOT_FOUND')  {
+				link = {
+					notFound: true
+				};
+			} else {
+				link = {
+					loc: json.result.geometry.location,
+					closed: json.result.permanently_closed
+				};
+			}
+			link.ts = new Date();
+			VenueLinkCache[id] = link;
+			return link;
+		});
+	}
+}
+
+// External info about venues
+function loadLinkCache(){
+	// Load VenueLinkCache || hijack Waze-Utils GoogleLinkEnhancer cache!
+	var storedCache = window.localStorage.getItem('gle_link_cache');
+	try {
+		VenueLinkCache = storedCache ? $.parseJSON(LZString.decompressFromUTF16(storedCache)) : {};
+	} catch (ex) {
+		if (ex.name === 'SyntaxError') {
+			// In case the cache is corrupted and can't be read.
+			VenueLinkCache = {};
+		} else {
+			throw ex;
+		}
+	}
+	if (VenueLinkCache === null || VenueLinkCache.length === 0) VenueLinkCache = {};
+	log("Links in venue cache: " + Object.keys(VenueLinkCache).length);
+}
+
+function cleanAndSaveLinkCache() {
+	if (!VenueLinkCache) return;
+	var now = new Date();
+	Object.keys(VenueLinkCache).forEach(function(id){
+		var link = VenueLinkCache[id];
+		// Delete link if older than 6 hours.
+		if (!link.ts || (now - new Date(link.ts)) > 6 * 3600 * 1000) {
+		    delete VenueLinkCache[id];
+		}
+	});
+	window.localStorage.setItem('gle_link_cache', LZString.compressToUTF16(JSON.stringify(VenueLinkCache)));
+}
+
+function _distanceBetweenPoints(x1, y1, x2, y2) {
+	return Math.sqrt(Math.pow(x1 - x2, 2) + Math.pow(y1 - y2, 2));
+}

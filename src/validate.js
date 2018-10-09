@@ -443,6 +443,8 @@ function F_VALIDATE(disabledHL) {
 		/** @type {boolean} */
 		this.$isRoundabout = false;
 		/** @type {boolean} */
+		this.$isPoint = false;
+		/** @type {boolean} */
 		this.$hasHNs = false;
 		/** @type {boolean} */
 		this.$isEditable = false;
@@ -547,9 +549,15 @@ function F_VALIDATE(disabledHL) {
 			this.$categories = attrs.categories;
 			this.$openingHours = attrs.openingHours;
 			this.$services = attrs.services;
-			this.$externalProviders = attrs.externalProviderIDs;
+			for (var i = attrs.externalProviderIDs.length - 1; i >= 0; i--) {
+				var linkId = attrs.externalProviderIDs[i].id;
+				this.$externalProviders.push(getLinkInfo(linkId));
+			}
+			this.$entryExitPoints = attrs.entryExitPoints;
 			this.$alts = attrs.aliases;
 			this.$address = new _WV.SimpleADDRESS(attrs.streetID);
+			this.$geometry = attrs.geometry;
+			this.$isPoint = raw.isPoint();
 		}
 
 		this.$isEditable = raw.arePropertiesEditable();
@@ -3133,11 +3141,11 @@ function F_VALIDATE(disabledHL) {
 		}
 		else {
 			// recheck the venue to revalidate
-			if (segmentID in _RT.$revalidate) {
+			if (venueID in _RT.$revalidate) {
 				deleteSeenObject(venueID);
 				seen = null;
 				// unmark venue
-				delete _RT.$revalidate[segmentID];
+				delete _RT.$revalidate[venueID];
 			}
 		}
 
@@ -3182,6 +3190,42 @@ function F_VALIDATE(disabledHL) {
 			&& address.isOkFor(250))
 			venue.report(250);
 
+		if(slowChecks
+			&& venue.$externalProviders
+			&& venue.$externalProviders.length){
+			// check if the venue is marked as permantly closed
+			for (var i = venue.$externalProviders.length - 1; i >= 0; i--) {
+				var external = venue.$externalProviders[i];
+				if (!external)
+					continue;
+				// Check if Google has marked it as closed
+				if (external.closed
+					&& isLimitOk(261)
+					&& address.isOkFor(261))
+					venue.report(261);
+
+				if (external.loc) {
+					var linkPt = new OpenLayers.Geometry.Point(external.loc.lng, external.loc.lat);
+					linkPt.transform(W.map.displayProjection, W.map.projection);
+					var distanceLimit = 400;
+					var venuePt;
+					if (venue.$isPoint){
+						venuePt = venue.$geometry.getCentroid();
+					} else {
+						var bounds = venue.$rawObject.geometry.getBounds();
+						venuePt = new OpenLayers.Geometry.Point(venue.$center.lon, venue.$center.lat);
+						venuePt.transform(W.map.displayProjection, W.map.projection);
+						// Add the distance from the center to the outer to the distanceLimit.
+						distanceLimit += _distanceBetweenPoints(venuePt.x, venuePt.y, bounds.right, bounds.top);
+					}
+					var distance = _distanceBetweenPoints(linkPt.x, linkPt.y, venuePt.x, venuePt.y);
+					if (distance > distanceLimit
+						&& isLimitOk(262)
+						&& address.isOkFor(262))
+						venue.report(262);
+				}
+			}
+		}
 	} // for all venues
 
 	// update severity if needed

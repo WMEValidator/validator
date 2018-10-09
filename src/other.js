@@ -380,6 +380,8 @@ function F_ONRUN() {
 	};
 	setRTState(ST_RUN);
 	clearWD();
+	// Save and clean the Venue Link cache
+	cleanAndSaveLinkCache();
 	_RT.$direction = DIR_L2R;
 	_RT.$firstStep = true;
 

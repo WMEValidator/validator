@@ -543,3 +543,5 @@ var WC = null;
 var UW = null;
 /** requite @const */
 var R = null;
+/** venueLinkCache @object */
+var VenueLinkCache = {};

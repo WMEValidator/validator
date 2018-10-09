@@ -1226,6 +1226,8 @@ function F_LOGIN() {
 	// for the highlights
 	async(ForceHLAllSegments, null, 700);
 
+	loadLinkCache();
+
 	// register event handlers
 	WMo.events.on({
 		"mergeend": onMergeEnd,
