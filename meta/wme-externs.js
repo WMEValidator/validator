@@ -253,12 +253,12 @@ Waze.VENUE = function () {
 		categories: [],
 		categoryAttributes: {
 			PARKING_LOT: {
-				canExitWhileClosed: false
-				costType: "UNKNOWN"
-				estimatedNumberOfSpots: ""
-				hasTBR: false
-				lotType: []
-				paymentType: []
+				canExitWhileClosed: false,
+				costType: "UNKNOWN",
+				estimatedNumberOfSpots: "",
+				hasTBR: false,
+				lotType: [],
+				paymentType: [],
 			},
 		},
 		createdBy: 0,
