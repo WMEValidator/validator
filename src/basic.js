@@ -675,6 +675,7 @@ function onMoveEnd() {
 		async(F_ONMOVEEND);
 	else
 		ForceHLAllSegments();
+		cleanAndSaveLinkCache();
 }
 
 /**

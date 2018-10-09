@@ -42,6 +42,7 @@ cat "${SRC_DIR}/meta/i18n-end.js" >> "${LOC_FILE}"
 	--js "${SRC_DIR}/src/login.js" \
 	--js "${SRC_DIR}/src/other.js" \
 	--js "${SRC_DIR}/src/lib/i18n.js" \
+	--js "${SRC_DIR}/src/lib/lzstring.js" \
 	--js "${SRC_DIR}/src/lib/audio.js" \
 	--js "${SRC_DIR}/src/lib/thui.js" \
 	--externs "${SRC_DIR}/meta/wme-externs.js" \

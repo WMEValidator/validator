@@ -183,6 +183,7 @@ Waze.SEGMENT = function () {
 		bounds: {},
 		distanceTo: function (l, o) { },
 		getGeodesicLength: function (p) { },
+		getBounds: function () { },
 	},
 		this.getAddress = function () { };
 	this.getDirection = function () { };
@@ -228,6 +229,9 @@ Waze.VENUE = function () {
 	this.layer = {};
 	this.arePropertiesEditable = function () { };
 	this.is2D = function () { };
+	this.isPoint = function () { };
+	this.isParkingLot = function () { };
+	this.isGasStation = function () { };
 	/** @type {Object} */
 	this.bounds;
 	this.geometry = {
@@ -236,6 +240,8 @@ Waze.VENUE = function () {
 		bounds: {},
 		distanceTo: function (l, o) { },
 		getGeodesicArea: function (p) { },
+		getCentroid: function () { },
+		getBounds: function () { },
 	},
  	this.getAddress = function () { };
 	this.getNavigationPoints = function () { };
@@ -348,6 +354,9 @@ var W = {
 		events: {
 			register: function (a, b, c) { },
 		},
+	},
+	apiKeys: {
+		googleMapsApiKey: "",
 	},
 	MapLayers: {
 		layerVisibilityBitmask: {}
