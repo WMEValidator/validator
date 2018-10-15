@@ -494,7 +494,18 @@ function F_LOGIN() {
 		+ 'how to create a localization pack</a>';
 
 	// Generate $checks
-	for (var i = 1; i < MAX_CHECKS; i++) {
+	var allLabels = Object.keys(_I18n.$defSet);
+	function onlyUnique(value, index, self) {
+		return self.indexOf(value) === index;
+	}
+	allLabels = allLabels.concat(Object.keys(_I18n.$fallbackSet)).filter(onlyUnique);
+	allLabels = allLabels.concat(Object.keys(_I18n.$curSet)).filter(onlyUnique);
+
+	var allChecks = allLabels.filter(function(item){
+		return /^\d+\.title$/.test(item);
+	});
+
+	for (var x = 0; x < allChecks.length; x++) {
 		var check = {
 			ENABLED: {},
 			PROBLEMLINK: {},
@@ -502,6 +513,8 @@ function F_LOGIN() {
 			SOLUTIONLINK: {},
 			SOLUTIONLINKTEXT: {},
 		};
+		// "1.enabled" ->> "1" -->> 1
+		i = parseInt(allChecks[x].split(".")[0], 10);
 
 		// set title
 		var label = i + '.title';
