@@ -883,6 +883,7 @@ function F_UPDATEUI(e) {
 				break;
 			case _UI.pMain.pFilter.oExcludeNonEditables:
 			case _UI.pMain.pFilter.oExcludeDuplicates:
+			case _UI.pMain.pFilter.oExcludeVenues:
 			case _UI.pMain.pFilter.oExcludeStreets:
 			case _UI.pMain.pFilter.oExcludeOther:
 			case _UI.pMain.pFilter.oExcludeNotes:

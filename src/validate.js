@@ -545,11 +545,14 @@ function F_VALIDATE(disabledHL) {
 			this.$isApproved = attrs.approved;
 			this.$mainCategory = raw.getMainCategory();
 			this.$categories = attrs.categories;
+			this.$categoryAttributes = attrs.categoryAttributes;
 			this.$openingHours = attrs.openingHours;
 			this.$services = attrs.services;
 			this.$externalProviders = attrs.externalProviderIDs;
+			this.$entryExitPoints = attrs.entryExitPoints;
 			this.$alts = attrs.aliases;
 			this.$address = new _WV.SimpleADDRESS(attrs.streetID);
+			this.$geometry = attrs.geometry;
 		}
 
 		this.$isEditable = raw.arePropertiesEditable();
@@ -3100,89 +3103,163 @@ function F_VALIDATE(disabledHL) {
 		HLObject(rawSegment);
 	} // for all segments
 
-	for (var venueKey in WMo.venues.objects) {
-		// check the venues
-		var rawVenue = WMo.venues.objects[venueKey];
-		var venueID = rawVenue.getID();
-		// skip unrendered features
-		if (rawVenue.layer
-			&& rawVenue.id in rawVenue.layer.unrenderedFeatures)
-			continue;
+	// If venue checking enabled...
+	if (!_UI.pMain.pFilter.oExcludeVenues.CHECKED) {
+		for (var venueKey in WMo.venues.objects) {
+			// check the venues
+			var rawVenue = WMo.venues.objects[venueKey];
+			var venueID = rawVenue.getID();
+			// skip unrendered features
+			if (rawVenue.layer
+				&& rawVenue.id in rawVenue.layer.unrenderedFeatures)
+				continue;
 
-		if ("Delete" === rawVenue.state) continue;
-		// not in scope of current view.
-		if (rawVenue.outOfScope && rawVenue.outOfScope === true) continue;
+			if ("Delete" === rawVenue.state) continue;
+			// not in scope of current view.
+			if (rawVenue.outOfScope) continue;
 
-		var seen = null;
-		// check if the venue was already seen
-		if (venueID in _RT.$seen)
-			seen = _RT.$seen[venueID];
+			var seen = null;
+			// check if the venue was already seen
+			if (venueID in _RT.$seen)
+				seen = _RT.$seen[venueID];
 
-		// always re-check selected venues
-		if (rawVenue.selected) {
-			// add selected venue to the array
-			selectedObjects.push(venueID);
+			// always re-check selected venues
+			if (rawVenue.selected) {
+				// add selected venue to the array
+				selectedObjects.push(venueID);
 
-			// mark venue to revalidate
-			_RT.$revalidate[venueID] = true;
-			// recheck selected venue
+				// mark venue to revalidate
+				_RT.$revalidate[venueID] = true;
+				// recheck selected venue
+				if (seen) {
+					deleteSeenObject(venueID);
+					seen = null;
+				}
+			}
+			else {
+				// recheck the venue to revalidate
+				if (segmentID in _RT.$revalidate) {
+					deleteSeenObject(venueID);
+					seen = null;
+					// unmark venue
+					delete _RT.$revalidate[segmentID];
+				}
+			}
+
+			// check if the venue was already seen
 			if (seen) {
-				deleteSeenObject(venueID);
-				seen = null;
+				HLObject(rawVenue);
+				continue;
 			}
-		}
-		else {
-			// recheck the venue to revalidate
-			if (segmentID in _RT.$revalidate) {
-				deleteSeenObject(venueID);
-				seen = null;
-				// unmark venue
-				delete _RT.$revalidate[segmentID];
+
+			///////////////////////////////////////////////////////////////////
+			// Prepare simple objects
+			var venue = new SimpleOBJECT(venueID, WMo.venues);
+			Object.seal(venue);
+
+			// mark venue as seen
+			_RT.$seen[venueID] = seen = [0, null, false, false,
+				4 > currentZoom,
+				cityID];
+
+			// increase city counter
+			venue.incCityCounter();
+
+			// shortcuts
+			var address = venue.$address;
+			var country = address.$country;
+			var countryLen = country.length;
+			var countryCode = country ? _I18n.getCountryCode(country.toUpperCase())
+				: _RT.$cachedTopCCode;
+			var city = address.$city;
+			var cityLen = city.length;
+			var cityID = address.$cityID;
+			var street = address.$street;
+			var state = address.$state;
+			var streetLen = street.length;
+			var alts = venue.$alts;
+			var lock = venue.$lock;
+
+			var exceptedCategories ='BRIDGE|ISLAND|FOREST_GROVE|SEA_LAKE_POOL|RIVER_STREAM|CANAL|DAM|TUNNEL|JUNCTION_INTERCHANGE'.split('|');
+
+			if (!cityLen
+				&& exceptedCategories.indexOf(venue.$categories[0]) === -1
+				&& isLimitOk(250)
+				&& address.isOkFor(250))
+				venue.report(250);
+
+			// GROUP name.length
+			if (!venue.$name.length) {
+				if (venue.$categories[0] === "PARK" && !cityLen
+					&& isLimitOk(258)
+					&& address.isOkFor(258))
+					venue.report(258);
 			}
-		}
+			// GROUP name.length
+			// Check for last update by bots
+			var botNamesAndIDs = [
+				'^waze-maint', '^105774162$',
+				'^waze3rdparty$', '^361008095$',
+				'^WazeParking1$', '^338475699$',
+				'^admin$', '^-1$',
+				'^avsus$', '^107668852$'
+			];
+			var re = new RegExp(botNamesAndIDs.join('|'),'i');
 
-		// check if the venue was already seen
-		if (seen) {
-			HLObject(rawVenue);
-			continue;
-		}
+			if ((re.test(venue.$updatedByID.toString()) || re.test(venue.$updatedBy))
+				&& isLimitOk(251)
+				&& address.isOkFor(251))
+				venue.report(251);
 
-		///////////////////////////////////////////////////////////////////
-		// Prepare simple objects
-		var venue = new SimpleOBJECT(venueID, WMo.venues);
-		Object.seal(venue);
+			// GROUP isParkingLot
+			if (venue.$rawObject.isParkingLot()){
+				var catAttr = venue.$categoryAttributes;
+				var parkAttr = catAttr ? catAttr.PARKING_LOT : undefined;
+				// missing parking lot type
+				if ((!parkAttr || !parkAttr.parkingType)
+					&& address.isOkFor(252))
+					venue.report(252);
+				// missing cost type
+				if ((!parkAttr || !parkAttr.costType || parkAttr.costType === 'UNKNOWN')
+					&& address.isOkFor(253))
+					venue.report(253);
+				// missing payment types
+				if ((parkAttr && parkAttr.costType && parkAttr.costType !== 'FREE'
+					&& parkAttr.costType !== 'UNKNOWN'
+					&& (!parkAttr.paymentType || !parkAttr.paymentType.length))
+					&& address.isOkFor(254))
+					venue.report(254);
+				//check elevation of the parking lot
+				if ((!parkAttr || !parkAttr.lotType || parkAttr.lotType.length === 0)
+					&& address.isOkFor(255))
+					venue.report(255)
+				if ((!venue.$entryExitPoints || !venue.$entryExitPoints.length)
+					&& address.isOkFor(257))
+					venue.report(257)
+			}// GROUP isParkingLot
 
-		// mark venue as seen
-		_RT.$seen[venueID] = seen = [0, null, false, false,
-			4 > currentZoom,
-			cityID];
+			// GROUP isGasStation
+			if (venue.$rawObject.isGasStation()) {
+				// check if brand in name
+				if (venue.$name.indexOf(venue.$brand) === -1
+					&& address.isOkFor(259))
+					venue.report(259);
+				//check lock level
+				options = getCheckOptions(260, countryCode);
+				if (options[CO_NUMBER] > lock
+					&& address.isOkFor(260))
+					segment.report(260);
+			}// GROUP isGasStation
 
-		// increase city counter
-		venue.incCityCounter();
-
-		// shortcuts
-		var address = venue.$address;
-		var country = address.$country;
-		var countryLen = country.length;
-		var countryCode = country ? _I18n.getCountryCode(country.toUpperCase())
-			: _RT.$cachedTopCCode;
-		var city = address.$city;
-		var cityLen = city.length;
-		var cityID = address.$cityID;
-		var street = address.$street;
-		var state = address.$state;
-		var streetLen = street.length;
-		var alts = venue.$alts;
-
-		var exceptedCategories ='BRIDGE|ISLAND|FOREST_GROVE|SEA_LAKE_POOL|RIVER_STREAM|CANAL|DAM|TUNNEL|JUNCTION_INTERCHANGE'.split('|');
-
-		if (!cityLen
-			&& exceptedCategories.indexOf(venue.$categories[0]) === -1
-			&& isLimitOk(250)
-			&& address.isOkFor(250))
-			venue.report(250);
-
-	} // for all venues
+			if(venue.$entryExitPoints && venue.$entryExitPoints.length){
+				var stopPoint = venue.$entryExitPoints[0].getPoint();
+				var areaCenter = venue.$geometry.getCentroid();
+				if (stopPoint.equals(areaCenter)
+					&& address.isOkFor(256))
+					venue.report(256)
+			}
+		} // for all venues
+	}
 
 	// update severity if needed
 	if (bUpdateMaxSeverity

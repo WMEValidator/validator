@@ -279,6 +279,7 @@ function ForceHLAllSegments() {
 function resetDefaults() {
 	_UI.pMain.pFilter.oExcludeNonEditables.CHECKED = true;
 	_UI.pMain.pFilter.oExcludeDuplicates.CHECKED = true;
+	_UI.pMain.pFilter.oExcludeVenues.CHECKED = false;
 	_UI.pMain.pFilter.oExcludeStreets.CHECKED = false;
 	_UI.pMain.pFilter.oExcludeOther.CHECKED = false;
 	_UI.pMain.pFilter.oExcludeNotes.CHECKED = false;

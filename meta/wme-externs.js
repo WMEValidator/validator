@@ -228,6 +228,8 @@ Waze.VENUE = function () {
 	this.layer = {};
 	this.arePropertiesEditable = function () { };
 	this.is2D = function () { };
+	this.isParkingLot = function () { };
+	this.isGasStation = function () { };
 	/** @type {Object} */
 	this.bounds;
 	this.geometry = {
@@ -236,6 +238,7 @@ Waze.VENUE = function () {
 		bounds: {},
 		distanceTo: function (l, o) { },
 		getGeodesicArea: function (p) { },
+		getCentroid: function () { },
 	},
  	this.getAddress = function () { };
 	this.getNavigationPoints = function () { };
@@ -248,6 +251,16 @@ Waze.VENUE = function () {
 		approved: false,
 		brand: null,
 		categories: [],
+		categoryAttributes: {
+			PARKING_LOT: {
+				canExitWhileClosed: false,
+				costType: "UNKNOWN",
+				estimatedNumberOfSpots: "",
+				hasTBR: false,
+				lotType: [],
+				paymentType: [],
+			},
+		},
 		createdBy: 0,
 		createdOn: 0,
 		description: null,

@@ -812,6 +812,11 @@ function F_LOGIN() {
 					TITLE: trS("filter.duplicates.tip"),
 					AUTOSAVE: AS_DUPLICATES
 				},
+				oExcludeVenues: {
+					TEXT: trS("filter.venues.text"),
+					TITLE: trS("filter.venues.tip"),
+					AUTOSAVE: AS_VENUES
+				},
 				oExcludeStreets: {
 					TEXT: trS("filter.streets.text"),
 					TITLE: trS("filter.streets.tip"),
