@@ -1617,6 +1617,7 @@ function F_VALIDATE(disabledHL) {
 	var oExcludeNotes = _UI.pMain.pFilter.oExcludeNotes.CHECKED;
 
 	var selectedSegments = [];
+	var segmentsToCheck = [];
 	_RT.$HLedObjects = {};
 	for (var segmentKey in WMo.segments.objects) {
 		var rawSegment = WMo.segments.objects[segmentKey];
@@ -1805,6 +1806,8 @@ function F_VALIDATE(disabledHL) {
 			// get next segment
 			continue;
 		}
+		// put the segment on the stack to be checked by plugins
+		segmentsToCheck.push(segment);
 
 		// SPECIAL CASE - report overlapping segments even for new roads
 		if (slowChecks
@@ -3179,19 +3182,26 @@ function F_VALIDATE(disabledHL) {
 					&& address.isOkFor(50))
 					segment.report(50);
 			} // GROUP isRoundabout.loops
-
-		} // GROUP isRoundabout
-
-		for(var key in _PLUGS){
-			var plugin = _PLUGS[key];
-			if (plugin.active && plugin.checkSegment)
-				plugin.checkSegment(segment);
-		};
-
+		} // GROUP isRoundabout && isDrivable
 
 		// highlight reported segments
 		HLSegment(rawSegment);
 	} // for all segments
+
+	// Setup calls to the plugins
+	var promises = [];
+	for(var key in _PLUGS){
+		var plugin = _PLUGS[key];
+		if (plugin.active && plugin.checkSegments)
+			 promises.push(plugin.checkSegments(segmentsToCheck));
+	};
+	// Execute plugins
+	var start = performance.now;
+	if (promises.length > 0) {
+        $.when(promises);
+        var end = performance.now;
+        log("Executing plugins took: " + (end - start));
+    }
 
 	// update severity if needed
 	if (bUpdateMaxSeverity

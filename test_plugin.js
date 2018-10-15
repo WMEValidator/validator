@@ -9,7 +9,7 @@
 // @grant               none
 // ==/UserScript==
 
-/*global W, OL, */
+/*global W, OL, $ */
 
 var WMEValidator_Plugin_Test;
 (function (WMEValidator_Plugin_Test) {
@@ -31,9 +31,20 @@ var WMEValidator_Plugin_Test;
 	}
 	WMEValidator_Plugin_Test.customChecks = customChecks;
 
-	function checkSegment(segment){
-		segment.report(270);
+	function checkSegments(segments){
+		var def = $.Deferred();
+		for (var i = segments.length - 1; i >= 0; i--) {
+			var segment = segments[i];
+			var address = segment.$address;
+			var city = address.$city;
+			if (city === "Heerenveen") {
+				segment.report(270);
+			}
+		}
+
+		def.resolve();
+		return def.promise();
 	}
-	WMEValidator_Plugin_Test.checkSegment = checkSegment;
+	WMEValidator_Plugin_Test.checkSegments = checkSegments;
 })(WMEValidator_Plugin_Test || (WMEValidator_Plugin_Test = {}));
 window.WMEValidator_Plugin_Test = WMEValidator_Plugin_Test;

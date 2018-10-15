@@ -404,15 +404,18 @@ function F_LOGIN() {
 			if (plugin.customChecks) {
 				var customChecks = plugin.customChecks();
 				for (var label in customChecks) {
-					defTranslation[label] = customChecks[label];
+					if (defTranslation[label] === undefined){
+						defTranslation[label] = customChecks[label];
+					}else{
+						alert('Plugin ' + plugin.name + ' redefines a check already in Validator.\nPlease report this problem to the plugin author. This plugin will not be loaded!');
+						delete _PLUGS[pluginId];
+						continue;
+					}
 				}
 			}
 		}
 	}
 	listOfPlugins = (listOfPlugins ? listOfPlugins : "No external plugins found");
-	listOfPlugins += '<br><b>See</b> <a target="_blank" href="'
-		+ PFX_FORUM + FORUM_LOCAL + '">'
-		+ 'how to create a plugin</a>';
 
 	// Generate mirror checks
 	mirrorChecks(defTranslation);
