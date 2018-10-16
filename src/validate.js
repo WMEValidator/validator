@@ -363,9 +363,16 @@ function F_VALIDATE(disabledHL) {
 		this.$toDate = (timeFrame.getEndDate() || "");
 		/** @type {string} */
 		this.$toTime = (timeFrame.getToTime() || "");
+
+		/*
+		 * To avoid any issues with time zones, report expired
+		 * restrictions 1-2 days after.
+		 */
+		var past = new Date();
+		past.setDate(past.getDate() - 2); /* 2..days().ago() */
 		/** @type {boolean} */
-		this.$isInThePast = new Date(this.$toDate +
-			" " + this.$toTime) < new Date();
+		this.$isInThePast = new Date(this.$toDate + " " +
+			this.$toTime) < past;
 
 		Object.defineProperties(this, {
 			_to: { enumerable: false },
