@@ -1,5 +1,9 @@
 Current changes:
 
+v2018.10.16:
+- berestovskyy: fix check 38 Expired segment restrictions
+- davidakachaos: fix check 36, 37 Unneeded node A/B
+
 v2018.10.04:
 - davidakachaos: fix 220 for Restricted Gates
 - davidakachaos: minor fixed for unverified speed limits
