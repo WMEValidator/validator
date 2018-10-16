@@ -75,6 +75,9 @@ var OpenLayers = {
 	Layer: {
 	},
 	Projection: function (a) { },
+	GeometryPoint: {
+		getPoint: function () { }
+	}
 };
 
 /** @constructor */
@@ -183,8 +186,8 @@ Waze.SEGMENT = function () {
 		bounds: {},
 		distanceTo: function (l, o) { },
 		getGeodesicLength: function (p) { },
-	},
-		this.getAddress = function () { };
+	};
+	this.getAddress = function () { };
 	this.getDirection = function () { };
 	this.isTollRoad = function () { };
 	this.isRoutable = function () { };
@@ -239,8 +242,8 @@ Waze.VENUE = function () {
 		distanceTo: function (l, o) { },
 		getGeodesicArea: function (p) { },
 		getCentroid: function () { },
-	},
- 	this.getAddress = function () { };
+	};
+	this.getAddress = function () { };
 	this.getNavigationPoints = function () { };
 	this.getMainCategory = function () { };
 	this.getCategorySet = function () { };
