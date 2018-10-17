@@ -727,3 +727,14 @@ function onNodesRemoved(e) {
 		if (RTStateIs(ST_STOP) || RTStateIs(ST_PAUSE))
 			sync(F_ONNODESCHANGED, e);
 }
+
+/**
+* Recover from switching isImperial pref
+*/
+function onChangeIsImperial() {
+	clearReport();
+	_RT.$HLedObjects = {};
+	_RT.$HLlayer.destroyFeatures();
+	_RT.$isMapChanged = true;
+	async(F_INIT);
+}

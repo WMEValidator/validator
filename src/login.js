@@ -1248,4 +1248,8 @@ function F_LOGIN() {
 		"objectschanged": onNodesChanged,
 		"objectsremoved": onNodesRemoved,
 	});
+	// event to recreate tab after changing WME units
+	W.prefs.on({
+		"change:isImperial": onChangeIsImperial,
+	});
 }
