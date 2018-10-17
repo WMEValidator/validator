@@ -3248,7 +3248,7 @@ function F_VALIDATE(disabledHL) {
 				options = getCheckOptions(260, countryCode);
 				if (options[CO_NUMBER] > lock
 					&& address.isOkFor(260))
-					segment.report(260);
+					venue.report(260);
 			}// GROUP isGasStation
 
 			if(venue.$entryExitPoints && venue.$entryExitPoints.length){
