@@ -26,11 +26,14 @@
  * WV RELEASE INFORMATION
  */
 /** WME Validator version @const */
-var WV_VERSION = "2018.09.15";
+var WV_VERSION = "2018.10.17";
 /** Auto-save password. Increase to reset auto-save config. @const */
 var AS_PASSWORD = "v1";
 /** @const */
 var WV_WHATSNEW = ""
+	+ "\nv2018.10.17:"
+	+ "\n- berestovskyy: minor fixes"
+	+ "\n"
 	+ "\nv2018.09.15:"
 	+ "\n- berestovskyy: add custom check variables: speedLimit,"
 	+ "\n  speedLimitAB, speedLimitBA and checkSpeedLimit"
@@ -47,12 +50,6 @@ var WV_WHATSNEW = ""
 	+ "\n- davidakachaos: fix revalidate segment after an edit"
 	+ "\n- davidakachaos: fix checks related to restrictions"
 	+ "\n- other minor fixes"
-	+ "\n"
-	+ "\nv2018.08.28:"
-	+ "\n- davidakachaos: fix switching to/from event mode"
-	+ "\n- davidakachaos: fix 'unneeded node' for segments"
-	+ "\n  with different speeds"
-	+ "\n- davidakachaos: fix WMECH integration bug"
 	;
 /** @const */
 var WV_LICENSE_VERSION = "1";
