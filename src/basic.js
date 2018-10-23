@@ -736,5 +736,5 @@ function onChangeIsImperial() {
 	_RT.$HLedObjects = {};
 	_RT.$HLlayer.destroyFeatures();
 	_RT.$isMapChanged = true;
-	async(F_INIT);
+	async(F_LOGIN);
 }
