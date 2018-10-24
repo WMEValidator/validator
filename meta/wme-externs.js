@@ -247,6 +247,23 @@ Waze.DRIVEPROFILE = function () {
 	this.isEmpty = function () { };
 }
 
+/** @constructor */
+Waze.ROADCLOSURE = function() {
+	this.id = "",
+	this.segID = 0,
+	this.active = true,
+	this.forward = true,
+	this.createdBy = 0,
+	this.createdOn = 0,
+	this.updatedBy = 0,
+	this.updatedOn = 0,
+	this.location = "",
+	this.reason = "",
+	this.endDate = "",
+	this.startDate = "",
+	this.state = null
+}
+
 var CITY = {
 	getID: function () { },
 	attributes: {
@@ -390,6 +407,9 @@ var W = {
 			getByAttributes: function (i) { }
 		},
 		users: {
+			getObjectById: function (i) { }
+		},
+		roadClosures: {
 			getObjectById: function (i) { }
 		}
 	},

@@ -331,6 +331,68 @@ function F_VALIDATE(disabledHL) {
 				function (e) { return new SimpleSEGMENT(e) });
 	}
 
+	/**
+	* Simple roadclosure object constructor
+	* @constructor
+	* @struct
+	* @param {Waze.ROADCLOSURE} obj
+	*/
+	function SimpleROADCLOSURE(obj) {
+		/** @type {string} */
+		this.$id = obj.id;
+		/** @type {number} */
+		this.$segID = obj.segID;
+		/** @type {boolean} */
+		this.$active = obj.active;
+		/** @type {string} */
+		this.$updatedOn = "";
+		/** @type {string} */
+		this.$updatedBy = "";
+		/** @type {number} */
+		this.$updatedByID = 0;
+		/** @type {number} */
+		this.$updatedByLevel = 0;
+		/** @type {string} */
+		this.$createdOn = "";
+		/** @type {string} */
+		this.$createdBy = "";
+		/** @type {number} */
+		this.$createdByID = 0;
+		/** @type {number} */
+		this.$createdByLevel = 0;
+
+		this.$startDate = Date.parse(obj.startDate);
+		this.$endDate = Date.parse(obj.endDate);
+		/** @type {string} */
+		this.$location = obj.location;
+		/** @type {string} */
+		this.$reason = obj.reason;
+
+		if (obj.updatedOn)
+			this.$updatedOn = formatDate('' + obj.updatedOn);
+		if (0 < obj.updatedBy) {
+			this.$updatedByID = obj.updatedBy;
+			this.$updatedBy = getUserName(obj.updatedBy);
+			this.$updatedByLevel = getUserLevel(obj.updatedBy);
+		}
+		if (obj.createdOn)
+			this.$createdOn = formatDate('' + obj.createdOn);
+		if (obj.createdBy) {
+			this.$createdByID = obj.createdBy;
+			this.$createdBy = getUserName(obj.createdBy);
+			this.$createdByLevel = getUserLevel(obj.createdBy);
+		}
+
+		/*
+		 * To avoid any issues with time zones, report expired
+		 * restrictions 1-2 days after.
+		 */
+		var past = new Date();
+		past.setDate(past.getDate() - 2); /* 2..days().ago() */
+		/** @type {boolean} */
+		this.$isInThePast = this.$endDate < past;
+	}
+
 
 	/**
 	 * Simple restriction object constructor
@@ -1535,6 +1597,17 @@ function F_VALIDATE(disabledHL) {
 		return foundPublicConnection;
 	}
 
+	function getRoadClosures(){
+		var roadClosures = [];
+		for (var closureKey in WMo.roadClosures.objects) {
+			var rawClosure = WMo.roadClosures.objects[closureKey];
+			var closure = new SimpleROADCLOSURE(rawClosure);
+			Object.seal(closure);
+			roadClosures.push(closure);
+		}
+		return roadClosures;
+	}
+
 	///////////////////////////////////////////////////////////////////////
 	// FOR ALL SEGMENTS
 
@@ -1548,6 +1621,22 @@ function F_VALIDATE(disabledHL) {
 	var slowChecks = _UI.pSettings.pScanner.oSlowChecks.CHECKED
 		&& 3 < currentZoom;
 	var oExcludeNotes = _UI.pMain.pFilter.oExcludeNotes.CHECKED;
+
+	// Load the road closures
+	var roadClosures = getRoadClosures();
+	// function which returns true if a segment has one(or more) active closures
+	function hasClosure(segment){
+		// filter function to see if a segment has a closure on it.
+		/** @this {SimpleSEGMENT} */
+		function checkForClosure(closure){
+			if (closure.$isInThePast)
+				return false;
+			return closure.$segID == this.$segmentID;
+		}
+		if (0 < roadClosures.filter(checkForClosure, segment).length)
+			return true;
+		return false;
+	}
 
 	var selectedSegments = [];
 	_RT.$HLedObjects = {};
@@ -1687,6 +1776,7 @@ function F_VALIDATE(disabledHL) {
 		var reverseSpeedUnverified = segment.$revMaxSpeedUnverified;
 
 		var hasRestrictions = segment.$hasRestrictions;
+		var hasClosures = hasClosure(segment);
 
 		var flags = segment.$flags;
 
@@ -2010,6 +2100,8 @@ function F_VALIDATE(disabledHL) {
 				// no turn restrictions
 				&& !nodeA.$restrictionsLen
 				&& !segment.$restrictionsLen
+				// Unable to edit if closures are active
+				&& !hasClosures
 				&& isLimitOk(36)
 				&& address.isOkFor(36)) {
 				var otherSegment = nodeA.$otherSegments[0];
@@ -2037,6 +2129,7 @@ function F_VALIDATE(disabledHL) {
 					&& otherSegment.$type === roadType
 					&& otherSegment.$isToll === isToll
 					&& otherSegment.$hasRestrictions === hasRestrictions
+					&& !hasClosure(otherSegment)
 					&& deepCompare(otherSegment.$flags, flags)
 					// 2 & 2 || !2 && !2
 					&& (
@@ -2077,6 +2170,8 @@ function F_VALIDATE(disabledHL) {
 				// no turn restrictions
 				&& !nodeB.$restrictionsLen
 				&& !segment.$restrictionsLen
+				// Unable to edit if closures are active
+				&& !hasClosures
 				&& isLimitOk(37)
 				&& address.isOkFor(37)) {
 				var otherSegment = nodeB.$otherSegments[0];
@@ -2104,6 +2199,8 @@ function F_VALIDATE(disabledHL) {
 					&& otherSegment.$type === roadType
 					&& otherSegment.$isToll === isToll
 					&& otherSegment.$hasRestrictions === hasRestrictions
+					// Unable to edit if closure active on other segment!
+					&& !hasClosure(otherSegment)
 					&& deepCompare(otherSegment.$flags, flags)
 					// 2 & 2 || !2 && !2
 					&& (
