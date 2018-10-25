@@ -3198,18 +3198,10 @@ function F_VALIDATE(disabledHL) {
 				&& isLimitOk(261))
 				venue.report(261);
 			// Check for last update by bots
-			var botNamesAndIDs = [
-				'^waze-maint', '^105774162$',
-				'^waze3rdparty$', '^361008095$',
-				'^WazeParking1$', '^338475699$',
-				'^admin$', '^-1$',
-				'^avsus$', '^107668852$'
-			];
-			var re = new RegExp(botNamesAndIDs.join('|'),'i');
-
-			if ((re.test(venue.$updatedByID.toString()) || re.test(venue.$updatedBy))
-				&& isLimitOk(251)
-				&& address.isOkFor(251))
+			options = getCheckOptions(251, countryCode);
+			if (options[CO_REGEXP].test(venue.$updatedByID.toString())
+				|| options[CO_REGEXP].test(venue.$updatedBy.toString())
+				&& isLimitOk(251))
 				venue.report(251);
 
 			// GROUP isParkingLot
