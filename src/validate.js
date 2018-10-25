@@ -1514,7 +1514,8 @@ function F_VALIDATE(disabledHL) {
 				var otherSegment = seg.$nodeA.$otherSegments[i];
 				if (ignoreSegment && otherSegment === ignoreSegment)
 					continue;
-				if (otherSegment.$rawSegment.isRoutable()) {
+				// Remember; ramps are public too, just not endpoint routable.
+				if (otherSegment.$rawSegment.isRoutable() || RT_RAMP === otherSegment.$type) {
 					foundPublicConnection = true;
 					break;
 				}
@@ -1525,7 +1526,7 @@ function F_VALIDATE(disabledHL) {
 				var otherSegment = seg.$nodeB.$otherSegments[i];
 				if (ignoreSegment && otherSegment === ignoreSegment)
 					continue;
-				if (otherSegment.$rawSegment.isRoutable()) {
+				if (otherSegment.$rawSegment.isRoutable() || RT_RAMP === otherSegment.$type) {
 					foundPublicConnection = true;
 					break;
 				}
