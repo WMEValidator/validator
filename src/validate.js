@@ -3241,7 +3241,7 @@ function F_VALIDATE(disabledHL) {
 			// GROUP isGasStation
 			if (venue.$rawObject.isGasStation()) {
 				// check if brand in name
-				if (venue.$name.indexOf(venue.$brand) === -1
+				if (venue.$name.toLowerCase().indexOf(venue.$brand.toLowerCase()) === -1
 					&& address.isOkFor(259))
 					venue.report(259);
 				//check lock level
