@@ -3184,15 +3184,13 @@ function F_VALIDATE(disabledHL) {
 
 			if (!cityLen
 				&& exceptedCategories.indexOf(venue.$categories[0]) === -1
-				&& isLimitOk(250)
-				&& address.isOkFor(250))
+				&& isLimitOk(250))
 				venue.report(250);
 
 			// GROUP name.length
 			if (!venue.$name.length) {
 				if (venue.$categories[0] === "PARK" && !cityLen
-					&& isLimitOk(258)
-					&& address.isOkFor(258))
+					&& isLimitOk(258))
 					venue.report(258);
 			}
 			// GROUP name.length
