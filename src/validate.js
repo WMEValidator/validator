@@ -3194,6 +3194,9 @@ function F_VALIDATE(disabledHL) {
 					venue.report(258);
 			}
 			// GROUP name.length
+			if (venue.$categories.indexOf('OTHER') > -1
+				&& isLimitOk(261))
+				venue.report(261);
 			// Check for last update by bots
 			var botNamesAndIDs = [
 				'^waze-maint', '^105774162$',
