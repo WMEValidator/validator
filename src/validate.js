@@ -437,6 +437,8 @@ function F_VALIDATE(disabledHL) {
 		/** *type {_WV.SimpleADDRESS} */
 		this.$address = null;
 		/** @type {boolean} */
+		this.$isPoint = false;
+		/** @type {boolean} */
 		this.$isTurnALocked = false;
 		/** @type {boolean} */
 		this.$isTurnBLocked = false;
@@ -559,6 +561,7 @@ function F_VALIDATE(disabledHL) {
 			this.$geometry = attrs.geometry;
 			this.$phone = attrs.phone;
 			this.$url = attrs.url;
+			this.$isPoint = raw.isPoint();
 		}
 
 		this.$isEditable = raw.arePropertiesEditable();
@@ -596,6 +599,7 @@ function F_VALIDATE(disabledHL) {
 			$restrictions: { get: this.getRestrictions },
 			$segmentID: { writable: false },
 			$isRoutable: { writable: false },
+			$isPoint: { writable: false },
 			$isTurnALocked: { writable: false },
 			$isTurnBLocked: { writable: false },
 			$isRoundabout: { writable: false },
@@ -3268,6 +3272,23 @@ function F_VALIDATE(disabledHL) {
 			if (venue.$url && !options[CO_REGEXP].test(venue.$url)
 				&& isLimitOk(263))
 				venue.report(263);
+
+			// GROUP isPoint
+			if (venue.$isPoint) {
+				// Should be a area?
+				options = getCheckOptions(264);
+				if (options[CO_REGEXP].test(venue.$categories[0])
+					&& address.isOkFor(264))
+					venue.report(264);
+			} else {
+				// Should be a point?
+				options = getCheckOptions(265);
+				if (options[CO_REGEXP].test(venue.$categories[0])
+					&& address.isOkFor(265))
+					venue.report(265);
+			}
+			// GROUP isPoint
+
 		} // for all venues
 	}
 
