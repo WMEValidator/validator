@@ -454,6 +454,10 @@ function F_VALIDATE(disabledHL) {
 		this.$categories = [];
 		/** @type {Array} */
 		this.$openingHours = [];
+		/** @type {string} */
+		this.$phone = "";
+		/** @type {string} */
+		this.$url = "";
 		/** @type {Array} */
 		this.$services = [];
 		/** @type {Array} */
@@ -553,6 +557,8 @@ function F_VALIDATE(disabledHL) {
 			this.$alts = attrs.aliases;
 			this.$address = new _WV.SimpleADDRESS(attrs.streetID);
 			this.$geometry = attrs.geometry;
+			this.$phone = attrs.phone;
+			this.$url = attrs.url;
 		}
 
 		this.$isEditable = raw.arePropertiesEditable();
@@ -3251,6 +3257,17 @@ function F_VALIDATE(disabledHL) {
 					&& address.isOkFor(256))
 					venue.report(256)
 			}
+
+			// Check phonenumber
+			options = getCheckOptions(262, countryCode);
+			if (venue.$phone && !options[CO_REGEXP].test(venue.$phone)
+				&& isLimitOk(262))
+				venue.report(262);
+			// Check URL
+			options = getCheckOptions(263, countryCode);
+			if (venue.$url && !options[CO_REGEXP].test(venue.$url)
+				&& isLimitOk(263))
+				venue.report(263);
 		} // for all venues
 	}
 
