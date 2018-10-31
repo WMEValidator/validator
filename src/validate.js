@@ -3214,6 +3214,13 @@ function F_VALIDATE(disabledHL) {
 				&& isLimitOk(251))
 				venue.report(251);
 
+			// Check minium level
+			options = getCheckOptions(266, countryCode);
+			if (options[CO_REGEXP].test(venue.$mainCategory)
+				&& options[CO_NUMBER] > lock
+				&& address.isOkFor(266))
+				venue.report(266);
+
 			// GROUP isParkingLot
 			if (venue.$rawObject.isParkingLot()){
 				var catAttr = venue.$categoryAttributes;
