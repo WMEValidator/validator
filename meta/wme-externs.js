@@ -216,6 +216,7 @@ Waze.SEGMENT = function () {
 		fwdMaxSpeedUnverified: true,
 		revMaxSpeed: 0,
 		revMaxSpeedUnverified: true,
+		hasClosures: false,
 	};
 }
 /** @constructor */

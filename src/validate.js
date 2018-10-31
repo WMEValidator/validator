@@ -552,6 +552,8 @@ function F_VALIDATE(disabledHL) {
 		this.$revMaxSpeedUnverified = false;
 		/** @type {Object} */
 		this.$flags = null;
+		/** @type {boolean} */
+		this.$hasClosures = false;
 
 		var seg = WMo.segments.getObjectById(objID);
 		if (classCodeIs(seg, CC_UNDEFINED) || classCodeIs(seg, CC_NULL))
@@ -611,6 +613,8 @@ function F_VALIDATE(disabledHL) {
 		this.$fwdMaxSpeedUnverified = attrs.fwdMaxSpeedUnverified;
 		this.$revMaxSpeed = getLocalizedValue(+attrs.revMaxSpeed);
 		this.$revMaxSpeedUnverified = attrs.revMaxSpeedUnverified;
+
+		this.$hasClosures = attrs.hasClosures;
 
 		this.$flags = seg.getFlagAttributes();
 
@@ -1597,17 +1601,6 @@ function F_VALIDATE(disabledHL) {
 		return foundPublicConnection;
 	}
 
-	function getRoadClosures(){
-		var roadClosures = [];
-		for (var closureKey in WMo.roadClosures.objects) {
-			var rawClosure = WMo.roadClosures.objects[closureKey];
-			var closure = new SimpleROADCLOSURE(rawClosure);
-			Object.seal(closure);
-			roadClosures.push(closure);
-		}
-		return roadClosures;
-	}
-
 	///////////////////////////////////////////////////////////////////////
 	// FOR ALL SEGMENTS
 
@@ -1621,22 +1614,6 @@ function F_VALIDATE(disabledHL) {
 	var slowChecks = _UI.pSettings.pScanner.oSlowChecks.CHECKED
 		&& 3 < currentZoom;
 	var oExcludeNotes = _UI.pMain.pFilter.oExcludeNotes.CHECKED;
-
-	// Load the road closures
-	var roadClosures = getRoadClosures();
-	// function which returns true if a segment has one(or more) active closures
-	function hasClosure(segment){
-		// filter function to see if a segment has a closure on it.
-		/** @this {SimpleSEGMENT} */
-		function checkForClosure(closure){
-			if (closure.$isInThePast)
-				return false;
-			return closure.$segID == this.$segmentID;
-		}
-		if (0 < roadClosures.filter(checkForClosure, segment).length)
-			return true;
-		return false;
-	}
 
 	var selectedSegments = [];
 	_RT.$HLedObjects = {};
@@ -1776,7 +1753,7 @@ function F_VALIDATE(disabledHL) {
 		var reverseSpeedUnverified = segment.$revMaxSpeedUnverified;
 
 		var hasRestrictions = segment.$hasRestrictions;
-		var hasClosures = hasClosure(segment);
+		var hasClosures = segment.$hasClosures;
 
 		var flags = segment.$flags;
 
@@ -2129,7 +2106,7 @@ function F_VALIDATE(disabledHL) {
 					&& otherSegment.$type === roadType
 					&& otherSegment.$isToll === isToll
 					&& otherSegment.$hasRestrictions === hasRestrictions
-					&& !hasClosure(otherSegment)
+					&& !otherSegment.$hasClosures
 					&& deepCompare(otherSegment.$flags, flags)
 					// 2 & 2 || !2 && !2
 					&& (
@@ -2200,7 +2177,7 @@ function F_VALIDATE(disabledHL) {
 					&& otherSegment.$isToll === isToll
 					&& otherSegment.$hasRestrictions === hasRestrictions
 					// Unable to edit if closure active on other segment!
-					&& !hasClosure(otherSegment)
+					&& !otherSegment.$hasClosures
 					&& deepCompare(otherSegment.$flags, flags)
 					// 2 & 2 || !2 && !2
 					&& (
