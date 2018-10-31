@@ -545,9 +545,9 @@ function F_VALIDATE(disabledHL) {
 		});
 		this.$restrictionsLen = attrs.restrictions.length;
 		// set speedlimits
-		this.$fwdMaxSpeed = getLocalizedValue(+attrs.fwdMaxSpeed);
+		this.$fwdMaxSpeed = getLocalizedValue(+attrs.fwdMaxSpeed, this.$address.$country);
 		this.$fwdMaxSpeedUnverified = attrs.fwdMaxSpeedUnverified;
-		this.$revMaxSpeed = getLocalizedValue(+attrs.revMaxSpeed);
+		this.$revMaxSpeed = getLocalizedValue(+attrs.revMaxSpeed, this.$address.$country);
 		this.$revMaxSpeedUnverified = attrs.revMaxSpeedUnverified;
 
 		this.$flags = seg.getFlagAttributes();
