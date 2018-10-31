@@ -1202,9 +1202,12 @@ function F_LOGIN() {
 	WM.addLayer(_RT.$HLlayer);
 	_RT.$HLlayer.setVisibility(_UI.pSettings.pScanner.oHLReported.CHECKED);
 	WM.raiseLayer(_RT.$HLlayer, 99);
+	// prevent double tabs when switching between isImperial pref
+	$('#sidepanel-' + ID_PREFIX + '').remove();
+	$('#tab-' + ID_PREFIX + '').remove();
 
 	// Create Validator tab
-	$('#user-tabs ul').append('<li>'
+	$('#user-tabs ul').append('<li id="tab-' + ID_PREFIX + '">'
 		+ '<a data-toggle="tab" href="#sidepanel-' + ID_PREFIX + '">'
 		+ '<span class="fa fa-check-square-o"></span>'
 		// + '<span class="c' + CL_COLLAPSE + '"> Validator:</span>'
@@ -1247,5 +1250,9 @@ function F_LOGIN() {
 	WMo.nodes.on({
 		"objectschanged": onNodesChanged,
 		"objectsremoved": onNodesRemoved,
+	});
+	// event to recreate tab after changing WME units
+	W.prefs.on({
+		"change:isImperial": onChangeIsImperial,
 	});
 }
