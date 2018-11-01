@@ -437,6 +437,8 @@ function F_VALIDATE(disabledHL) {
 		/** *type {_WV.SimpleADDRESS} */
 		this.$address = null;
 		/** @type {boolean} */
+		this.$isPoint = false;
+		/** @type {boolean} */
 		this.$isTurnALocked = false;
 		/** @type {boolean} */
 		this.$isTurnBLocked = false;
@@ -454,6 +456,10 @@ function F_VALIDATE(disabledHL) {
 		this.$categories = [];
 		/** @type {Array} */
 		this.$openingHours = [];
+		/** @type {string} */
+		this.$phone = "";
+		/** @type {string} */
+		this.$url = "";
 		/** @type {Array} */
 		this.$services = [];
 		/** @type {Array} */
@@ -553,6 +559,9 @@ function F_VALIDATE(disabledHL) {
 			this.$alts = attrs.aliases;
 			this.$address = new _WV.SimpleADDRESS(attrs.streetID);
 			this.$geometry = attrs.geometry;
+			this.$phone = attrs.phone;
+			this.$url = attrs.url;
+			this.$isPoint = raw.isPoint();
 		}
 
 		this.$isEditable = raw.arePropertiesEditable();
@@ -590,6 +599,7 @@ function F_VALIDATE(disabledHL) {
 			$restrictions: { get: this.getRestrictions },
 			$segmentID: { writable: false },
 			$isRoutable: { writable: false },
+			$isPoint: { writable: false },
 			$isTurnALocked: { writable: false },
 			$isTurnBLocked: { writable: false },
 			$isRoundabout: { writable: false },
@@ -3184,31 +3194,24 @@ function F_VALIDATE(disabledHL) {
 
 			if (!cityLen
 				&& exceptedCategories.indexOf(venue.$categories[0]) === -1
-				&& isLimitOk(250)
-				&& address.isOkFor(250))
+				&& isLimitOk(250))
 				venue.report(250);
 
 			// GROUP name.length
 			if (!venue.$name.length) {
 				if (venue.$categories[0] === "PARK" && !cityLen
-					&& isLimitOk(258)
-					&& address.isOkFor(258))
+					&& isLimitOk(258))
 					venue.report(258);
 			}
 			// GROUP name.length
+			if (venue.$categories.indexOf('OTHER') > -1
+				&& isLimitOk(261))
+				venue.report(261);
 			// Check for last update by bots
-			var botNamesAndIDs = [
-				'^waze-maint', '^105774162$',
-				'^waze3rdparty$', '^361008095$',
-				'^WazeParking1$', '^338475699$',
-				'^admin$', '^-1$',
-				'^avsus$', '^107668852$'
-			];
-			var re = new RegExp(botNamesAndIDs.join('|'),'i');
-
-			if ((re.test(venue.$updatedByID.toString()) || re.test(venue.$updatedBy))
-				&& isLimitOk(251)
-				&& address.isOkFor(251))
+			options = getCheckOptions(251, countryCode);
+			if (options[CO_REGEXP].test(venue.$updatedByID.toString())
+				|| options[CO_REGEXP].test(venue.$updatedBy.toString())
+				&& isLimitOk(251))
 				venue.report(251);
 
 			// GROUP isParkingLot
@@ -3241,7 +3244,7 @@ function F_VALIDATE(disabledHL) {
 			// GROUP isGasStation
 			if (venue.$rawObject.isGasStation()) {
 				// check if brand in name
-				if (venue.$name.indexOf(venue.$brand) === -1
+				if (venue.$name.toLowerCase().indexOf(venue.$brand.toLowerCase()) === -1
 					&& address.isOkFor(259))
 					venue.report(259);
 				//check lock level
@@ -3258,6 +3261,46 @@ function F_VALIDATE(disabledHL) {
 					&& address.isOkFor(256))
 					venue.report(256)
 			}
+
+			// Check phonenumber
+			options = getCheckOptions(262, countryCode);
+			if (venue.$phone && !options[CO_REGEXP].test(venue.$phone)
+				&& isLimitOk(262))
+				venue.report(262);
+			// Check URL
+			options = getCheckOptions(263, countryCode);
+			if (venue.$url && !options[CO_REGEXP].test(venue.$url)
+				&& isLimitOk(263))
+				venue.report(263);
+
+			// GROUP isPoint
+			if (venue.$isPoint) {
+				// Should be a area?
+				options = getCheckOptions(264, countryCode);
+				if (options[CO_REGEXP].test(venue.$categories[0])
+					&& address.isOkFor(264))
+					venue.report(264);
+			} else {
+				// Should be a point?
+				options = getCheckOptions(265, countryCode);
+				if (options[CO_REGEXP].test(venue.$categories[0])
+					&& address.isOkFor(265))
+					venue.report(265);
+			}
+			// GROUP isPoint
+			// Check minium level 2
+			options = getCheckOptions(266, countryCode);
+			if (options[CO_REGEXP].test(venue.$categories[0])
+				&& options[CO_NUMBER] > lock
+				&& address.isOkFor(266))
+				venue.report(266);
+			// Check minium level 3
+			options = getCheckOptions(267, countryCode);
+			if (options[CO_REGEXP].test(venue.$categories[0])
+				&& options[CO_NUMBER] > lock
+				&& address.isOkFor(267))
+				venue.report(267);
+
 		} // for all venues
 	}
 

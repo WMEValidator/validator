@@ -428,10 +428,12 @@ var W = {
 		segments: {
 			getObjectArray: function () { },
 			getObjectById: function (e) { },
+			events: { on: 0, un: 0 },
 			objects: {},
 			topCityID: 0
 		},
 		nodes: {
+			events: { on: 0, un: 0 },
 			getObjectById: function (i) { }
 		},
 		streets: {
@@ -452,6 +454,7 @@ var W = {
 			getObjectById: function (i) { }
 		},
 		venues: {
+			events: { on: 0, un: 0 },
 			objects: {},
 			getObjectById: function (i) { }
 		},

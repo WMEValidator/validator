@@ -1247,11 +1247,16 @@ function F_LOGIN() {
 		"loadstart": onLoadStart,
 	});
 
-	// monitor segments and nodes changes
+	// monitor segments, venues and nodes changes
 	WMo.segments.on({
 		"objectsadded": onSegmentsAdded,
 		"objectschanged": onSegmentsChanged,
 		"objectsremoved": onSegmentsRemoved,
+	});
+	WMo.venues.on({
+		"objectsadded": onVenuesAdded,
+		"objectschanged": onVenuesChanged,
+		"objectsremoved": onVenuesRemoved,
 	});
 	WMo.nodes.on({
 		"objectschanged": onNodesChanged,

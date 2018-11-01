@@ -709,7 +709,7 @@ function onSegmentsRemoved(e) {
 			sync(F_ONSEGMENTSCHANGED, e);
 }
 /**
- * Segments Removed Handler
+ * Segments Added Handler
  */
 function onSegmentsAdded(e) {
 	_RT.$isMapChanged = true;
@@ -730,4 +730,27 @@ function onNodesRemoved(e) {
 	if (1 === e.length)
 		if (RTStateIs(ST_STOP) || RTStateIs(ST_PAUSE))
 			sync(F_ONNODESCHANGED, e);
+}
+/**
+ * Venues Added Handler
+ */
+function onVenuesAdded(e) {
+	_RT.$isMapChanged = true;
+}
+
+/**
+ * Venues Changed Handler
+ */
+function onVenuesChanged(e) {
+	_RT.$isMapChanged = true;
+	sync(F_ONVENUESCHANGED, e);
+}
+/**
+ * Venues Removed Handler
+ */
+function onVenuesRemoved(e) {
+	_RT.$isMapChanged = true;
+	if (1 === e.length)
+		if (RTStateIs(ST_STOP) || RTStateIs(ST_PAUSE))
+			sync(F_ONVENUESCHANGED, e);
 }

@@ -56,6 +56,21 @@ function F_ONNODESCHANGED(e) {
 }
 
 /**
+* On Venues Changed Handler
+*/
+function F_ONVENUESCHANGED(e) {
+	// add nearby venues to _RT.$revalidate
+	var reHL = false;
+	for (var i = e.length - 1; i >= 0; i--) {
+		var id = e[i].attributes.id;
+		_RT.$revalidate[id] = true;
+		reHL = true;
+	}
+	if (reHL)
+		HLAllSegments();
+}
+
+/**
  * On Change Layer Handler
  */
 function F_ONCHANGELAYER(e) {
@@ -1145,11 +1160,16 @@ function F_LOGOUT() {
 		"loadstart": onLoadStart,
 	});
 
-	// monitor segments and nodes changes
+	// monitor segments, venues and nodes changes
 	WMo.segments.events.un({
 		"objectsadded": onSegmentsAdded,
 		"objectschanged": onSegmentsChanged,
 		"objectsremoved": onSegmentsRemoved,
+	});
+	WMo.venues.events.un({
+		"objectsadded": onVenuesAdded,
+		"objectschanged": onVenuesChanged,
+		"objectsremoved": onVenuesRemoved,
 	});
 	WMo.nodes.events.un({
 		"objectschanged": onNodesChanged,
