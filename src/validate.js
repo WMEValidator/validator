@@ -3214,13 +3214,6 @@ function F_VALIDATE(disabledHL) {
 				&& isLimitOk(251))
 				venue.report(251);
 
-			// Check minium level
-			options = getCheckOptions(266, countryCode);
-			if (options[CO_REGEXP].test(venue.$mainCategory)
-				&& options[CO_NUMBER] > lock
-				&& address.isOkFor(266))
-				venue.report(266);
-
 			// GROUP isParkingLot
 			if (venue.$rawObject.isParkingLot()){
 				var catAttr = venue.$categoryAttributes;
@@ -3283,18 +3276,30 @@ function F_VALIDATE(disabledHL) {
 			// GROUP isPoint
 			if (venue.$isPoint) {
 				// Should be a area?
-				options = getCheckOptions(264);
+				options = getCheckOptions(264, countryCode);
 				if (options[CO_REGEXP].test(venue.$categories[0])
 					&& address.isOkFor(264))
 					venue.report(264);
 			} else {
 				// Should be a point?
-				options = getCheckOptions(265);
+				options = getCheckOptions(265, countryCode);
 				if (options[CO_REGEXP].test(venue.$categories[0])
 					&& address.isOkFor(265))
 					venue.report(265);
 			}
 			// GROUP isPoint
+			// Check minium level 2
+			options = getCheckOptions(266, countryCode);
+			if (options[CO_REGEXP].test(venue.$categories[0])
+				&& options[CO_NUMBER] > lock
+				&& address.isOkFor(266))
+				venue.report(266);
+			// Check minium level 3
+			options = getCheckOptions(267, countryCode);
+			if (options[CO_REGEXP].test(venue.$categories[0])
+				&& options[CO_NUMBER] > lock
+				&& address.isOkFor(267))
+				venue.report(267);
 
 		} // for all venues
 	}
