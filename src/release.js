@@ -26,11 +26,20 @@
  * WV RELEASE INFORMATION
  */
 /** WME Validator version @const */
-var WV_VERSION = "2018.10.17";
+var WV_VERSION = "2018.11.01";
 /** Auto-save password. Increase to reset auto-save config. @const */
 var AS_PASSWORD = "v1";
 /** @const */
 var WV_WHATSNEW = ""
+	+ "\nv2018.11.01:"
+	+ "\n- davidakachaos: Added check for category OTHER"
+	+ "\n- davidakachaos: Added check for brand name in Gas Station name"
+	+ "\n- davidakachaos: Added check for phone number and URL"
+	+ "\n- davidakachaos: Added check for point vs area places"
+	+ "\n- davidakachaos: Added check for lock level for certain places"
+	+ "\n- davidakachaos: Monitor venue changes like segments"
+	+ "\n- davidakachaos: Added Dutch translations"
+	+ "\n"
 	+ "\nv2018.10.17:"
 	+ "\n- berestovskyy: minor fixes"
 	+ "\n"
@@ -43,13 +52,6 @@ var WV_WHATSNEW = ""
 	+ "\nv2018.09.13:"
 	+ "\n- davidakachaos: new checks for unverified/unset/wrong speed limit"
 	+ "\n- davidakachaos: enabled/adjusted some checks for NL"
-	+ "\n"
-	+ "\nv2018.09.12:"
-	+ "\n- davidakachaos: fix 'Show report' and other pop up windows"
-	+ "\n- davidakachaos: new check #220 'No connection for public segment'"
-	+ "\n- davidakachaos: fix revalidate segment after an edit"
-	+ "\n- davidakachaos: fix checks related to restrictions"
-	+ "\n- other minor fixes"
 	;
 /** @const */
 var WV_LICENSE_VERSION = "1";
