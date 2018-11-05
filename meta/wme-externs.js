@@ -33,6 +33,17 @@ var I18n = {
 }
 
 ///////////////////////////////////////////////////////////////////////////
+// WazeWrap Namespace
+/** @type {Object} */
+var WazeWrap = {
+	Interface: {
+		Shortcut: {
+			add:  function () { },
+		}
+	}
+}
+
+///////////////////////////////////////////////////////////////////////////
 // OpenLayers Namespace
 /** @type {Object} */
 var OpenLayers = {

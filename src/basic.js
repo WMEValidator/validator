@@ -738,3 +738,12 @@ function onChangeIsImperial() {
 	_RT.$isMapChanged = true;
 	async(F_LOGIN);
 }
+
+/**
+* Toggle WME Validator from shortcut
+*/
+function onToggleValidator(){
+	// switch Validator on/off
+	_RT.$switchValidator = true;
+	async(F_UPDATEUI);
+}

@@ -5,6 +5,7 @@
 // @match               https://beta.waze.com/*editor*
 // @match               https://www.waze.com/*editor*
 // @exclude             https://www.waze.com/*user/*editor/*
+// @require             https://greasyfork.org/scripts/24851-wazewrap/code/WazeWrap.js
 // @grant               none
 // @icon                https://raw.githubusercontent.com/WMEValidator/release/master/img/WV-icon96.png
 // @namespace           a

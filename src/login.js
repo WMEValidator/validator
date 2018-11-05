@@ -1217,6 +1217,9 @@ function F_LOGIN() {
 	$('#user-tabs+div.tab-content').append(
 		'<div class="tab-pane" id="sidepanel-' + ID_PREFIX + '"></div>'
 	);
+	// Create Shortcut
+	new WazeWrap.Interface.Shortcut(GL_LAYERACCEL, 'Toggle WME Validator',
+		'wmevalidator', 'WME Validator', GL_LAYERSHORTCUT, onToggleValidator, null).add();
 	// append user interface after the details or ad the bottom
 	_THUI.appendUI(document.getElementById("sidepanel-" + ID_PREFIX),
 		_UI, "i" + ID_PREFIX);
