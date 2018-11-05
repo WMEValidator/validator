@@ -983,11 +983,15 @@ function F_UPDATEUI(e) {
 		if (_UI.pSettings.pScanner.oHLReported.CHECKED) {
 			ForceHLAllSegments();
 			_RT.$HLlayer.setVisibility(true);
+			// Check the layer in layer switcher
+			$('#layer-switcher-item_wme_validator').prop('checked', true);
 		}
 		else {
 			ForceHLAllSegments();
 			destroyHLs();
 			_RT.$HLlayer.setVisibility(false);
+			// Uncheck the layer in layer switcher
+			$('#layer-switcher-item_wme_validator').prop('checked', false);
 		}
 		_RT.$switchValidator = false;
 	}

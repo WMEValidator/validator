@@ -39,7 +39,8 @@ var WazeWrap = {
 	Interface: {
 		Shortcut: {
 			add:  function () { },
-		}
+		},
+		AddLayerCheckbox: function(group, checkboxText, checked, callback) { },
 	}
 }
 

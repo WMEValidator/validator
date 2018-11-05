@@ -1220,6 +1220,9 @@ function F_LOGIN() {
 	// Create Shortcut
 	new WazeWrap.Interface.Shortcut(GL_LAYERACCEL, 'Toggle WME Validator',
 		'wmevalidator', 'WME Validator', GL_LAYERSHORTCUT, onToggleValidator, null).add();
+
+	new WazeWrap.Interface.AddLayerCheckbox("issues", GL_LAYERNAME, _UI.pSettings.pScanner.oHLReported.CHECKED, onToggleValidator)
+
 	// append user interface after the details or ad the bottom
 	_THUI.appendUI(document.getElementById("sidepanel-" + ID_PREFIX),
 		_UI, "i" + ID_PREFIX);
