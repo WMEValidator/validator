@@ -331,6 +331,68 @@ function F_VALIDATE(disabledHL) {
 				function (e) { return new SimpleSEGMENT(e) });
 	}
 
+	/**
+	* Simple roadclosure object constructor
+	* @constructor
+	* @struct
+	* @param {Waze.ROADCLOSURE} obj
+	*/
+	function SimpleROADCLOSURE(obj) {
+		/** @type {string} */
+		this.$id = obj.id;
+		/** @type {number} */
+		this.$segID = obj.segID;
+		/** @type {boolean} */
+		this.$active = obj.active;
+		/** @type {string} */
+		this.$updatedOn = "";
+		/** @type {string} */
+		this.$updatedBy = "";
+		/** @type {number} */
+		this.$updatedByID = 0;
+		/** @type {number} */
+		this.$updatedByLevel = 0;
+		/** @type {string} */
+		this.$createdOn = "";
+		/** @type {string} */
+		this.$createdBy = "";
+		/** @type {number} */
+		this.$createdByID = 0;
+		/** @type {number} */
+		this.$createdByLevel = 0;
+
+		this.$startDate = Date.parse(obj.startDate);
+		this.$endDate = Date.parse(obj.endDate);
+		/** @type {string} */
+		this.$location = obj.location;
+		/** @type {string} */
+		this.$reason = obj.reason;
+
+		if (obj.updatedOn)
+			this.$updatedOn = formatDate('' + obj.updatedOn);
+		if (0 < obj.updatedBy) {
+			this.$updatedByID = obj.updatedBy;
+			this.$updatedBy = getUserName(obj.updatedBy);
+			this.$updatedByLevel = getUserLevel(obj.updatedBy);
+		}
+		if (obj.createdOn)
+			this.$createdOn = formatDate('' + obj.createdOn);
+		if (obj.createdBy) {
+			this.$createdByID = obj.createdBy;
+			this.$createdBy = getUserName(obj.createdBy);
+			this.$createdByLevel = getUserLevel(obj.createdBy);
+		}
+
+		/*
+		 * To avoid any issues with time zones, report expired
+		 * restrictions 1-2 days after.
+		 */
+		var past = new Date();
+		past.setDate(past.getDate() - 2); /* 2..days().ago() */
+		/** @type {boolean} */
+		this.$isInThePast = this.$endDate < past;
+	}
+
 
 	/**
 	 * Simple restriction object constructor
@@ -490,6 +552,8 @@ function F_VALIDATE(disabledHL) {
 		this.$revMaxSpeedUnverified = false;
 		/** @type {Object} */
 		this.$flags = null;
+		/** @type {boolean} */
+		this.$hasClosures = false;
 
 		var seg = WMo.segments.getObjectById(objID);
 		if (classCodeIs(seg, CC_UNDEFINED) || classCodeIs(seg, CC_NULL))
@@ -549,6 +613,8 @@ function F_VALIDATE(disabledHL) {
 		this.$fwdMaxSpeedUnverified = attrs.fwdMaxSpeedUnverified;
 		this.$revMaxSpeed = getLocalizedValue(+attrs.revMaxSpeed);
 		this.$revMaxSpeedUnverified = attrs.revMaxSpeedUnverified;
+
+		this.$hasClosures = attrs.hasClosures;
 
 		this.$flags = seg.getFlagAttributes();
 
@@ -1688,6 +1754,7 @@ function F_VALIDATE(disabledHL) {
 		var reverseSpeedUnverified = segment.$revMaxSpeedUnverified;
 
 		var hasRestrictions = segment.$hasRestrictions;
+		var hasClosures = segment.$hasClosures;
 
 		var flags = segment.$flags;
 
@@ -2011,6 +2078,8 @@ function F_VALIDATE(disabledHL) {
 				// no turn restrictions
 				&& !nodeA.$restrictionsLen
 				&& !segment.$restrictionsLen
+				// Unable to edit if closures are active
+				&& !hasClosures
 				&& isLimitOk(36)
 				&& address.isOkFor(36)) {
 				var otherSegment = nodeA.$otherSegments[0];
@@ -2038,6 +2107,7 @@ function F_VALIDATE(disabledHL) {
 					&& otherSegment.$type === roadType
 					&& otherSegment.$isToll === isToll
 					&& otherSegment.$hasRestrictions === hasRestrictions
+					&& !otherSegment.$hasClosures
 					&& deepCompare(otherSegment.$flags, flags)
 					// 2 & 2 || !2 && !2
 					&& (
@@ -2078,6 +2148,8 @@ function F_VALIDATE(disabledHL) {
 				// no turn restrictions
 				&& !nodeB.$restrictionsLen
 				&& !segment.$restrictionsLen
+				// Unable to edit if closures are active
+				&& !hasClosures
 				&& isLimitOk(37)
 				&& address.isOkFor(37)) {
 				var otherSegment = nodeB.$otherSegments[0];
@@ -2105,6 +2177,8 @@ function F_VALIDATE(disabledHL) {
 					&& otherSegment.$type === roadType
 					&& otherSegment.$isToll === isToll
 					&& otherSegment.$hasRestrictions === hasRestrictions
+					// Unable to edit if closure active on other segment!
+					&& !otherSegment.$hasClosures
 					&& deepCompare(otherSegment.$flags, flags)
 					// 2 & 2 || !2 && !2
 					&& (
