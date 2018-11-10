@@ -26,11 +26,17 @@
  * WV RELEASE INFORMATION
  */
 /** WME Validator version @const */
-var WV_VERSION = "2018.10.16";
+var WV_VERSION = "2018.11.10";
 /** Auto-save password. Increase to reset auto-save config. @const */
 var AS_PASSWORD = "v1";
 /** @const */
 var WV_WHATSNEW = ""
+	+ "\nv2018.11.10:"
+	+ "\n- davidakachaos: fix streets isolated by ramps"
+	+ "\n- davidakachaos: fix recover from preference change"
+	+ "\n- davidakachaos: add road closures to fix #36 and #37"
+	+ "\n- davidakachaos: fix speed limit issues on borders"
+	+ "\n"
 	+ "\nv2018.10.16:"
 	+ "\n- berestovskyy: fix check 38 Expired segment restrictions"
 	+ "\n- davidakachaos: fix check 36, 37 Unneeded node A/B"
@@ -44,12 +50,6 @@ var WV_WHATSNEW = ""
 	+ "\n- davidakachaos: adjust reports in segment properties"
 	+ "\n- davidakachaos: fix restrictions bug"
 	+ "\n- carloslaso: add Mexico localization"
-	+ "\n"
-	+ "\nv2018.09.15:"
-	+ "\n- berestovskyy: add custom check variables: speedLimit,"
-	+ "\n  speedLimitAB, speedLimitBA and checkSpeedLimit"
-	+ "\n- berestovskyy: ignore speed limits issues on streets and ramps."
-	+ "\n  Please use custom checks instead."
 	;
 /** @const */
 var WV_LICENSE_VERSION = "1";

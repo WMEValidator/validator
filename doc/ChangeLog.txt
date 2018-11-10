@@ -1,5 +1,11 @@
 Current changes:
 
+v2018.11.10:
+- davidakachaos: fix streets isolated by ramps
+- davidakachaos: fix recover from preference change
+- davidakachaos: add road closures to fix #36 and #37
+- davidakachaos: fix speed limit issues on borders
+
 v2018.10.16:
 - berestovskyy: fix check 38 Expired segment restrictions
 - davidakachaos: fix check 36, 37 Unneeded node A/B
