@@ -143,8 +143,14 @@ function getDirection(seg) {
 	return (seg.attributes.fwdDirection ? 1 : 0) + (seg.attributes.revDirection ? 2 : 0);
 };
 
-function getLocalizedValue(val) {
+function getLocalizedValue(val, country) {
 	var ipu = OpenLayers.INCHES_PER_UNIT;
-	return W.model.isImperial ?
+	var mph = false;
+	if ((country == "United Kingdom") ||
+		(country == "Jersey") ||
+		(country == "Guernsey") ||
+		(country == "United States"))
+		mph = true;
+	return mph ?
 		Math.round(val * ipu["km"] / ipu["mi"]) : val;
 }
