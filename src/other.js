@@ -434,7 +434,7 @@ function F_INIT() {
 	WM = nW.map;
 	WMo = nW.model;
 	WC = nW.controller;
-	if (!Wa || !WLM || !WSM || !WM || !WMo || !WC || !WazeWrap || !$("#user-tabs")) {
+	if (!Wa || !WLM || !WSM || !WM || !WMo || !WC || !$("#user-tabs")) {
 		log("waiting for WME...")
 		async(F_INIT, null, 1e3);
 		return;

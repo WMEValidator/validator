@@ -154,3 +154,69 @@ function getLocalizedValue(val, country) {
 	return mph ?
 		Math.round(val * ipu["km"] / ipu["mi"]) : val;
 }
+
+// Function from WazeWrap with permission from justins83
+function AddLayerCheckbox(group, checkboxText, checked, callback){
+	group = group.toLowerCase();
+	var normalizedText = checkboxText.toLowerCase().replace(/\s/g, '_');
+	var checkboxID = "layer-switcher-item_" + normalizedText;
+	var groupPrefix = 'layer-switcher-group_';
+	var groupClass = groupPrefix + group.toLowerCase();
+	sessionStorage[normalizedText] = checked;
+
+	var CreateParentGroup = function(groupChecked){
+		var groupList = $('.layer-switcher').find('.list-unstyled.togglers');
+		var checkboxText = group.charAt(0).toUpperCase() + group.substr(1);
+		var newLI = $('<li class="group">');
+		newLI.html([
+			'<div class="controls-container toggler">',
+			'<input class="' + groupClass + '" id="' + groupClass + '" type="checkbox" ' + (groupChecked ? 'checked' : '') +'>',
+			'<label for="' + groupClass + '">',
+			'<span class="label-text">'+ checkboxText + '</span>',
+			'</label></div>',
+			'<ul class="children"></ul>'
+		].join(' '));
+
+		groupList.append(newLI);
+		$('#' + groupClass).change(function(){sessionStorage[groupClass] = this.checked;});
+	};
+
+	if(group !== "issues" && group !== "places" && group !== "road" && group !== "display") //"non-standard" group, check its existence
+		if($('.'+groupClass).length === 0){ //Group doesn't exist yet, create it
+			var isParentChecked = (typeof sessionStorage[groupClass] == "undefined" ? true : sessionStorage[groupClass]=='true');
+			CreateParentGroup(isParentChecked);  //create the group
+			sessionStorage[groupClass] = isParentChecked;
+
+			W.app.modeController.model.bind('change:mode', function(model, modeId, context){ //make it reappear after changing modes
+				CreateParentGroup((sessionStorage[groupClass]=='true'));
+			});
+		}
+
+	var buildLayerItem = function(isChecked){
+		var groupChildren = $("."+groupClass).parent().parent().find('.children').not('.extended');
+		var  $li = $('<li>');
+		$li.html([
+			'<div class="controls-container toggler">',
+			'<input type="checkbox" id="' + checkboxID + '"  class="' + checkboxID + ' toggle">',
+			'<label for="' + checkboxID + '"><span class="label-text">' + checkboxText + '</span></label>',
+			'</div>',
+		].join(' '));
+
+		groupChildren.append($li);
+		$('#' + checkboxID).prop('checked', isChecked);
+		$('#' + checkboxID).change(function(){callback(this.checked); sessionStorage[normalizedText] = this.checked;});
+		if(!$('#' + groupClass).is(':checked')){
+			$('#' + checkboxID).prop('disabled', true);
+			callback(false);
+		}
+
+		$('#' + groupClass).change(function(){$('#' + checkboxID).prop('disabled', !this.checked); callback(!this.checked ? false : sessionStorage[normalizedText]=='true');});
+	};
+
+
+	W.app.modeController.model.bind('change:mode', function(model, modeId, context){
+		buildLayerItem((sessionStorage[normalizedText]=='true'));
+	});
+
+	buildLayerItem(checked);
+};
