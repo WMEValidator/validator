@@ -142,6 +142,10 @@ function deepCompare(obj1, obj2) {
 function getDirection(seg) {
 	return (seg.attributes.fwdDirection ? 1 : 0) + (seg.attributes.revDirection ? 2 : 0);
 };
+function reverseDirection(dir) {
+	// switch bit 0 and 1
+	return (dir << 1 | dir >> 1) & 3;
+};
 
 function getLocalizedValue(val, country) {
 	var ipu = OpenLayers.INCHES_PER_UNIT;
