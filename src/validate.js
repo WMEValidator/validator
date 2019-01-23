@@ -548,6 +548,9 @@ function F_VALIDATE(disabledHL) {
 			// Set venue only properties
 			this.$name = attrs.name;
 			this.$brand = attrs.brand;
+			if (this.$brand === null){
+				this.$brand = "";
+			}
 			this.$isApproved = attrs.approved;
 			this.$mainCategory = raw.getMainCategory();
 			this.$categories = attrs.categories;
