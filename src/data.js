@@ -470,7 +470,7 @@ var SZ_PANEL_HEIGHT = 190;
  * Scan constants
  */
 /** @const */
-var SCAN_ZOOM = 4;
+var SCAN_ZOOM = 5;
 /** @const */
 var SCAN_STEP = 100;
 
