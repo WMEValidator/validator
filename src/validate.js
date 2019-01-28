@@ -3188,6 +3188,7 @@ function F_VALIDATE(disabledHL) {
 			var cityLen = city.length;
 			var cityID = address.$cityID;
 			var street = address.$street;
+			var streetLen = street.length;
 			var state = address.$state;
 			var streetLen = street.length;
 			var alts = venue.$alts;
@@ -3199,6 +3200,11 @@ function F_VALIDATE(disabledHL) {
 				&& exceptedCategories.indexOf(venue.$categories[0]) === -1
 				&& isLimitOk(250))
 				venue.report(250);
+
+			if (!streetLen
+				&& exceptedCategories.indexOf(venue.$categories[0]) === -1
+				&& isLimitOk(268))
+				venue.report(268);
 
 			// GROUP name.length
 			if (!venue.$name.length) {
