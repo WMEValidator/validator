@@ -3194,7 +3194,7 @@ function F_VALIDATE(disabledHL) {
 			var alts = venue.$alts;
 			var lock = venue.$lock;
 
-			var exceptedCategories ='BRIDGE|ISLAND|FOREST_GROVE|SEA_LAKE_POOL|RIVER_STREAM|CANAL|DAM|TUNNEL|JUNCTION_INTERCHANGE'.split('|');
+			var exceptedCategories ='NATURAL_FEATURES|BRIDGE|ISLAND|FOREST_GROVE|SEA_LAKE_POOL|RIVER_STREAM|CANAL|DAM|TUNNEL|JUNCTION_INTERCHANGE'.split('|');
 
 			if (!cityLen
 				&& exceptedCategories.indexOf(venue.$categories[0]) === -1
