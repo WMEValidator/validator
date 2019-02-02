@@ -26,11 +26,14 @@
  * WV RELEASE INFORMATION
  */
 /** WME Validator version @const */
-var WV_VERSION = "2018.11.01";
+var WV_VERSION = "2019.02.02";
 /** Auto-save password. Increase to reset auto-save config. @const */
 var AS_PASSWORD = "v1";
 /** @const */
 var WV_WHATSNEW = ""
+	+ "\nv2019.02.02:"
+	+ "\n- davidakachaos: new checks for venues"
+	+ "\n- davidakachaos: enabled/adjusted some checks for NL"
 	+ "\nv2018.11.01:"
 	+ "\n- davidakachaos: Added check for category OTHER"
 	+ "\n- davidakachaos: Added check for brand name in Gas Station name"
