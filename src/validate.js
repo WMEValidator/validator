@@ -3194,15 +3194,15 @@ function F_VALIDATE(disabledHL) {
 			var alts = venue.$alts;
 			var lock = venue.$lock;
 
-			var exceptedCategories ='NATURAL_FEATURES|BRIDGE|ISLAND|FOREST_GROVE|SEA_LAKE_POOL|RIVER_STREAM|CANAL|DAM|TUNNEL|JUNCTION_INTERCHANGE'.split('|');
-
+			options = getCheckOptions(250, countryCode);
 			if (!cityLen
-				&& exceptedCategories.indexOf(venue.$categories[0]) === -1
+				&& !options[CO_REGEXP].test(venue.$categories[0])
 				&& isLimitOk(250))
 				venue.report(250);
 
+			options = getCheckOptions(268, countryCode);
 			if (!streetLen
-				&& exceptedCategories.indexOf(venue.$categories[0]) === -1
+				&& !options[CO_REGEXP].test(venue.$categories[0])
 				&& isLimitOk(268))
 				venue.report(268);
 
