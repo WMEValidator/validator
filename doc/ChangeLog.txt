@@ -1,5 +1,8 @@
 Current changes:
 
+v2019.02.26:
+- berestovskyy: hot fixes for latests WME
+
 v2018.11.10:
 - davidakachaos: fix streets isolated by ramps
 - davidakachaos: fix recover from preference change

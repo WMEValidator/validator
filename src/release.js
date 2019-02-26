@@ -26,11 +26,14 @@
  * WV RELEASE INFORMATION
  */
 /** WME Validator version @const */
-var WV_VERSION = "2018.11.10";
+var WV_VERSION = "2019.02.26";
 /** Auto-save password. Increase to reset auto-save config. @const */
 var AS_PASSWORD = "v1";
 /** @const */
 var WV_WHATSNEW = ""
+	+ "\nv2019.02.26:"
+	+ "\n- berestovskyy: hot fixes for latests WME"
+	+ "\n"
 	+ "\nv2018.11.10:"
 	+ "\n- davidakachaos: fix streets isolated by ramps"
 	+ "\n- davidakachaos: fix recover from preference change"
@@ -44,12 +47,6 @@ var WV_WHATSNEW = ""
 	+ "\nv2018.10.04:"
 	+ "\n- davidakachaos: fix 220 for Restricted Gates"
 	+ "\n- davidakachaos: minor fixed for unverified speed limits"
-	+ "\n"
-	+ "\nv2018.09.28:"
-	+ "\n- davidakachaos: add exceptions for speed limit checks"
-	+ "\n- davidakachaos: adjust reports in segment properties"
-	+ "\n- davidakachaos: fix restrictions bug"
-	+ "\n- carloslaso: add Mexico localization"
 	;
 /** @const */
 var WV_LICENSE_VERSION = "1";
