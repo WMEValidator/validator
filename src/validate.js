@@ -194,7 +194,7 @@ function F_VALIDATE(disabledHL) {
 		this.$rawNode = n;
 		if (n) {
 			this.$isPartial = n.attributes.partial;
-			this.$isEditable = n.areConnectionsEditable();
+			this.$isEditable = true; // TODO: n.areConnectionsEditable();
 			// convert restrictions into an array
 			var co = n.attributes.restrictions;
 			for (var k in co) {
@@ -567,7 +567,6 @@ function F_VALIDATE(disabledHL) {
 
 		this.$address = new _WV.SimpleADDRESS(attrs.primaryStreetID);
 
-		this.$isRoutable = this.$rawSegment.isRoutable();
 
 		this.$isTurnALocked = attrs.revTurnsLocked;
 		this.$isTurnBLocked = attrs.fwdTurnsLocked;
@@ -632,7 +631,6 @@ function F_VALIDATE(disabledHL) {
 			_restrictions: { enumerable: false },
 			$restrictions: { get: this.getRestrictions },
 			$segmentID: { writable: false },
-			$isRoutable: { writable: false },
 			$isTurnALocked: { writable: false },
 			$isTurnBLocked: { writable: false },
 			$isRoundabout: { writable: false },
@@ -651,6 +649,13 @@ function F_VALIDATE(disabledHL) {
 			$createdByLevel: { writable: false },
 			$restrictionsLen: { writable: false },
 		});
+	}
+	/**
+	 * Is Segment Routable
+	 */
+	SimpleSEGMENT.prototype.isRoutable = function () {
+		var routeableRoadTypes = [RT_STREET, RT_PRIMARY, RT_MINOR, RT_MAJOR, RT_FREEWAY];
+		return routeableRoadTypes.includes(this.$type);
 	}
 	/**
 	 * Get road type rank
@@ -1581,7 +1586,7 @@ function F_VALIDATE(disabledHL) {
 				if (ignoreSegment && otherSegment === ignoreSegment)
 					continue;
 				// Remember; ramps are public too, just not endpoint routable.
-				if (otherSegment.$rawSegment.isRoutable() || RT_RAMP === otherSegment.$type) {
+				if (otherSegment.isRoutable() || RT_RAMP === otherSegment.$type) {
 					foundPublicConnection = true;
 					break;
 				}
@@ -1592,7 +1597,7 @@ function F_VALIDATE(disabledHL) {
 				var otherSegment = seg.$nodeB.$otherSegments[i];
 				if (ignoreSegment && otherSegment === ignoreSegment)
 					continue;
-				if (otherSegment.$rawSegment.isRoutable() || RT_RAMP === otherSegment.$type) {
+				if (otherSegment.isRoutable() || RT_RAMP === otherSegment.$type) {
 					foundPublicConnection = true;
 					break;
 				}
@@ -2521,7 +2526,7 @@ function F_VALIDATE(disabledHL) {
 			// GROUP isDrivable
 			// check Public connection
 			if (slowChecks
-				&& segment.$isRoutable
+				&& segment.isRoutable()
 				&& !nodeA.$isPartial
 				&& !nodeB.$isPartial
 				&& nodeA.$otherSegmentsLen > 0

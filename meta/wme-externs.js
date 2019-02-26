@@ -149,7 +149,6 @@ var Waze = {
 Waze.NODE = function () {
 	/** @type {Object} */
 	this.bounds;
-	this.areConnectionsEditable;
 	this.getAngleToSegment;
 	this.geometry = {
 		id: "",
@@ -188,7 +187,6 @@ Waze.SEGMENT = function () {
 		this.getAddress = function () { };
 	this.getDirection = function () { };
 	this.isTollRoad = function () { };
-	this.isRoutable = function () { };
 
 	this.attributes = {
 		fromNodeID: 0,
