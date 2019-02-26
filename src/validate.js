@@ -2725,13 +2725,9 @@ function F_VALIDATE(disabledHL) {
 							&& nodeAID && nodeBID
 							&& (
 								(otherSegment.$nodeAID === nodeAID
-									&& otherSegment.$nodeBID === nodeBID
-									// and segments have common direction
-									&& otherSegment.$direction & direction)
+									&& otherSegment.$nodeBID === nodeBID)
 								|| (otherSegment.$nodeAID === nodeBID
-									&& otherSegment.$nodeBID === nodeAID
-									// and segments have common direction
-									&& otherSegment.$direction & reverseDirection(direction))
+									&& otherSegment.$nodeBID === nodeAID)
 							)
 						) {
 							// report either lower rank or longer segment
