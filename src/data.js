@@ -395,6 +395,8 @@ var AS_NONEDITABLES = "non_editables";
 /** @const */
 var AS_DUPLICATES = "duplicates";
 /** @const */
+var AS_VENUES = "venues";
+/** @const */
 var AS_STREETS = "streets";
 /** @const */
 var AS_OTHERS = "others";
@@ -468,7 +470,7 @@ var SZ_PANEL_HEIGHT = 190;
  * Scan constants
  */
 /** @const */
-var SCAN_ZOOM = 4;
+var SCAN_ZOOM = 5;
 /** @const */
 var SCAN_STEP = 100;
 
@@ -486,7 +488,7 @@ var HL_OPACITY = 0.4;
 /** @const */
 var I_SEVERITY = 0;
 /** @const */
-var I_SEGMENTCOPY = 1;
+var I_OBJECTCOPY = 1;
 /** @const */
 var I_ISTBCOLOR = 2;
 /** @const */
@@ -495,6 +497,8 @@ var I_ISWMECHCOLOR = 3;
 var I_ISPARTIAL = 4;
 /** @const */
 var I_CITYID = 5;
+/** @const */
+var I_VENUECOPY = 6;
 
 /**
  * Check options

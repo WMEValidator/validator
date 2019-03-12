@@ -26,11 +26,23 @@
  * WV RELEASE INFORMATION
  */
 /** WME Validator version @const */
-var WV_VERSION = "2019.02.26";
+var WV_VERSION = "2019.03.12";
 /** Auto-save password. Increase to reset auto-save config. @const */
 var AS_PASSWORD = "v1";
 /** @const */
 var WV_WHATSNEW = ""
+	+ "\nv2019.03.12:"
+	+ "\nVenues checking added!"
+	+ "\n- davidakachaos: new checks for venues"
+	+ "\n- davidakachaos: enabled/adjusted some checks for NL"
+	+ "\n- davidakachaos: Added check for category OTHER"
+	+ "\n- davidakachaos: Added check for brand name in Gas Station name"
+	+ "\n- davidakachaos: Added check for phone number and URL"
+	+ "\n- davidakachaos: Added check for point vs area places"
+	+ "\n- davidakachaos: Added check for lock level for certain places"
+	+ "\n- davidakachaos: Monitor venue changes like segments"
+	+ "\n- davidakachaos: Added Dutch translations"
+	+ "\n"
 	+ "\nv2019.02.26:"
 	+ "\n- berestovskyy: hot fixes for latests WME"
 	+ "\n"
@@ -44,9 +56,6 @@ var WV_WHATSNEW = ""
 	+ "\n- berestovskyy: fix check 38 Expired segment restrictions"
 	+ "\n- davidakachaos: fix check 36, 37 Unneeded node A/B"
 	+ "\n"
-	+ "\nv2018.10.04:"
-	+ "\n- davidakachaos: fix 220 for Restricted Gates"
-	+ "\n- davidakachaos: minor fixed for unverified speed limits"
 	;
 /** @const */
 var WV_LICENSE_VERSION = "1";

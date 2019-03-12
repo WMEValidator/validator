@@ -75,6 +75,9 @@ var OpenLayers = {
 	Layer: {
 	},
 	Projection: function (a) { },
+	GeometryPoint: {
+		getPoint: function () { }
+	}
 };
 
 /** @constructor */
@@ -183,8 +186,8 @@ Waze.SEGMENT = function () {
 		bounds: {},
 		distanceTo: function (l, o) { },
 		getGeodesicLength: function (p) { },
-	},
-		this.getAddress = function () { };
+	};
+	this.getAddress = function () { };
 	this.getDirection = function () { };
 	this.isTollRoad = function () { };
 
@@ -215,6 +218,71 @@ Waze.SEGMENT = function () {
 		revMaxSpeed: 0,
 		revMaxSpeedUnverified: true,
 		hasClosures: false,
+	};
+}
+/** @constructor */
+Waze.VENUE = function () {
+	this.getID = function () { };
+	// this.atPoint = function (c, tx, ty) { };
+	this.id = "";
+	this.fid = 0;
+	this.state = "";
+	this.selected = false;
+	this.layer = {};
+	this.arePropertiesEditable = function () { };
+	this.is2D = function () { };
+	this.isParkingLot = function () { };
+	this.isGasStation = function () { };
+	/** @type {Object} */
+	this.bounds;
+	this.geometry = {
+		id: "",
+		/** @type {Object} */
+		bounds: {},
+		distanceTo: function (l, o) { },
+		getGeodesicArea: function (p) { },
+		getCentroid: function () { },
+	};
+	this.getAddress = function () { };
+	this.getNavigationPoints = function () { };
+	this.getMainCategory = function () { };
+	this.getCategorySet = function () { };
+
+	this.attributes = {
+		adLocked: false,
+		aliases: [],
+		approved: false,
+		brand: null,
+		categories: [],
+		categoryAttributes: {
+			PARKING_LOT: {
+				canExitWhileClosed: false,
+				costType: "UNKNOWN",
+				estimatedNumberOfSpots: "",
+				hasTBR: false,
+				lotType: [],
+				paymentType: [],
+			},
+		},
+		createdBy: 0,
+		createdOn: 0,
+		description: null,
+		entryExitPoints: [],
+		externalProviderIDs: [],
+		geometry: {},
+		level: 0,
+		lockRank: 0,
+		name: null,
+		streetID: 0,
+		updatedBy: 0,
+		updatedOn: 0,
+		openingHours: [],
+		permissions: -1,
+		phone: null,
+		residential: false,
+		services: [],
+		url: null,
+		venueUpdateRequests: [],
 	};
 }
 /** @constructor */
@@ -385,10 +453,12 @@ var W = {
 		segments: {
 			getObjectArray: function () { },
 			getObjectById: function (e) { },
+			events: { on: 0, un: 0 },
 			objects: {},
 			topCityID: 0
 		},
 		nodes: {
+			events: { on: 0, un: 0 },
 			getObjectById: function (i) { }
 		},
 		streets: {
@@ -410,7 +480,12 @@ var W = {
 		},
 		roadClosures: {
 			getObjectById: function (i) { }
-		}
+		},
+		venues: {
+			events: { on: 0, un: 0 },
+			objects: {},
+			getObjectById: function (i) { }
+		},
 	},
 	controller: {},
 	prefs: {},
