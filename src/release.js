@@ -26,15 +26,15 @@
  * WV RELEASE INFORMATION
  */
 /** WME Validator version @const */
-var WV_VERSION = "2019.02.02";
+var WV_VERSION = "2019.03.12";
 /** Auto-save password. Increase to reset auto-save config. @const */
 var AS_PASSWORD = "v1";
 /** @const */
 var WV_WHATSNEW = ""
-	+ "\nv2019.02.02:"
+	+ "\nv2019.03.12:"
+	+ "\nVenues checking added!"
 	+ "\n- davidakachaos: new checks for venues"
 	+ "\n- davidakachaos: enabled/adjusted some checks for NL"
-	+ "\nv2018.11.01:"
 	+ "\n- davidakachaos: Added check for category OTHER"
 	+ "\n- davidakachaos: Added check for brand name in Gas Station name"
 	+ "\n- davidakachaos: Added check for phone number and URL"
@@ -43,18 +43,19 @@ var WV_WHATSNEW = ""
 	+ "\n- davidakachaos: Monitor venue changes like segments"
 	+ "\n- davidakachaos: Added Dutch translations"
 	+ "\n"
-	+ "\nv2018.10.17:"
-	+ "\n- berestovskyy: minor fixes"
+	+ "\nv2019.02.26:"
+	+ "\n- berestovskyy: hot fixes for latests WME"
 	+ "\n"
-	+ "\nv2018.09.15:"
-	+ "\n- berestovskyy: add custom check variables: speedLimit,"
-	+ "\n  speedLimitAB, speedLimitBA and checkSpeedLimit"
-	+ "\n- berestovskyy: ignore speed limits issues on streets and ramps."
-	+ "\n  Please use custom checks instead."
+	+ "\nv2018.11.10:"
+	+ "\n- davidakachaos: fix streets isolated by ramps"
+	+ "\n- davidakachaos: fix recover from preference change"
+	+ "\n- davidakachaos: add road closures to fix #36 and #37"
+	+ "\n- davidakachaos: fix speed limit issues on borders"
 	+ "\n"
-	+ "\nv2018.09.13:"
-	+ "\n- davidakachaos: new checks for unverified/unset/wrong speed limit"
-	+ "\n- davidakachaos: enabled/adjusted some checks for NL"
+	+ "\nv2018.10.16:"
+	+ "\n- berestovskyy: fix check 38 Expired segment restrictions"
+	+ "\n- davidakachaos: fix check 36, 37 Unneeded node A/B"
+	+ "\n"
 	;
 /** @const */
 var WV_LICENSE_VERSION = "1";
