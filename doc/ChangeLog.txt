@@ -1,5 +1,41 @@
 Current changes:
 
+v2019.02.26:
+- Venues checking added!
+- davidakachaos: new checks for venues
+- davidakachaos: enabled/adjusted some checks for NL
+- davidakachaos: Added check for category OTHER
+- davidakachaos: Added check for brand name in Gas Station name
+- davidakachaos: Added check for phone number and URL
+- davidakachaos: Added check for point vs area places
+- davidakachaos: Added check for lock level for certain places
+- davidakachaos: Monitor venue changes like segments
+- davidakachaos: Added Dutch translations
+
+v2019.02.26:
+- berestovskyy: hot fixes for latests WME
+
+v2018.11.10:
+- davidakachaos: fix streets isolated by ramps
+- davidakachaos: fix recover from preference change
+- davidakachaos: add road closures to fix #36 and #37
+- davidakachaos: fix speed limit issues on borders
+
+v2018.10.16:
+- berestovskyy: fix check 38 Expired segment restrictions
+- davidakachaos: fix check 36, 37 Unneeded node A/B
+
+v2018.10.04:
+- davidakachaos: fix 220 for Restricted Gates
+- davidakachaos: minor fixed for unverified speed limits
+
+v2018.09.28:
+- davidakachaos: add exceptions for speed limit checks
+- davidakachaos: adjust reports in segment properties
+- davidakachaos: fix restrictions bug
+- carloslaso: add Mexico localization
+- other minor changes
+
 v2018.09.15:
 - berestovskyy: add custom check variables: speedLimit,
   speedLimitAB, speedLimitBA and checkSpeedLimit
