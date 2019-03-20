@@ -656,7 +656,7 @@ function F_VALIDATE(disabledHL) {
 
 		this.$hasClosures = attrs.hasClosures;
 
-		this.$flags = seg.getFlagAttributes();
+		this.$flags = raw.getFlagAttributes();
 
 		// mark some properties as readonly
 		Object.defineProperties(this, {
