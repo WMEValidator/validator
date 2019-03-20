@@ -605,12 +605,16 @@ function F_VALIDATE(disabledHL) {
 				return new _WV.SimpleADDRESS(objID);
 			});
 			this.$restrictionsLen = attrs.restrictions.length;
+			this.$address = new _WV.SimpleADDRESS(attrs.primaryStreetID);
 			// set speedlimits
 			this.$fwdMaxSpeed = getLocalizedValue(+attrs.fwdMaxSpeed, this.$address.$country);
 			this.$fwdMaxSpeedUnverified = attrs.fwdMaxSpeedUnverified;
 			this.$revMaxSpeed = getLocalizedValue(+attrs.revMaxSpeed, this.$address.$country);
 			this.$revMaxSpeedUnverified = attrs.revMaxSpeedUnverified;
-			this.$address = new _WV.SimpleADDRESS(attrs.primaryStreetID);
+			this.$hasClosures = attrs.hasClosures;
+			if (raw.getFlagAttributes) {
+				this.$flags = raw.getFlagAttributes();
+			}
 		} else {
 			// Set venue only properties
 			this.$name = attrs.name;
@@ -653,10 +657,6 @@ function F_VALIDATE(disabledHL) {
 			this.$createdBy = getUserName(attrs.createdBy);
 			this.$createdByLevel = getUserLevel(attrs.createdBy);
 		}
-
-		this.$hasClosures = attrs.hasClosures;
-
-		this.$flags = raw.getFlagAttributes();
 
 		// mark some properties as readonly
 		Object.defineProperties(this, {
