@@ -697,7 +697,7 @@ function F_VALIDATE(disabledHL) {
 	/**
 	 * Is Segment Routable
 	 */
-	SimpleSEGMENT.prototype.isRoutable = function () {
+	SimpleOBJECT.prototype.isRoutable = function () {
 		var routeableRoadTypes = [RT_STREET, RT_PRIMARY, RT_MINOR, RT_MAJOR, RT_FREEWAY];
 		return routeableRoadTypes.includes(this.$type);
 	}
