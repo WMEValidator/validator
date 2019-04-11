@@ -1,5 +1,9 @@
 Current changes:
 
+v2019.04.11:
+- berestovskyy: hot fix for login issue
+- berestovskyy: fixed audio for Google Chrome
+
 v2019.02.26:
 - berestovskyy: hot fixes for latests WME
 

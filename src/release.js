@@ -26,11 +26,15 @@
  * WV RELEASE INFORMATION
  */
 /** WME Validator version @const */
-var WV_VERSION = "2019.02.26";
+var WV_VERSION = "2019.04.11";
 /** Auto-save password. Increase to reset auto-save config. @const */
 var AS_PASSWORD = "v1";
 /** @const */
 var WV_WHATSNEW = ""
+	+ "\nv2019.04.11:"
+	+ "\n- berestovskyy: hot fix for login issue"
+	+ "\n- berestovskyy: fixed audio for Google Chrome"
+	+ "\n"
 	+ "\nv2019.02.26:"
 	+ "\n- berestovskyy: hot fixes for latests WME"
 	+ "\n"
@@ -43,10 +47,6 @@ var WV_WHATSNEW = ""
 	+ "\nv2018.10.16:"
 	+ "\n- berestovskyy: fix check 38 Expired segment restrictions"
 	+ "\n- davidakachaos: fix check 36, 37 Unneeded node A/B"
-	+ "\n"
-	+ "\nv2018.10.04:"
-	+ "\n- davidakachaos: fix 220 for Restricted Gates"
-	+ "\n- davidakachaos: minor fixed for unverified speed limits"
 	;
 /** @const */
 var WV_LICENSE_VERSION = "1";
