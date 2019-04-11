@@ -3,7 +3,7 @@
 . ./00.config.sh
 
 EXT_FILE_NAME="${EXT_FILE_NAME%.user.js}.debug.js"
-EXTRA_PARAMS="--define DEF_DEBUG=true --compilation_level SIMPLE_OPTIMIZATIONS"
+EXTRA_PARAMS="--define DEF_DEBUG=true --compilation_level BUNDLE"
 
 
 . ./99.build.sh
