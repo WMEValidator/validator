@@ -1,5 +1,8 @@
 Current changes:
 
+v:
+- jangliss: Add lock checks for railroad and private roads.
+
 v2019.04.11:
 - berestovskyy: hot fix for login issue
 - berestovskyy: fixed audio for Google Chrome

@@ -316,7 +316,7 @@ function F_LOGIN() {
 	/** @const */
 	var streetNames = ["Freeway", "Major Highway", "Minor Highway",
 		"Ramp", "Primary Street", "Street", "Parking Lot Road",
-		"Railroad"];
+		"Railroad", "Private Road"];
 	// Generate custom checks descriptions in EN
 	for (var i = CK_TYPEFIRST; i <= CK_TYPELAST; i++) {
 		var streetName = streetNames[i - CK_TYPEFIRST];
@@ -353,6 +353,10 @@ function F_LOGIN() {
 		152: 3,
 		153: 4,
 		154: 2,
+		155: 0,
+		156: 0,
+		157: 2,
+		158: 2
 	};
 	for (var i = CK_LOCKFIRST; i <= CK_LOCKLAST; i++) {
 		var lockName = streetNames[i - CK_LOCKFIRST];
