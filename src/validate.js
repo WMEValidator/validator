@@ -2965,7 +2965,7 @@ function F_VALIDATE(disabledHL) {
 			} // GROUP isDrivable && Primary
 
 			// GROUP isDrivable && Local Street
-			if (RT_RAILROAD === roadType) {
+			if (RT_STREET === roadType) {
 				// GROUP isDrivable && Local Street
 				options = getCheckOptions(155, countryCode);
 				if (options[CO_NUMBER] > lock
@@ -2975,7 +2975,7 @@ function F_VALIDATE(disabledHL) {
 			} // GROUP isDrivable && Local Street
 
 			// GROUP isDrivable && Parking Lot Road
-			if (RT_RAILROAD === roadType) {
+			if (RT_PARKING === roadType) {
 				// GROUP isDrivable && Parking Lot Road
 				options = getCheckOptions(156, countryCode);
 				if (options[CO_NUMBER] > lock
