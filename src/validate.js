@@ -2964,6 +2964,46 @@ function F_VALIDATE(disabledHL) {
 					segment.report(154);
 			} // GROUP isDrivable && Primary
 
+			// GROUP isDrivable && Local Street
+			if (RT_STREET === roadType) {
+				// GROUP isDrivable && Local Street
+				options = getCheckOptions(155, countryCode);
+				if (options[CO_NUMBER] > lock
+					&& isLimitOk(155)
+					&& address.isOkFor(155))
+					segment.report(155);
+			} // GROUP isDrivable && Local Street
+
+			// GROUP isDrivable && Parking Lot Road
+			if (RT_PARKING === roadType) {
+				// GROUP isDrivable && Parking Lot Road
+				options = getCheckOptions(156, countryCode);
+				if (options[CO_NUMBER] > lock
+					&& isLimitOk(156)
+					&& address.isOkFor(156))
+					segment.report(156);
+			} // GROUP isDrivable && Parking Lot Road
+
+			// GROUP isDrivable && Railroad
+			if (RT_RAILROAD === roadType) {
+				// GROUP isDrivable && Railroad
+				options = getCheckOptions(157, countryCode);
+				if (options[CO_NUMBER] > lock
+					&& isLimitOk(157)
+					&& address.isOkFor(157))
+					segment.report(157);
+			} // GROUP isDrivable && Railroad
+
+			// GROUP isDrivable && Private Road
+			if (RT_PRIVATE === roadType) {
+				// GROUP isDrivable && Private Road
+				options = getCheckOptions(158, countryCode);
+				if (options[CO_NUMBER] > lock
+					&& isLimitOk(158)
+					&& address.isOkFor(158))
+					segment.report(158);
+			} // GROUP isDrivable && Private Road
+
 		} // GROUP isDrivable
 		else {
 			// GROUP !isDrivable

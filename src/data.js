@@ -338,7 +338,7 @@ var CK_CUSTOMLAST = 139;
 /** @const */
 var CK_LOCKFIRST = 150;
 /** @const */
-var CK_LOCKLAST = 154;
+var CK_LOCKLAST = 158;
 // Used to generate street type-name checks
 /** @const */
 var CK_STREETTNFIRST = 160;
