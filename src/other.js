@@ -59,6 +59,10 @@ function F_ONNODESCHANGED(e) {
  * On Change Layer Handler
  */
 function F_ONCHANGELAYER(e) {
+	// Trigger of layer change was not by a layer (ie WMETB Config Dialog)
+	if (!e.hasOwnProperty('layer')) {
+		return;
+	}
 	if (-1 !== e.layer.id.indexOf(GL_TBPREFIX)) {
 		if (!e.layer.visibility) {
 			for (var segmentID in WMo.segments.objects) {
