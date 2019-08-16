@@ -1,5 +1,8 @@
 Current changes:
 
+v
+- jangliss: Fix for layer refresh if layer did not trigger update
+
 v2019.08.13:
 - jangliss: Add lock checks for railroad and private roads
 
