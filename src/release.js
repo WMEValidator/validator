@@ -26,12 +26,13 @@
  * WV RELEASE INFORMATION
  */
 /** WME Validator version @const */
-var WV_VERSION = "2019.08.13";
+var WV_VERSION = "2019.08.16";
 /** Auto-save password. Increase to reset auto-save config. @const */
 var AS_PASSWORD = "v1";
 /** @const */
 var WV_WHATSNEW = ""
-	+ "\nv2019.08.13:"
+	+ "\nv2019.08.16:"
+	+ "\n- jangliss: Fix for layer refresh if layer did not trigger update"
 	+ "\n- jangliss: Add lock checks for railroad and private roads"
 	+ "\n"
 	+ "\nv2019.04.11:"
