@@ -1,5 +1,6 @@
-ABOUT
-=====
+About WME Validator
+===================
+
 Validates a map area in Waze Map Editor (WME), highlights issues and generates
 a very detailed report with wiki references and solutions.
 
@@ -11,50 +12,57 @@ the GPL along with build & install instructions.
 
 Please check the doc directory for more information.
 
-For questions please use official forum:<br/>
+For questions please use official forum: \
 https://www.waze.com/forum/viewtopic.php?f=819&t=76488
 
-Report bugs on GitHub Issues Tracker:<br/>
+Report bugs on GitHub Issues Tracker: \
 https://github.com/WMEValidator/validator/issues
 
-
 QUICK START
-===========
-## 1. Install Closure Compiler
-WME Validator uses Google Closure Compiler:<br/>
+-----------
+
+Install Closure Compiler
+------------------------
+
+WME Validator uses Google Closure Compiler: \
 https://developers.google.com/closure/compiler/
 
-To install the compiler on Linux Ububntu:
+To install the compiler on Linux Ubuntu:
 
-    $ sudo apt install closure-compiler
+    sudo apt install closure-compiler
 
 To install Closure Compiler on macOS:
 
-    $ brew install closure-compiler
+    brew install closure-compiler
 
-### Check if Closure Compiler is correctly installed:
+Check if Closure Compiler is correctly installed:
 
     $ closure-compiler --version
     Closure Compiler (http://github.com/google/closure-compiler)
     Version: v20180805
     Built on: 2018-08-09 20:09
 
-## 2. Get WME Validator source files
-WME Validator uses `git` as a version control system and hosted on GitHub:<br/>
+Get WME Validator source files
+------------------------------
+
+WME Validator uses `git` as a version control system and hosted on GitHub: \
 https://github.com/WMEValidator/
 
-To get the sources with all the submodules run:
+To get the sources with all the sub-modules run:
 
-    $ git clone --recurse-submodules git@github.com:WMEValidator/validator
+    git clone --recurse-submodules git@github.com:WMEValidator/validator
 
-## 3. Build WME Validator
+Build WME Validator
+-------------------
+
 At the moment WME Validator uses few custom build scripts:
- - `release.sh` -- to produce a normal release file in `build/WME_Validator.user.js`
- - `debug.sh` -- to produce a debug version (`DEBUG` is defined, simple
-   optimizations) in `build/WME_Validator.debug.js`
- - `gf.sh` -- to produce unminified release file for GreasyFork in  `build/WME_Validator.gf.js`
 
-### Example build run:
+- `release.sh` -- to produce a normal release file in `build/WME_Validator.user.js`
+- `debug.sh` -- to produce a debug version (`DEBUG` is defined, simple
+   optimizations) in `build/WME_Validator.debug.js`
+- `gf.sh` -- to produce formatted release file for GreasyFork in  `build/WME_Validator.gf.js`
+
+Example build run:
 
     $ cd validator
     $ ./10.release.sh

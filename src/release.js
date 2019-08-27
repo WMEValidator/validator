@@ -26,11 +26,19 @@
  * WV RELEASE INFORMATION
  */
 /** WME Validator version @const */
-var WV_VERSION = "2019.03.12";
+var WV_VERSION = "2019.08.16";
 /** Auto-save password. Increase to reset auto-save config. @const */
 var AS_PASSWORD = "v1";
 /** @const */
 var WV_WHATSNEW = ""
+	+ "\nv2019.08.16:"
+	+ "\n- jangliss: Fix for layer refresh if layer did not trigger update"
+	+ "\n- jangliss: Add lock checks for railroad and private roads"
+	+ "\n"
+	+ "\nv2019.04.11:"
+	+ "\n- berestovskyy: hot fix for login issue"
+	+ "\n- berestovskyy: fixed audio for Google Chrome"
+	+ "\n"
 	+ "\nv2019.03.12:"
 	+ "\nVenues checking added!"
 	+ "\n- davidakachaos: new checks for venues"
@@ -51,11 +59,6 @@ var WV_WHATSNEW = ""
 	+ "\n- davidakachaos: fix recover from preference change"
 	+ "\n- davidakachaos: add road closures to fix #36 and #37"
 	+ "\n- davidakachaos: fix speed limit issues on borders"
-	+ "\n"
-	+ "\nv2018.10.16:"
-	+ "\n- berestovskyy: fix check 38 Expired segment restrictions"
-	+ "\n- davidakachaos: fix check 36, 37 Unneeded node A/B"
-	+ "\n"
 	;
 /** @const */
 var WV_LICENSE_VERSION = "1";

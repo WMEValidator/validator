@@ -1,5 +1,13 @@
 Current changes:
 
+v2019.08.16:
+- jangliss: Fix for layer refresh if layer did not trigger update
+- jangliss: Add lock checks for railroad and private roads
+
+v2019.04.11:
+- berestovskyy: hot fix for login issue
+- berestovskyy: fixed audio for Google Chrome
+
 v2019.03.12:
 - Venues checking added!
 - davidakachaos: new checks for venues

@@ -74,6 +74,10 @@ function F_ONVENUESCHANGED(e) {
  * On Change Layer Handler
  */
 function F_ONCHANGELAYER(e) {
+	// Trigger of layer change was not by a layer (ie WMETB Config Dialog)
+	if (!e.hasOwnProperty('layer')) {
+		return;
+	}
 	if (-1 !== e.layer.id.indexOf(GL_TBPREFIX)) {
 		if (!e.layer.visibility) {
 			for (var segmentID in WMo.segments.objects) {
@@ -430,9 +434,11 @@ function F_ONLOGIN() {
 			_WV.$loggedIn = false;
 			async(F_LOGOUT);
 		}
-		else
+		else {
 			// we have no user and no flag is set
 			log("waiting for login...");
+			async(F_ONLOGIN, null, 1e3);
+		}
 	}
 }
 
@@ -449,7 +455,7 @@ function F_INIT() {
 	WM = nW.map;
 	WMo = nW.model;
 	WC = nW.controller;
-	if (!Wa || !WLM || !WSM || !WM || !WMo || !WC || !$("#user-tabs")) {
+	if (!Wa || !WLM || !WLM.user || !WSM || !WM || !WMo || !WC || !$("#user-tabs")) {
 		log("waiting for WME...")
 		async(F_INIT, null, 1e3);
 		return;
@@ -686,7 +692,7 @@ function F_INIT() {
 		Object.defineProperties(this, {
 			$streetID: { writable: false },
 		});
-	}
+	};
 	_WV.SimpleADDRESS.prototype = new _WV.SimpleCITY;
 	_WV.SimpleADDRESS.prototype.constructor = _WV.SimpleADDRESS;
 }
@@ -1178,4 +1184,4 @@ function F_LOGOUT() {
 }
 
 // call the init function when the library is initialized
-async(F_INIT, 0, 1);
+async(F_INIT, null, 0);

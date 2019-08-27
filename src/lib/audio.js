@@ -24,21 +24,17 @@
  * oscType: sine, square, sawtooth, triangle
  */
 var _AUDIO = {};
-try {
-	_AUDIO._context = new (window.AudioContext || window.webkitAudioContext)();
-	_AUDIO.beep =
-		/** @param {string=} oscType */
-		function (dur, oscType) {
-			var osc = _AUDIO._context.createOscillator();
-			osc.connect(_AUDIO._context.destination);
-			osc.type = oscType || "sine";
-			osc.start(0);
-			setTimeout(function () { osc.stop(0) }, dur);
-		}
-}
-catch (e) {
-	_AUDIO._context = null;
-	_AUDIO.beep =
-		/** @param {string=} oscType */
-		function (dur, oscType) { log("beep!") }
+/** @param {string=} oscType */
+_AUDIO.beep = function (dur, oscType) {
+	try {
+		_AUDIO._context = new (window.AudioContext || window.webkitAudioContext)();
+		var osc = _AUDIO._context.createOscillator();
+		osc.connect(_AUDIO._context.destination);
+		osc.type = oscType || "sine";
+		osc.start(0);
+		setTimeout(function () { osc.stop(0) }, dur);
+	}
+	catch (e) {
+		log("beep!");
+	}
 }
