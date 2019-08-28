@@ -1,5 +1,8 @@
 Current changes:
 
+v2019.08.29:
+- luc45z: update PL abbreviations
+
 v2019.08.16:
 - jangliss: Fix for layer refresh if layer did not trigger update
 - jangliss: Add lock checks for railroad and private roads
