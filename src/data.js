@@ -103,6 +103,13 @@ var _RT = {}
 var _REP = {}
 
 /**
+ * Global plugins object
+ * @dict
+ */
+var _PLUGS = {}
+
+
+/**
  * Global names
  */
 /** @const */

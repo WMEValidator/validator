@@ -394,6 +394,33 @@ function F_LOGIN() {
 			"regexp": streetRegExp,
 		};
 	}
+	// add external plugins
+	var listOfPlugins = [];
+	for (var gObject in window) {
+		if (!window.hasOwnProperty(gObject)) continue;
+		if (-1 !== gObject.indexOf("WMEValidator_Plugin_")) {
+			var plugin = window[gObject];
+			log("found plugin: " + gObject.replace('WMEValidator_Plugin_', ''));
+			listOfPlugins += plugin.name;
+			var pluginId = Math.ceil(Math.random() * 1000);
+			_PLUGS[pluginId] = plugin;
+			// load the checks from the plugin
+			if (plugin.customChecks) {
+				var customChecks = plugin.customChecks();
+				for (var label in customChecks) {
+					if (defTranslation[label] === undefined){
+						defTranslation[label] = customChecks[label];
+					}else{
+						alert('Plugin ' + plugin.name + ' redefines a check already in Validator.\nPlease report this problem to the plugin author. This plugin will not be loaded!');
+						delete _PLUGS[pluginId];
+						continue;
+					}
+				}
+			}
+		}
+	}
+	listOfPlugins = (listOfPlugins ? listOfPlugins : "No external plugins found");
+
 	// Generate mirror checks
 	mirrorChecks(defTranslation);
 
@@ -471,7 +498,18 @@ function F_LOGIN() {
 		+ 'how to create a localization pack</a>';
 
 	// Generate $checks
-	for (var i = 1; i < MAX_CHECKS; i++) {
+	var allLabels = Object.keys(_I18n.$defSet);
+	function onlyUnique(value, index, self) {
+		return self.indexOf(value) === index;
+	}
+	allLabels = allLabels.concat(Object.keys(_I18n.$fallbackSet)).filter(onlyUnique);
+	allLabels = allLabels.concat(Object.keys(_I18n.$curSet)).filter(onlyUnique);
+
+	var allChecks = allLabels.filter(function(item){
+		return /^\d+\.title$/.test(item);
+	});
+
+	for (var x = 0; x < allChecks.length; x++) {
 		var check = {
 			ENABLED: {},
 			PROBLEMLINK: {},
@@ -479,6 +517,8 @@ function F_LOGIN() {
 			SOLUTIONLINK: {},
 			SOLUTIONLINKTEXT: {},
 		};
+		// "1.enabled" ->> "1" -->> 1
+		i = parseInt(allChecks[x].split(".")[0], 10);
 
 		// set title
 		var label = i + '.title';
