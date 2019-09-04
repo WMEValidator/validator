@@ -27,10 +27,21 @@ var I18n = {
 			layers: {
 				name: {},
 			},
+			keyboard_shortcuts: {
+				groups: {
+					description: "",
+					members: { },
+				},
+			},
 		},
 	},
 	currentLocale: function () { },
 }
+
+///////////////////////////////////////////////////////////////////////////
+// sessionStorage Namespace
+/** @type {Object} */
+var sessionStorage = { }
 
 ///////////////////////////////////////////////////////////////////////////
 // OpenLayers Namespace
@@ -141,9 +152,9 @@ var Waze = {
 	Util: {
 		localStorage: {
 			get: function (a) { },
-			set: function (a, b) { }
-		}
-	}
+			set: function (a, b) { },
+		},
+	},
 };
 /** @constructor */
 Waze.NODE = function () {
@@ -318,9 +329,16 @@ var W = {
 		getAppRegionCode: function () { },
 	},
 	accelerators: {
+		_registerShortcuts: function(a) { },
 		events: {
 			register: function (a, b, c) { },
+			listeners: { 
+				func: function() { },
+				obj: { },
+			},
 		},
+		Groups: { },
+		Actions: { },
 	},
 	MapLayers: {
 		layerVisibilityBitmask: {}
