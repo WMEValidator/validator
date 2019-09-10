@@ -3417,11 +3417,6 @@ function F_VALIDATE(disabledHL) {
 				if (venue.$name.toLowerCase().indexOf(venue.$brand.toLowerCase()) === -1
 					&& address.isOkFor(259))
 					venue.report(259);
-				//check lock level
-				options = getCheckOptions(260, countryCode);
-				if (options[CO_NUMBER] > lock
-					&& address.isOkFor(260))
-					venue.report(260);
 			}// GROUP isGasStation
 
 			if(venue.$entryExitPoints && venue.$entryExitPoints.length){
