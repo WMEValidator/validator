@@ -136,6 +136,8 @@ function F_LOGIN() {
 		$HLlayer: null,
 		// array of objects to animate
 		$HLedObjects: {},
+		// array of venues to animate
+		$HLedVenues: {},
 		// global access flag
 		$isGlobalAccess: false,
 		// timer to measure ETA
@@ -177,8 +179,10 @@ function F_LOGIN() {
 		$moveEndCenter: null,
 		// map of seen object IDs
 		$seen: {},
+		$seenVenues: {},
 		// map of segment IDs to revalidate
 		$revalidate: {},
+		$revalidateVenues: {},
 		// current user
 		$curUserName: WLM.user.userName,
 		// error flag
@@ -812,6 +816,11 @@ function F_LOGIN() {
 					TITLE: trS("filter.duplicates.tip"),
 					AUTOSAVE: AS_DUPLICATES
 				},
+				oExcludeVenues: {
+					TEXT: trS("filter.venues.text"),
+					TITLE: trS("filter.venues.tip"),
+					AUTOSAVE: AS_VENUES
+				},
 				oExcludeStreets: {
 					TEXT: trS("filter.streets.text"),
 					TITLE: trS("filter.streets.tip"),
@@ -1245,11 +1254,16 @@ function F_LOGIN() {
 		"loadstart": onLoadStart,
 	});
 
-	// monitor segments and nodes changes
+	// monitor segments, venues and nodes changes
 	WMo.segments.on({
 		"objectsadded": onSegmentsAdded,
 		"objectschanged": onSegmentsChanged,
 		"objectsremoved": onSegmentsRemoved,
+	});
+	WMo.venues.on({
+		"objectsadded": onVenuesAdded,
+		"objectschanged": onVenuesChanged,
+		"objectsremoved": onVenuesRemoved,
 	});
 	WMo.nodes.on({
 		"objectschanged": onNodesChanged,

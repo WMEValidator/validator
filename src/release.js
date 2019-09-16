@@ -26,11 +26,23 @@
  * WV RELEASE INFORMATION
  */
 /** WME Validator version @const */
-var WV_VERSION = "2019.08.29";
+var WV_VERSION = "2019.09.16";
 /** Auto-save password. Increase to reset auto-save config. @const */
 var AS_PASSWORD = "v1";
 /** @const */
 var WV_WHATSNEW = ""
+	+ "\nv2019.09.16:"
+	+ "\nVenues checking added!"
+	+ "\n- davidakachaos: new checks for venues"
+	+ "\n- davidakachaos: enabled/adjusted some checks for NL"
+	+ "\n- davidakachaos: Added check for category OTHER"
+	+ "\n- davidakachaos: Added check for brand name in Gas Station name"
+	+ "\n- davidakachaos: Added check for phone number and URL"
+	+ "\n- davidakachaos: Added check for point vs area places"
+	+ "\n- davidakachaos: Added check for lock level for certain places"
+	+ "\n- davidakachaos: Monitor venue changes like segments"
+	+ "\n- davidakachaos: Added Dutch translations"
+	+ "\n"
 	+ "v2019.08.29:"
 	+ "\n- luc45z: update PL abbreviations"
 	+ "\n"

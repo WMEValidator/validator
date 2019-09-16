@@ -246,6 +246,8 @@ function F_SHOWREPORT(reportFormat) {
 			var filters = [];
 			if (_UI.pMain.pFilter.oExcludeDuplicates.CHECKED)
 				filters.push(trS("report.filter.duplicate"));
+			if (_UI.pMain.pFilter.oExcludeVenues.CHECKED)
+				filters.push(trS("report.filter.venue"));
 			if (_UI.pMain.pFilter.oExcludeStreets.CHECKED)
 				filters.push(trS("report.filter.streets"));
 			if (_UI.pMain.pFilter.oExcludeOther.CHECKED)
@@ -792,7 +794,7 @@ function F_SHOWREPORT(reportFormat) {
 		}
 	}
 	// filter helpers
-	var seenSegments = {};
+	var seenObjects = {};
 	var lastCheckID = -1;
 	var lastCityID = -1;
 	var lastStreetID = -1;
@@ -803,7 +805,7 @@ function F_SHOWREPORT(reportFormat) {
 	var counterCustoms2 = 0;
 	// reset filter
 	function resetFilter() {
-		seenSegments = {};
+		seenObjects = {};
 		lastCheckID = -1;
 		lastCityID = -1;
 		lastStreetID = -1;
@@ -822,13 +824,12 @@ function F_SHOWREPORT(reportFormat) {
 		FR += '</b></big>';
 		FR += '\n<ol>';
 		traverseReport(function (obj) {
-			if (checkFilter(0, obj.$segmentCopy, seenSegments)
+			if (checkFilter(0, obj.$objectCopy, seenObjects)
 				&& getFilteredSeverity(obj.$check.SEVERITY, obj.$checkID, false)) {
 				if (obj.$checkID !== lastCheckID) {
 					lastCheckID = obj.$checkID;
 					var check = obj.$check;
-
-					var strCountry = _REP.$countries[obj.$segmentCopy.$countryID];
+					var strCountry = _REP.$countries[obj.$objectCopy.$countryID];
 					var ccode = "";
 
 					if (strCountry)
@@ -847,7 +848,7 @@ function F_SHOWREPORT(reportFormat) {
 					FR += '</a></li>';
 				}
 				// TODO:
-				// bug: TOC item shows duplicate segments
+				// bug: TOC item shows duplicate objects
 				// solution: filter, then create the toc and report
 
 				// alt solution: remove dublicate checks!
@@ -867,7 +868,7 @@ function F_SHOWREPORT(reportFormat) {
 			Object.keys(_RT.$checks)
 				.sort(cmpCheckIDs);
 	}
-	// _REP->$cityIDs->streetIDs->$segmentIDs->$reportIDs
+	// _REP->$cityIDs->streetIDs->$objectIDs->$reportIDs
 	// traverse report and call a handler
 	function traverseReport(handler) {
 		var mapCenter = WM.getCenter();
@@ -897,13 +898,13 @@ function F_SHOWREPORT(reportFormat) {
 			//          return Math.round(Math.sqrt(c1*c1 + c2*c2)*10);
 			return Math.sqrt(c1 * c1 + c2 * c2);
 		}
-		// get sorted segments
-		function getSortedSegments(repS) {
-			var ret = repS.$sortedSegmentIDs;
-			var repSeg = repS.$segmentIDs;
-			if (!ret || ret.length != repS.$unsortedSegmentIDs.length)
+		// get sorted objects
+		function getSortedObjects(repS) {
+			var ret = repS.$sortedObjectIDs;
+			var repSeg = repS.$objectIDs;
+			if (!ret || ret.length != repS.$unsortedObjectIDs.length)
 				return repS.$sortedSegmentIDs
-					= [].concat(repS.$unsortedSegmentIDs).sort(function (a, b) {
+					= [].concat(repS.$unsortedObjectIDs).sort(function (a, b) {
 						var segA = repSeg[a], segB = repSeg[b];
 						if (segA.$typeRank !== segB.$typeRank)
 							return segB.$typeRank - segA.$typeRank;
@@ -911,7 +912,7 @@ function F_SHOWREPORT(reportFormat) {
 						/** @const */
 						var distAB = getHypot(segA.$center.lat - segB.$center.lat,
 							segA.$center.lon - segB.$center.lon);
-						// the segments are close
+						// the objects are close
 						if (0.002 > distAB) return 0;
 						/** @const */
 						var distA = getHypot(mapCenter.lat - segA.$center.lat,
@@ -950,28 +951,31 @@ function F_SHOWREPORT(reportFormat) {
 					var sid = sortedStreets[sorsid];
 					var repS = repC.$streetIDs[sid];
 
-					// for all segment copies
-					var sortedSegments = getSortedSegments(repS);
-					for (var sorscid = 0; sorscid < sortedSegments.length; sorscid++) {
-						var scid = sortedSegments[sorscid];
-						var sc = repS.$segmentIDs[scid];
-						if (checkID in sc.$reportIDs) {
-							var obj = {
-								$checkID: checkID,
-								$check: check,
-								$param: sc.$reportIDs[checkID],
-								$cityParam: repC.$params[checkID],
-								$streetParam: repS.$params[checkID],
-								$segmentCopy: sc
-							};
-							switch (handler(obj)) {
-								case RT_STOP:
-									return;
-								case RT_NEXTCHECK:
-									continue nextCheck;
-							};
-						} // checkID in reportIDs
-					} // for all segmets
+
+					// for all object copies
+					if (repS.$unsortedObjectIDs){
+						var sortedObjects = getSortedObjects(repS);
+						for (var sorscid = 0; sorscid < sortedObjects.length; sorscid++) {
+							var scid = sortedObjects[sorscid];
+							var sc = repS.$objectIDs[scid];
+							if (checkID in sc.$reportIDs) {
+								var obj = {
+									$checkID: checkID,
+									$check: check,
+									$param: sc.$reportIDs[checkID],
+									$cityParam: repC.$params[checkID],
+									$streetParam: repS.$params[checkID],
+									$objectCopy: sc
+								};
+								switch (handler(obj)) {
+									case RT_STOP:
+										return;
+									case RT_NEXTCHECK:
+										continue nextCheck;
+								};
+							} // checkID in reportIDs
+						}
+					} // for all objects
 				} // for all streets
 			} // for all cities
 		} // for all checks
@@ -1001,7 +1005,7 @@ function F_SHOWREPORT(reportFormat) {
 				else {
 					FR += '[and ';
 					FR += (_repRC[lastCheckID] - LIMIT_PERCHECK);
-					FR += ' segments more...]';
+					FR += ' objects more...]';
 				}
 			}
 			lastCheckID = -1;
@@ -1090,8 +1094,7 @@ function F_SHOWREPORT(reportFormat) {
 			FR += obj.$checkID;
 			FR += '"></a>';
 		}
-
-		FR += getCheckDescription(obj.$checkID, obj.$segmentCopy.$countryID,
+		FR += getCheckDescription(obj.$checkID, obj.$objectCopy.$countryID,
 			Bh2, Eh2);
 		FR += Br;
 	}
@@ -1100,7 +1103,7 @@ function F_SHOWREPORT(reportFormat) {
 		closeReportCity();
 		FR += Bbig;
 		FR += Bb;
-		FR += checkNoCity(_repC[obj.$segmentCopy.$cityID]);
+		FR += checkNoCity(_repC[obj.$objectCopy.$cityID]);
 		FR += Eb;
 		FR += Ebig;
 		if (obj.$cityParam) {
@@ -1113,9 +1116,9 @@ function F_SHOWREPORT(reportFormat) {
 	function getReportStreet(obj) {
 		closeReportStreet();
 		FR += Bli;
-		FR += checkNoStreet(_repS[obj.$segmentCopy.$streetID]);
+		FR += checkNoStreet(_repS[obj.$objectCopy.$streetID]);
 		FR += ', ';
-		FR += checkNoCity(_repC[obj.$segmentCopy.$cityID]);
+		FR += checkNoCity(_repC[obj.$objectCopy.$cityID]);
 		if (obj.$streetParam) {
 			FR += Mdash;
 			FR += obj.$streetParam;
@@ -1126,29 +1129,33 @@ function F_SHOWREPORT(reportFormat) {
 	// returns permalink
 	function getPermalink(obj) {
 		var z = SCAN_ZOOM;
-		if (50 > obj.$segmentCopy.$length)
-			z = 7;
-		else if (500 > obj.$segmentCopy.$length) {
-			if (6 > z) z += 1;
-		}
-		else
+		if(obj.$objectCopy){
+			if (50 > obj.$objectCopy.$length)
+				z = 7;
+			else if (500 > obj.$objectCopy.$length) {
+				if (6 > z) z += 1;
+			}
+			else
+				z = 4;
+		} else {
 			z = 4;
+		}
 		FR += window.location.origin;
 		FR += window.location.pathname;
 		FR += '?zoom=';
 		FR += z;
 		FR += '&lat=';
-		FR += obj.$segmentCopy.$center.lat;
+		FR += obj.$objectCopy.$center.lat;
 		FR += '&lon=';
-		FR += obj.$segmentCopy.$center.lon;
+		FR += obj.$objectCopy.$center.lon;
 		FR += '&env=';
 		FR += nW.app.getAppRegionCode();
-		FR += '&segments=';
-		FR += obj.$segmentCopy.$segmentID;
+		FR += '&' + obj.$objectCopy.$model.name + '=';
+		FR += obj.$objectCopy.$objectID;
 	}
 	// report item handler
 	function getReportItem(obj) {
-		if (!checkFilter(0, obj.$segmentCopy, seenSegments)
+		if (!checkFilter(0, obj.$objectCopy, seenObjects)
 			|| !getFilteredSeverity(obj.$check.SEVERITY, obj.$checkID, false))
 			return;
 
@@ -1179,13 +1186,14 @@ function F_SHOWREPORT(reportFormat) {
 				}
 			}
 		}
-		if (obj.$segmentCopy.$cityID !== lastCityID)
+		if (obj.$objectCopy.$cityID !== lastCityID)
 			getReportCity(obj);
-		if (obj.$segmentCopy.$streetID !== lastStreetID)
+		if (obj.$objectCopy.$streetID !== lastStreetID)
 			getReportStreet(obj);
+		// set last ids
+		lastCityID = obj.$objectCopy.$cityID;
+		lastStreetID = obj.$objectCopy.$streetID;
 		lastCheckID = obj.$checkID;
-		lastCityID = obj.$segmentCopy.$cityID;
-		lastStreetID = obj.$segmentCopy.$streetID;
 
 		if (!noFilters) {
 			switch (obj.$check.SEVERITY) {
@@ -1211,7 +1219,16 @@ function F_SHOWREPORT(reportFormat) {
 		getPermalink(obj);
 		FR += Ca
 		if (isBeta) FR += 'B:';
-		FR += obj.$segmentCopy.$segmentID;
+		if (obj.$objectCopy.$model === WMo.segments) {
+			FR += obj.$objectCopy.$objectID;
+		} else {
+			// Use the name of a venue, when set.
+			if (obj.$objectCopy.$name !== ""){
+				FR += obj.$objectCopy.$name;
+			}else{
+				FR += obj.$objectCopy.$objectID;
+			}
+		}
 		FR += Ea;
 		FR += ' ';
 	}
@@ -1311,7 +1328,7 @@ function F_SHOWREPORT(reportFormat) {
 		_REP.$maxSeverity = 0;
 
 		traverseReport(function (obj) {
-			if (checkFilter(0, obj.$segmentCopy, seenSegments)
+			if (checkFilter(0, obj.$objectCopy, seenObjects)
 				&& getFilteredSeverity(obj.$check.SEVERITY, obj.$checkID, false)) {
 				if (_REP.$maxSeverity < obj.$check.SEVERITY)
 					_REP.$maxSeverity = obj.$check.SEVERITY;
