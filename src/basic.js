@@ -189,9 +189,7 @@ function setRTState(nstate) {
  */
 function clearReport() {
 	_RT.$seen = {};
-	_RT.$seenVenues = {};
 	_RT.$revalidate = {};
-	_RT.$revalidateVenues = {};
 	_REP = {
 		// debug counter
 		$debugCounter: LIMIT_DEBUG,
@@ -252,9 +250,9 @@ function RTStateIs(st) { return getRTState() === st }
 function getRTState() { return _RT.$state }
 
 /**
- * Highlight segments
+ * Highlight objects
  */
-function HLAllSegments() {
+function HLAllObjects() {
 	if (RTStateIs(ST_STOP) || RTStateIs(ST_PAUSE)) {
 		if (_UI.pSettings.pScanner.oHLReported.CHECKED)
 			sync(F_VALIDATE, false);
@@ -266,20 +264,20 @@ function HLAllSegments() {
 }
 
 /**
- * Force Highlight segments
+ * Force Highlight objects
  */
-function ForceHLAllSegments() {
+function ForceHLAllObjects() {
 	_RT.$isMapChanged = true;
-	HLAllSegments();
+	HLAllObjects();
 }
 
 /**
  * Reset Defaults
  */
 function resetDefaults() {
+	_UI.pMain.pFilter.oEnablePlaces.CHECKED = false;
 	_UI.pMain.pFilter.oExcludeNonEditables.CHECKED = true;
 	_UI.pMain.pFilter.oExcludeDuplicates.CHECKED = true;
-	_UI.pMain.pFilter.oExcludeVenues.CHECKED = false;
 	_UI.pMain.pFilter.oExcludeStreets.CHECKED = false;
 	_UI.pMain.pFilter.oExcludeOther.CHECKED = false;
 	_UI.pMain.pFilter.oExcludeNotes.CHECKED = false;
@@ -675,7 +673,7 @@ function onMoveEnd() {
 	if (RTStateIs(ST_RUN) || RTStateIs(ST_CONTINUE))
 		async(F_ONMOVEEND);
 	else
-		ForceHLAllSegments();
+		ForceHLAllObjects();
 }
 
 /**

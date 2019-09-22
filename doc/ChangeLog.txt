@@ -1,16 +1,14 @@
 Current changes:
 
 v2019.09.16:
-Venues checking added!
-- davidakachaos: new checks for venues
-- davidakachaos: enabled/adjusted some checks for NL
-- davidakachaos: Added check for category OTHER
-- davidakachaos: Added check for brand name in Gas Station name
-- davidakachaos: Added check for phone number and URL
-- davidakachaos: Added check for point vs area places
-- davidakachaos: Added check for lock level for certain places
-- davidakachaos: Monitor venue changes like segments
-- davidakachaos: Added Dutch translations
+- davidakachaos: Added new places checks:
+  * check for other category
+  * check gas station brand name
+  * check phone number and URL
+  * check for point/area places
+  * check place lock level
+- davidakachaos: Added Dutch translations for places checks
+- davidakachaos: Enabled/adjusted some checks for NL
 
 v2019.08.29:
 - luc45z: update PL abbreviations

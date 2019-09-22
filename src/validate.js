@@ -584,7 +584,7 @@ function F_VALIDATE(disabledHL) {
 		if (this.$model === WMo.segments) {
 			this.$nodeAID = attrs.fromNodeID;
 			this.$nodeBID = attrs.toNodeID;
-			this.$isRoutable = this.$rawObject.isRoutable();
+			this.$isRoutable = this.isRoutable();
 			this.$isTurnALocked = attrs.revTurnsLocked;
 			this.$isTurnBLocked = attrs.fwdTurnsLocked;
 			this.$isRoundabout = classCodeDefined(attrs.junctionID)
@@ -619,7 +619,7 @@ function F_VALIDATE(disabledHL) {
 			// Set venue only properties
 			this.$name = attrs.name;
 			this.$brand = attrs.brand;
-			if (this.$brand === null){
+			if (this.$brand === null) {
 				this.$brand = "";
 			}
 			this.$isApproved = attrs.approved;
@@ -779,12 +779,12 @@ function F_VALIDATE(disabledHL) {
 	SimpleOBJECT.prototype.getRestrictions = function () {
 		var t;
 		return this._restrictions ? this._restrictions :
-			this._restrictions = this.$model == WMo.venues? [] :
-			(t = this, this.$rawObject.attributes.restrictions.map(
-				function (e) {
-					return new SimpleRESTRICTION(e, t.$objectID)
-				})
-			);
+			this._restrictions = this.$model == WMo.venues ? [] :
+				(t = this, this.$rawObject.attributes.restrictions.map(
+					function (e) {
+						return new SimpleRESTRICTION(e, t.$objectID)
+					})
+				);
 	}
 	/**
 	 * Report a segment
@@ -1627,26 +1627,26 @@ function F_VALIDATE(disabledHL) {
 	 * Check if a public seg is connected to another public segment,
 	 * ignoring ignoreSegment
 	 */
-	function checkPublicConnection(seg, ignoreSegment){
+	function checkPublicConnection(seg, ignoreSegment) {
 		var foundPublicConnection = false;
-		if (!seg.$nodeA.$isPartial && seg.$nodeA.$otherSegmentsLen > 0){
-			for (var i = 0; i < seg.$nodeA.$otherSegmentsLen; i++){
+		if (!seg.$nodeA.$isPartial && seg.$nodeA.$otherSegmentsLen > 0) {
+			for (var i = 0; i < seg.$nodeA.$otherSegmentsLen; i++) {
 				var otherSegment = seg.$nodeA.$otherSegments[i];
 				if (ignoreSegment && otherSegment === ignoreSegment)
 					continue;
 				// Remember; ramps are public too, just not endpoint routable.
-				if (otherSegment.isRoutable() || RT_RAMP === otherSegment.$type) {
+				if (otherSegment.$isRoutable || RT_RAMP === otherSegment.$type) {
 					foundPublicConnection = true;
 					break;
 				}
 			}
 		}
-		if (!seg.$nodeB.$isPartial && seg.$nodeB.$otherSegmentsLen > 0){
-			for (var i = 0; i < seg.$nodeB.$otherSegmentsLen; i++){
+		if (!seg.$nodeB.$isPartial && seg.$nodeB.$otherSegmentsLen > 0) {
+			for (var i = 0; i < seg.$nodeB.$otherSegmentsLen; i++) {
 				var otherSegment = seg.$nodeB.$otherSegments[i];
 				if (ignoreSegment && otherSegment === ignoreSegment)
 					continue;
-				if (otherSegment.isRoutable() || RT_RAMP === otherSegment.$type) {
+				if (otherSegment.$isRoutable || RT_RAMP === otherSegment.$type) {
 					foundPublicConnection = true;
 					break;
 				}
@@ -1840,7 +1840,7 @@ function F_VALIDATE(disabledHL) {
 			_REP.$isEditableFound = true;
 
 		///////////////////////////////////////////////////////////////////
-		// Checks
+		// Segment Checks
 
 		///////////////////////////////////////////////////////////////////
 		// SPECIAL CASES
@@ -2575,7 +2575,7 @@ function F_VALIDATE(disabledHL) {
 			// GROUP isDrivable
 			// check Public connection
 			if (slowChecks
-				&& segment.isRoutable()
+				&& segment.$isRoutable
 				&& !nodeA.$isPartial
 				&& !nodeB.$isPartial
 				&& nodeA.$otherSegmentsLen > 0
@@ -2585,10 +2585,10 @@ function F_VALIDATE(disabledHL) {
 				// Check other segments to be a drivable public segment
 				// Second param is a segment to ignore as a valid public connection
 				var foundPublicConnection = checkPublicConnection(segment, null);
-				if(!foundPublicConnection){
+				if (!foundPublicConnection) {
 					// We might have a isolated segment. Could be a Restricted Gate
 					// See https://wazeopedia.waze.com/wiki/USA/Private_Installations#Specialty_Gate:_Restricted_Gate
-					if(nodeA.$otherSegmentsLen == 1 && nodeB.$otherSegmentsLen == 1){
+					if (nodeA.$otherSegmentsLen == 1 && nodeB.$otherSegmentsLen == 1) {
 						// both sides are connected to just one private segment
 						var nodeASegment = nodeA.$otherSegments[0];
 						var nodeBSegment = nodeB.$otherSegments[0];
@@ -3119,7 +3119,7 @@ function F_VALIDATE(disabledHL) {
 			var checkIDID = { 160: 70, 161: 71, 162: 72 };
 			for (var i in checkIDType) {
 				i = +i;
-				if (!address.isOkFor(i) || !isLimitOk(i))
+				if (!isLimitOk(i) || !address.isOkFor(i))
 					continue;
 
 				var rType = checkIDType[i];
@@ -3142,7 +3142,7 @@ function F_VALIDATE(disabledHL) {
 			// GROUP streetLen
 			// RegExp street name checks
 			for (var i = CK_STREETNAMEFIRST; i <= CK_STREETNAMELAST; i++) {
-				if (!address.isOkFor(i) || !isLimitOk(i))
+				if (!isLimitOk(i) || !address.isOkFor(i))
 					continue;
 
 				if (matchRegExp(i, segmentID, street,
@@ -3277,8 +3277,8 @@ function F_VALIDATE(disabledHL) {
 		HLObject(rawSegment);
 	} // for all segments
 
-	// If venue checking enabled...
-	if (!_UI.pMain.pFilter.oExcludeVenues.CHECKED) {
+	// If places checking enabled...
+	if (_UI.pMain.pFilter.oEnablePlaces.CHECKED) {
 		for (var venueKey in WMo.venues.objects) {
 			// check the venues
 			var rawVenue = WMo.venues.objects[venueKey];
@@ -3331,6 +3331,18 @@ function F_VALIDATE(disabledHL) {
 			var venue = new SimpleOBJECT(venueID, WMo.venues);
 			Object.seal(venue);
 
+			// shortcuts
+			var address = venue.$address;
+			var country = address.$country;
+			var countryCode = country ? _I18n.getCountryCode(country.toUpperCase())
+				: _RT.$cachedTopCCode;
+			var city = address.$city;
+			var cityLen = city.length;
+			var cityID = address.$cityID;
+			var street = address.$street;
+			var streetLen = street.length;
+			var lock = venue.$lock;
+
 			// mark venue as seen
 			_RT.$seen[venueID] = seen = [0, null, false, false,
 				4 > currentZoom,
@@ -3339,133 +3351,136 @@ function F_VALIDATE(disabledHL) {
 			// increase city counter
 			venue.incCityCounter();
 
-			// shortcuts
-			var address = venue.$address;
-			var country = address.$country;
-			var countryLen = country.length;
-			var countryCode = country ? _I18n.getCountryCode(country.toUpperCase())
-				: _RT.$cachedTopCCode;
-			var city = address.$city;
-			var cityLen = city.length;
-			var cityID = address.$cityID;
-			var street = address.$street;
-			var streetLen = street.length;
-			var state = address.$state;
-			var streetLen = street.length;
-			var alts = venue.$alts;
-			var lock = venue.$lock;
+			// check if any editable found
+			if (venue.$isEditable)
+				_REP.$isEditableFound = true;
 
-			options = getCheckOptions(250, countryCode);
+			////////////////////////////////////////////////////////////
+			// Venues Checks
+
 			if (!cityLen
-				&& !options[CO_REGEXP].test(venue.$categories[0])
-				&& isLimitOk(250))
-				venue.report(250);
-
-			options = getCheckOptions(268, countryCode);
-			if (!streetLen
-				&& !options[CO_REGEXP].test(venue.$categories[0])
-				&& isLimitOk(268))
-				venue.report(268);
-
-			// GROUP name.length
-			if (!venue.$name.length) {
-				if (venue.$categories[0] === "PARK" && !cityLen
-					&& isLimitOk(258))
-					venue.report(258);
+				&& isLimitOk(250)) {
+				options = getCheckOptions(250, countryCode);
+				if (!options[CO_REGEXP].test(venue.$categories[0])
+					&& address.isOkFor(250))
+					venue.report(250);
 			}
-			// GROUP name.length
-			if (venue.$categories.indexOf('OTHER') > -1
-				&& isLimitOk(261))
-				venue.report(261);
-			// Check for last update by bots
-			options = getCheckOptions(251, countryCode);
-			if (options[CO_REGEXP].test(venue.$updatedByID.toString())
-				|| options[CO_REGEXP].test(venue.$updatedBy.toString())
-				&& isLimitOk(251))
-				venue.report(251);
 
-			// GROUP isParkingLot
-			if (venue.$rawObject.isParkingLot()){
-				var catAttr = venue.$categoryAttributes;
-				var parkAttr = catAttr ? catAttr.PARKING_LOT : undefined;
-				// missing parking lot type
-				if ((!parkAttr || !parkAttr.parkingType)
+			if (!streetLen
+				&& isLimitOk(251)) {
+				options = getCheckOptions(251, countryCode);
+				if (!options[CO_REGEXP].test(venue.$categories[0])
+					&& address.isOkFor(251))
+					venue.report(251);
+			}
+
+			// Check for last update by bots
+			if (isLimitOk(252)) {
+				options = getCheckOptions(252, countryCode);
+				if (options[CO_REGEXP].test(venue.$updatedByID.toString())
+					|| options[CO_REGEXP].test(venue.$updatedBy.toString())
 					&& address.isOkFor(252))
 					venue.report(252);
-				// missing cost type
+			}
+
+			if (venue.$categories.indexOf('OTHER') > -1
+				&& isLimitOk(253)
+				&& address.isOkFor(253))
+				venue.report(253);
+
+			if (venue.$entryExitPoints && venue.$entryExitPoints.length
+				&& isLimitOk(254)) {
+				var stopPoint = venue.$entryExitPoints[0].getPoint();
+				var areaCenter = venue.$geometry.getCentroid();
+				if (stopPoint.equals(areaCenter)
+					&& address.isOkFor(254))
+					venue.report(254);
+			}
+
+			// Check phone number
+			if (venue.$phone && isLimitOk(255)) {
+				options = getCheckOptions(255, countryCode);
+				if (!options[CO_REGEXP].test(venue.$phone)
+					&& address.isOkFor(255))
+					venue.report(255);
+			}
+
+			// Check URL
+			if (venue.$url && isLimitOk(256)) {
+				options = getCheckOptions(256, countryCode);
+				if (!options[CO_REGEXP].test(venue.$url)
+					&& address.isOkFor(256))
+					venue.report(256);
+			}
+
+			// GROUP isPoint
+			if (venue.$isPoint && isLimitOk(257)) {
+				// Should be an area?
+				options = getCheckOptions(257, countryCode);
+				if (options[CO_REGEXP].test(venue.$categories[0])
+					&& address.isOkFor(257))
+					venue.report(257);
+			} else if (isLimitOk(258)) {
+				// Should be a point?
+				options = getCheckOptions(258, countryCode);
+				if (options[CO_REGEXP].test(venue.$categories[0])
+					&& address.isOkFor(258))
+					venue.report(258);
+			} // GROUP isPoint
+
+			// Check minimum level 2
+			if (isLimitOk(259)) {
+				options = getCheckOptions(259, countryCode);
+				if (options[CO_REGEXP].test(venue.$categories[0])
+					&& options[CO_NUMBER] > lock
+					&& address.isOkFor(259))
+					venue.report(259);
+			}
+
+			// Check minimum level 3
+			if (isLimitOk(260)) {
+				options = getCheckOptions(260, countryCode);
+				if (options[CO_REGEXP].test(venue.$categories[0])
+					&& options[CO_NUMBER] > lock
+					&& address.isOkFor(260))
+					venue.report(260);
+			}
+
+			if (venue.$rawObject.isParkingLot()) {
+				var catAttr = venue.$categoryAttributes;
+				var parkAttr = catAttr ? catAttr.PARKING_LOT : undefined;
+				// parking lot type
+				if ((!parkAttr || !parkAttr.parkingType)
+					&& address.isOkFor(270))
+					venue.report(270);
+				// cost type
 				if ((!parkAttr || !parkAttr.costType || parkAttr.costType === 'UNKNOWN')
-					&& address.isOkFor(253))
-					venue.report(253);
-				// missing payment types
+					&& address.isOkFor(271))
+					venue.report(271);
+				// payment types
 				if ((parkAttr && parkAttr.costType && parkAttr.costType !== 'FREE'
 					&& parkAttr.costType !== 'UNKNOWN'
 					&& (!parkAttr.paymentType || !parkAttr.paymentType.length))
-					&& address.isOkFor(254))
-					venue.report(254);
-				//check elevation of the parking lot
+					&& address.isOkFor(272))
+					venue.report(272);
+				// check elevation of the parking lot
 				if ((!parkAttr || !parkAttr.lotType || parkAttr.lotType.length === 0)
-					&& address.isOkFor(255))
-					venue.report(255)
+					&& address.isOkFor(273))
+					venue.report(273)
 				if ((!venue.$entryExitPoints || !venue.$entryExitPoints.length)
-					&& address.isOkFor(257))
-					venue.report(257)
+					&& address.isOkFor(274))
+					venue.report(274)
 			}// GROUP isParkingLot
 
 			// GROUP isGasStation
 			if (venue.$rawObject.isGasStation()) {
-				// check if brand in name
-				if (venue.$name.toLowerCase().indexOf(venue.$brand.toLowerCase()) === -1
-					&& address.isOkFor(259))
-					venue.report(259);
+				// check brand in the name
+				if (isLimitOk(275)
+					&& venue.$name.toLowerCase().indexOf(
+						venue.$brand.toLowerCase().split(' ')[0]) === -1
+					&& address.isOkFor(275))
+					venue.report(275);
 			}// GROUP isGasStation
-
-			if(venue.$entryExitPoints && venue.$entryExitPoints.length){
-				var stopPoint = venue.$entryExitPoints[0].getPoint();
-				var areaCenter = venue.$geometry.getCentroid();
-				if (stopPoint.equals(areaCenter)
-					&& address.isOkFor(256))
-					venue.report(256)
-			}
-
-			// Check phonenumber
-			options = getCheckOptions(262, countryCode);
-			if (venue.$phone && !options[CO_REGEXP].test(venue.$phone)
-				&& isLimitOk(262))
-				venue.report(262);
-			// Check URL
-			options = getCheckOptions(263, countryCode);
-			if (venue.$url && !options[CO_REGEXP].test(venue.$url)
-				&& isLimitOk(263))
-				venue.report(263);
-
-			// GROUP isPoint
-			if (venue.$isPoint) {
-				// Should be a area?
-				options = getCheckOptions(264, countryCode);
-				if (options[CO_REGEXP].test(venue.$categories[0])
-					&& address.isOkFor(264))
-					venue.report(264);
-			} else {
-				// Should be a point?
-				options = getCheckOptions(265, countryCode);
-				if (options[CO_REGEXP].test(venue.$categories[0])
-					&& address.isOkFor(265))
-					venue.report(265);
-			}
-			// GROUP isPoint
-			// Check minium level 2
-			options = getCheckOptions(266, countryCode);
-			if (options[CO_REGEXP].test(venue.$categories[0])
-				&& options[CO_NUMBER] > lock
-				&& address.isOkFor(266))
-				venue.report(266);
-			// Check minium level 3
-			options = getCheckOptions(267, countryCode);
-			if (options[CO_REGEXP].test(venue.$categories[0])
-				&& options[CO_NUMBER] > lock
-				&& address.isOkFor(267))
-				venue.report(267);
-
 		} // for all venues
 	}
 
