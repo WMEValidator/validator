@@ -1,14 +1,11 @@
 Current changes:
 
-v2019.09.16:
-- davidakachaos: Added new places checks:
-  * check for other category
-  * check gas station brand name
-  * check phone number and URL
-  * check for point/area places
-  * check place lock level
+v2019.09.24:
+- davidakachaos: Added new places checks!
 - davidakachaos: Added Dutch translations for places checks
-- davidakachaos: Enabled/adjusted some checks for NL
+- other minor fixes
+Please report any issues/suggestions on the forum:
+https://www.waze.com/forum/viewtopic.php?t=76488
 
 v2019.08.29:
 - luc45z: update PL abbreviations
