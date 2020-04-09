@@ -460,6 +460,9 @@ function F_INIT() {
 		async(F_INIT, null, 1e3);
 		return;
 	}
+	// Now we surely have WM as map, but stuff moved to W.map.olMap for us
+	// So we redefine WM here to use olMap instead, now we have map loaded.
+	WM = nW.map.olMap;
 
 	// detect new WME version
 	if (classCodeDefined(UW.require)) {
