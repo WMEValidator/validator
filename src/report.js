@@ -246,8 +246,8 @@ function F_SHOWREPORT(reportFormat) {
 			var filters = [];
 			if (_UI.pMain.pFilter.oExcludeDuplicates.CHECKED)
 				filters.push(trS("report.filter.duplicate"));
-			if (_UI.pMain.pFilter.oExcludeVenues.CHECKED)
-				filters.push(trS("report.filter.venue"));
+			if (!_UI.pMain.pFilter.oEnablePlaces.CHECKED)
+				filters.push(trS("report.filter.places"));
 			if (_UI.pMain.pFilter.oExcludeStreets.CHECKED)
 				filters.push(trS("report.filter.streets"));
 			if (_UI.pMain.pFilter.oExcludeOther.CHECKED)

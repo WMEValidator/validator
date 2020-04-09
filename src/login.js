@@ -134,10 +134,8 @@ function F_LOGIN() {
 		$switchValidator: false,
 		// HL layer
 		$HLlayer: null,
-		// array of objects to animate
+		// array of objects to highlight
 		$HLedObjects: {},
-		// array of venues to animate
-		$HLedVenues: {},
 		// global access flag
 		$isGlobalAccess: false,
 		// timer to measure ETA
@@ -179,10 +177,8 @@ function F_LOGIN() {
 		$moveEndCenter: null,
 		// map of seen object IDs
 		$seen: {},
-		$seenVenues: {},
 		// map of segment IDs to revalidate
 		$revalidate: {},
-		$revalidateVenues: {},
 		// current user
 		$curUserName: WLM.user.userName,
 		// error flag
@@ -806,6 +802,11 @@ function F_LOGIN() {
 				_TYPE: _THUI.CHECKBOX,
 				_REVERSE: 1,
 				_ONCHANGE: onUpdateUI,
+				oEnablePlaces: {
+					TEXT: trS("filter.places.text"),
+					TITLE: trS("filter.places.tip"),
+					AUTOSAVE: AS_PLACES
+				},
 				oExcludeNonEditables: {
 					TEXT: trS("filter.noneditables.text"),
 					TITLE: trS("filter.noneditables.tip"),
@@ -815,11 +816,6 @@ function F_LOGIN() {
 					TEXT: trS("filter.duplicates.text"),
 					TITLE: trS("filter.duplicates.tip"),
 					AUTOSAVE: AS_DUPLICATES
-				},
-				oExcludeVenues: {
-					TEXT: trS("filter.venues.text"),
-					TITLE: trS("filter.venues.tip"),
-					AUTOSAVE: AS_VENUES
 				},
 				oExcludeStreets: {
 					TEXT: trS("filter.streets.text"),
@@ -1236,7 +1232,7 @@ function F_LOGIN() {
 
 	async(F_UPDATEUI);
 	// for the highlights
-	async(ForceHLAllSegments, null, 700);
+	async(ForceHLAllObjects, null, 700);
 
 	// register event handlers
 	WMo.events.on({
@@ -1244,11 +1240,11 @@ function F_LOGIN() {
 	});
 	WM.events.on({
 		"moveend": onMoveEnd,
-		"zoomend": HLAllSegments,
+		"zoomend": HLAllObjects,
 		"changelayer": onChangeLayer,
 	});
 	WSM.events.on({
-		"selectionchanged": ForceHLAllSegments
+		"selectionchanged": ForceHLAllObjects
 	});
 	WC.events.on({
 		"loadstart": onLoadStart,

@@ -50,9 +50,9 @@ function F_ONNODESCHANGED(e) {
 			_RT.$revalidate[ids[j]] = true,
 				reHL = true;
 	}
-	// revalidate all the segments
+	// revalidate all the objects
 	if (reHL)
-		HLAllSegments();
+		HLAllObjects();
 }
 
 /**
@@ -67,7 +67,7 @@ function F_ONVENUESCHANGED(e) {
 		reHL = true;
 	}
 	if (reHL)
-		HLAllSegments();
+		HLAllObjects();
 }
 
 /**
@@ -85,7 +85,7 @@ function F_ONCHANGELAYER(e) {
 				delete WMo.segments.objects[segmentID][GL_TBCOLOR];
 			}
 		}
-		ForceHLAllSegments();
+		ForceHLAllObjects();
 	}
 	else
 		if (GL_LAYERUNAME === e.layer.uniqueName
@@ -280,9 +280,9 @@ function F_ONMERGEEND() {
 		async(F_ONRUN);
 		return;
 	}
-	// Highlight reported segments
+	// Highlight reported objects
 	if (!RTStateIs(ST_RUN)) {
-		HLAllSegments();
+		HLAllObjects();
 		return;
 	}
 
@@ -366,7 +366,7 @@ function F_ONMERGEEND() {
 		|| Math.abs(newY - s.bottom) < Math.abs(newY - eh2 - s.bottom)
 	) {
 		// finished!
-		// check if any editable segment was found
+		// check if any editable objects was found
 		if (!_REP.$isEditableFound && _UI.pMain.pFilter.oExcludeNonEditables.CHECKED)
 			_RT.$reportEditableNotFound = true;
 
@@ -841,7 +841,7 @@ function F_UPDATEUI(e) {
 		_RT.oReportToolbox.CHECKED = true;
 		_RT.oReportToolbox.NA = false;
 		clearReport();
-		async(ForceHLAllSegments, null, 1e3);
+		async(ForceHLAllObjects, null, 1e3);
 	}
 	// check for WMECH
 	if (_RT.oReportWMECH.NA
@@ -849,7 +849,7 @@ function F_UPDATEUI(e) {
 		_RT.oReportWMECH.CHECKED = true;
 		_RT.oReportWMECH.NA = false;
 		clearReport();
-		async(ForceHLAllSegments, null, 1e3);
+		async(ForceHLAllObjects, null, 1e3);
 	}
 	// build custom RegExps
 	var customOptions = _RT.$checks[128].OPTIONS[_I18n.$defLng];
@@ -900,11 +900,11 @@ function F_UPDATEUI(e) {
 			case _UI.pSettings.pCustom.oRegExp2:
 				_RT.$isMapChanged = true;
 				clearReport();
-				async(ForceHLAllSegments);
+				async(ForceHLAllObjects);
 				break;
+			case _UI.pMain.pFilter.oEnablePlaces:
 			case _UI.pMain.pFilter.oExcludeNonEditables:
 			case _UI.pMain.pFilter.oExcludeDuplicates:
-			case _UI.pMain.pFilter.oExcludeVenues:
 			case _UI.pMain.pFilter.oExcludeStreets:
 			case _UI.pMain.pFilter.oExcludeOther:
 			case _UI.pMain.pFilter.oExcludeNotes:
@@ -919,8 +919,8 @@ function F_UPDATEUI(e) {
 				_RT.$includeChecksCache = {};
 				// update max severity
 				async(F_SHOWREPORT, RF_UPDATEMAXSEVERITY);
-				// highlight segments
-				async(ForceHLAllSegments);
+				// highlight objects
+				async(ForceHLAllObjects);
 				break;
 			case _UI.pMain.pButtons.bScan:
 				async(F_ONRUN);
@@ -979,8 +979,8 @@ function F_UPDATEUI(e) {
 				};
 				// update max severity
 				sync(F_SHOWREPORT, RF_UPDATEMAXSEVERITY);
-				// highlight segments
-				async(ForceHLAllSegments);
+				// highlight objects
+				async(ForceHLAllObjects);
 				break;
 			case _UI.pSettings.pButtons.bBack:
 				_UI.pMain.NODISPLAY = false;
@@ -1003,22 +1003,22 @@ function F_UPDATEUI(e) {
 		_UI.pSettings.pScanner.oHLReported.CHECKED =
 			!_UI.pSettings.pScanner.oHLReported.CHECKED;
 		if (_UI.pSettings.pScanner.oHLReported.CHECKED) {
-			ForceHLAllSegments();
+			ForceHLAllObjects();
 			_RT.$HLlayer.setVisibility(true);
 		}
 		else {
-			ForceHLAllSegments();
+			ForceHLAllObjects();
 			destroyHLs();
 			_RT.$HLlayer.setVisibility(false);
 		}
 		_RT.$switchValidator = false;
 	}
 
-	// check if any editable segment was found
+	// check if any editable objects was found
 	if (_RT.$reportEditableNotFound) {
 		_RT.$reportEditableNotFound = false;
 		_UI.pMain.pFilter.oExcludeNonEditables.CHECKED = false;
-		info("'Exclude non-editable segments' filter option has been removed because the area you just scanned has no editable segments.\n\nNow just click 'Show report' to view the report!");
+		info(trS("filter.noneditables.reverted"));
 	}
 	///////////////////////////////////////////////////////////////////////
 	// Update panels
@@ -1156,11 +1156,11 @@ function F_LOGOUT() {
 	});
 	WM.events.un({
 		"moveend": onMoveEnd,
-		"zoomend": HLAllSegments,
+		"zoomend": HLAllObjects,
 		"changelayer": onChangeLayer,
 	});
 	WSM.events.un({
-		"selectionchanged": ForceHLAllSegments
+		"selectionchanged": ForceHLAllObjects
 	});
 	WC.events.un({
 		"loadstart": onLoadStart,

@@ -247,6 +247,7 @@ Waze.VENUE = function () {
 	this.getNavigationPoints = function () { };
 	this.getMainCategory = function () { };
 	this.getCategorySet = function () { };
+	this.isPoint = function () { };
 
 	this.attributes = {
 		adLocked: false,
