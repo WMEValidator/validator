@@ -752,15 +752,15 @@ WME Map Validator
 - limit of segments per report
 - BBreport: warning 50000 chars
 - show the settings at the beginning of the report?
-- sort city/steeet/segment
+- sort city/street/segment
 - in report major/critical permalinks -> orange and red
-- count city names and use for the report anme with the biggest counter
+- count city names and use for the report name with the biggest counter
 - show total number of issues at the end of the report
 - report button color depend on severity of the issue: red, orange and blue
 - new filter: exclude minor issues
 - list of available checks
 - continue scan on error
-- scan the map continuesly, i.e. every move end
+- scan the map continuously, i.e. every move end
 - runtime reports (save username, road rank, editable flag)
 - UI change filters on a first page, all reports by default
 - new access lists + cache
