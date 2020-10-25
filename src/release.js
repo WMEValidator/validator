@@ -26,12 +26,15 @@
  * WV RELEASE INFORMATION
  */
 /** WME Validator version @const */
-var WV_VERSION = "2020.04.12";
+var WV_VERSION = "2020.10.25";
 /** Auto-save password. Increase to reset auto-save config. @const */
 var AS_PASSWORD = "v1";
 /** @const */
 var WV_WHATSNEW = ""
-	+ "v2020.04.12:"
+	+ "v2020.10.25:"
+	+ "\n- davidakachaos: updated Wiki links for BE/NL"
+	+ "\n"
+	+ "\nv2020.04.12:"
 	+ "\n- davidakachaos: fixes for latests WME"
 	+ "\n"
 	+ "\nv2019.09.24:"

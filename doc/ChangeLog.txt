@@ -1,5 +1,8 @@
 Current changes:
 
+v2020.10.25:
+- davidakachaos: updated Wiki links for BE/NL
+
 v2020.04.12:
 - davidakachaos: fixes for latests WME
 
