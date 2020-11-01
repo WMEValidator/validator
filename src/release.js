@@ -26,12 +26,15 @@
  * WV RELEASE INFORMATION
  */
 /** WME Validator version @const */
-var WV_VERSION = "2020.10.25";
+var WV_VERSION = "2020.11.1";
 /** Auto-save password. Increase to reset auto-save config. @const */
 var AS_PASSWORD = "v1";
 /** @const */
 var WV_WHATSNEW = ""
-	+ "v2020.10.25:"
+	+ "v2020.11.1:"
+	+ "\n- paulvdwyn: update Motorway naming for BE"
+	+ "\n"
+	+ "\nv2020.10.25:"
 	+ "\n- davidakachaos: updated Wiki links for BE/NL"
 	+ "\n"
 	+ "\nv2020.04.12:"
@@ -55,14 +58,8 @@ var WV_WHATSNEW = ""
 	+ "\n- berestovskyy: hot fix for login issue"
 	+ "\n- berestovskyy: fixed audio for Google Chrome"
 	+ "\n"
-	+ "\nv2019.02.26:"
-	+ "\n- berestovskyy: hot fixes for latests WME"
-	+ "\n"
-	+ "\nv2018.11.10:"
-	+ "\n- davidakachaos: fix streets isolated by ramps"
-	+ "\n- davidakachaos: fix recover from preference change"
-	+ "\n- davidakachaos: add road closures to fix #36 and #37"
-	+ "\n- davidakachaos: fix speed limit issues on borders"
+	+ "\nSee the full Change Log:"
+	+ "\nhttps://www.waze.com/forum/viewtopic.php?f=819&t=76488&p=787161#p787161"
 	;
 /** @const */
 var WV_LICENSE_VERSION = "1";
