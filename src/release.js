@@ -30,60 +30,58 @@ var WV_VERSION = "2020.11.1";
 /** Auto-save password. Increase to reset auto-save config. @const */
 var AS_PASSWORD = "v1";
 /** @const */
-var WV_WHATSNEW = ""
-	+ "v2020.11.1:"
-	+ "\n- paulvdwyn: update Motorway naming for BE"
-	+ "\n"
-	+ "\nv2020.10.25:"
-	+ "\n- davidakachaos: updated Wiki links for BE/NL"
-	+ "\n"
-	+ "\nv2020.04.12:"
-	+ "\n- davidakachaos: fixes for latests WME"
-	+ "\n"
-	+ "\nv2019.09.24:"
-	+ "\n- davidakachaos: Added new places checks!"
-	+ "\n- davidakachaos: Added Dutch translations for places checks"
-	+ "\n- other minor fixes"
-	+ "\nPlease report any issues/suggestions on the forum:"
-	+ "\nhttps://www.waze.com/forum/viewtopic.php?t=76488"
-	+ "\n"
-	+ "\nv2019.08.29:"
-	+ "\n- luc45z: update PL abbreviations"
-	+ "\n"
-	+ "\nv2019.08.16:"
-	+ "\n- jangliss: Fix for layer refresh if layer did not trigger update"
-	+ "\n- jangliss: Add lock checks for railroad and private roads"
-	+ "\n"
-	+ "\nv2019.04.11:"
-	+ "\n- berestovskyy: hot fix for login issue"
-	+ "\n- berestovskyy: fixed audio for Google Chrome"
-	+ "\n"
-	+ "\nSee the full Change Log:"
-	+ "\nhttps://www.waze.com/forum/viewtopic.php?f=819&t=76488&p=787161#p787161"
+var WV_WHATSNEW = `v2020.11.1:
+- paulvdwyn: update Motorway naming for BE
+
+v2020.10.25:
+- davidakachaos: updated Wiki links for BE/NL
+
+v2020.04.12:
+- davidakachaos: fixes for latests WME
+
+v2019.09.24:
+- davidakachaos: Added new places checks!
+- davidakachaos: Added Dutch translations for places checks
+- other minor fixes
+Please report any issues/suggestions on the forum:
+https://www.waze.com/forum/viewtopic.php?t=76488
+
+v2019.08.29:
+- luc45z: update PL abbreviations
+
+v2019.08.16:
+- jangliss: Fix for layer refresh if layer did not trigger update
+- jangliss: Add lock checks for railroad and private roads
+
+v2019.04.11:
+- berestovskyy: hot fix for login issue
+- berestovskyy: fixed audio for Google Chrome
+
+See the full Change Log:
+https://www.waze.com/forum/viewtopic.php?f=819&t=76488&p=787161#p787161`
 	;
 /** @const */
 var WV_LICENSE_VERSION = "1";
 /** @const */
-var WV_LICENSE = ""
-	+ "\nLICENSE:"
-	+ "\nWME Validator uses Open Source GPLv3 license,"
-	+ "\ni.e. you may copy, distribute and modify the software"
-	+ "\nas long as you track changes/dates in source files."
-	+ "\nAny modifications to or software including (via compiler)"
-	+ "\nGPL-licensed code must also be made available"
-	+ "\nunder the GPL along with build & install instructions."
-	+ "\n"
-	+ "\nWME Validator source code is available on GitHub:"
-	+ "\nhttps://github.com/WMEValidator/"
-	+ "\n"
-	+ "\nFor questions please use official forum:"
-	+ "\nhttps://www.waze.com/forum/viewtopic.php?f=819&t=76488"
-	+ "\n"
-	+ "\nReport bugs on GitHub Issues Tracker:"
-	+ "\nhttps://github.com/WMEValidator/validator/issues"
-	+ "\n"
-	+ "\nNote: WME Validator uses local storage to remember"
-	+ "\nyour choices and preferences."
+var WV_LICENSE = `LICENSE:
+WME Validator uses Open Source GPLv3 license,
+i.e. you may copy, distribute and modify the software
+as long as you track changes/dates in source files.
+Any modifications to or software including (via compiler)
+GPL-licensed code must also be made available
+under the GPL along with build & install instructions.
+
+WME Validator source code is available on GitHub:
+https://github.com/WMEValidator/
+
+For questions please use official forum:
+https://www.waze.com/forum/viewtopic.php?f=819&t=76488
+
+Report bugs on GitHub Issues Tracker:
+https://github.com/WMEValidator/validator/issues
+
+Note: WME Validator uses local storage to remember
+your choices and preferences.`
 	;
 
 /**
