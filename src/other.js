@@ -485,9 +485,6 @@ function F_INIT() {
 		"login": onLogin
 	});
 
-	// install event recovery
-	W.app.modeController.model.bind('change:mode', F_INIT);
-
 	// do login or wait for user
 	async(F_ONLOGIN);
 
