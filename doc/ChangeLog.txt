@@ -1,5 +1,8 @@
 Current changes:
 
+v2021.3.5:
+- Glodenox: fixes for latests WME version
+
 v2020.11.1:
 - paulvdwyn: update Motorway naming for BE
 

@@ -26,11 +26,14 @@
  * WV RELEASE INFORMATION
  */
 /** WME Validator version @const */
-var WV_VERSION = "2020.11.1";
+var WV_VERSION = "2021.3.5";
 /** Auto-save password. Increase to reset auto-save config. @const */
 var AS_PASSWORD = "v1";
 /** @const */
-var WV_WHATSNEW = `v2020.11.1:
+var WV_WHATSNEW = `v2021.3.5:
+- Glodenox: fixes for latests WME version
+
+v2020.11.1:
 - paulvdwyn: update Motorway naming for BE
 
 v2020.10.25:
@@ -52,10 +55,6 @@ v2019.08.29:
 v2019.08.16:
 - jangliss: Fix for layer refresh if layer did not trigger update
 - jangliss: Add lock checks for railroad and private roads
-
-v2019.04.11:
-- berestovskyy: hot fix for login issue
-- berestovskyy: fixed audio for Google Chrome
 
 See the full Change Log:
 https://www.waze.com/forum/viewtopic.php?f=819&t=76488&p=787161#p787161`
