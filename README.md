@@ -1,8 +1,13 @@
 About WME Validator
 ===================
 
-Validates a map area in Waze Map Editor (WME), highlights issues and generates
-a very detailed report with wiki references and solutions.
+Chrome Web Extension for [Waze Map Editor](https://waze.com) to validate map vector data and locations, scan big map areas for issues, generate detailed report with references and solutions.
+
+* Supports 150+ validation rules for vector data, attributes, and locations (places)
+* The rules are adapted to 26+ countries by local communities
+* UI has been translated to 10+ languages by community
+
+![annotated screenshots](annotated_screenshots.png "WME Validator")
 
 WME Validator uses Open Source GPLv3 license, i.e. you may copy,
 distribute and modify the software as long as you track changes/dates
