@@ -764,7 +764,7 @@ function F_UPDATEUI(e) {
 		}
 
 		// update start button
-		if (3 < WM.getZoom()) {
+		if (15 < WM.getZoom()) {
 			btns.bScan.CLASS = "btn btn-default";
 			btns.bScan.DISABLED = true;
 			btns.bScan.TITLE = trS("button.scan.tip.NA");
@@ -1099,7 +1099,7 @@ function F_UPDATEUI(e) {
 	if (RTStateIs(ST_STOP) && !_REP.$maxSeverity) {
 		// always display a zoom out message
 		if (!_UI.pMain.NODISPLAY) {
-			if (3 < WM.getZoom())
+			if (15 < WM.getZoom())
 				_RT.$curMessage = {
 					TEXT: _UI.pSettings.pScanner.oHLReported.CHECKED ?
 						trS("msg.pan.text")
