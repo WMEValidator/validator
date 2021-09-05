@@ -26,11 +26,14 @@
  * WV RELEASE INFORMATION
  */
 /** WME Validator version @const */
-var WV_VERSION = "2021.3.5";
+var WV_VERSION = "2021.9.6";
 /** Auto-save password. Increase to reset auto-save config. @const */
 var AS_PASSWORD = "v1";
 /** @const */
-var WV_WHATSNEW = `v2021.3.5:
+var WV_WHATSNEW = `v2021.9.6:
+- Glodenox: fixes for latests WME version
+
+v2021.3.5:
 - Glodenox: fixes for latests WME version
 
 v2020.11.1:
@@ -48,13 +51,6 @@ v2019.09.24:
 - other minor fixes
 Please report any issues/suggestions on the forum:
 https://www.waze.com/forum/viewtopic.php?t=76488
-
-v2019.08.29:
-- luc45z: update PL abbreviations
-
-v2019.08.16:
-- jangliss: Fix for layer refresh if layer did not trigger update
-- jangliss: Add lock checks for railroad and private roads
 
 See the full Change Log:
 https://www.waze.com/forum/viewtopic.php?f=819&t=76488&p=787161#p787161`
