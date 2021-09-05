@@ -1667,7 +1667,7 @@ function F_VALIDATE(disabledHL) {
 		&& _RT.oReportToolbox.CHECKED;
 	var currentZoom = WM.getZoom();
 	var slowChecks = _UI.pSettings.pScanner.oSlowChecks.CHECKED
-		&& 3 < currentZoom;
+		&& 15 < currentZoom;
 	var oExcludeNotes = _UI.pMain.pFilter.oExcludeNotes.CHECKED;
 
 	var selectedObjects = [];
@@ -1829,7 +1829,7 @@ function F_VALIDATE(disabledHL) {
 		// mark segment as seen
 		_RT.$seen[segmentID] = seen = [0, null,
 			GL_TBCOLOR in rawSegment, GL_WMECHCOLOR in rawSegment,
-			isPartial || 4 > currentZoom,
+			isPartial || 16 > currentZoom,
 			cityID];
 
 		// increase city counter
@@ -3345,7 +3345,7 @@ function F_VALIDATE(disabledHL) {
 
 			// mark venue as seen
 			_RT.$seen[venueID] = seen = [0, null, false, false,
-				4 > currentZoom,
+				16 > currentZoom,
 				cityID];
 
 			// increase city counter
