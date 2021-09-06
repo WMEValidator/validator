@@ -1,10 +1,10 @@
 Current changes:
 
-v2021.9.6:
-- Glodenox: fixes for latests WME version
+v2021.9.7:
+- Glodenox: fixes for the latest WME version
 
 v2021.3.5:
-- Glodenox: fixes for latests WME version
+- Glodenox: fixes for the latest WME version
 
 v2020.11.1:
 - paulvdwyn: update Motorway naming for BE
@@ -13,7 +13,7 @@ v2020.10.25:
 - davidakachaos: updated Wiki links for BE/NL
 
 v2020.04.12:
-- davidakachaos: fixes for latests WME
+- davidakachaos: fixes for the latest WME
 
 v2019.09.24:
 - davidakachaos: Added new places checks!
@@ -34,7 +34,7 @@ v2019.04.11:
 - berestovskyy: fixed audio for Google Chrome
 
 v2019.02.26:
-- berestovskyy: hot fixes for latests WME
+- berestovskyy: hot fixes for the latest WME
 
 v2018.11.10:
 - davidakachaos: fix streets isolated by ramps
