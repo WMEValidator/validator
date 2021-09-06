@@ -158,7 +158,7 @@ function F_SHOWREPORT(reportFormat) {
 			.transform(WM.projection, WM.displayProjection);
 		return window.location.origin
 			+ window.location.pathname
-			+ '?zoom=' + zoom
+			+ '?zoomLevel=' + zoom
 			+ '&lat=' + Math.round(c.lat * 1e5) / 1e5
 			+ '&lon=' + Math.round(c.lon * 1e5) / 1e5
 			+ '&env=' + nW.app.getAppRegionCode()
@@ -1142,7 +1142,7 @@ function F_SHOWREPORT(reportFormat) {
 		}
 		FR += window.location.origin;
 		FR += window.location.pathname;
-		FR += '?zoom=';
+		FR += '?zoomLevel=';
 		FR += z;
 		FR += '&lat=';
 		FR += obj.$objectCopy.$center.lat;
