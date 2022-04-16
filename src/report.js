@@ -1131,14 +1131,14 @@ function F_SHOWREPORT(reportFormat) {
 		var z = SCAN_ZOOM;
 		if(obj.$objectCopy){
 			if (50 > obj.$objectCopy.$length)
-				z = 7;
+				z = 19;
 			else if (500 > obj.$objectCopy.$length) {
-				if (6 > z) z += 1;
+				if (18 > z) z += 1;
 			}
 			else
-				z = 4;
+				z = 16;
 		} else {
-			z = 4;
+			z = 16;
 		}
 		FR += window.location.origin;
 		FR += window.location.pathname;
