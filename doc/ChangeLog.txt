@@ -1,5 +1,8 @@
 Current changes:
 
+v2022.4.16:
+- Glodenox: Zoom-related fixes
+
 v2021.9.7:
 - Glodenox: fixes for the latest WME version
 

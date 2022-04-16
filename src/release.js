@@ -26,11 +26,14 @@
  * WV RELEASE INFORMATION
  */
 /** WME Validator version @const */
-var WV_VERSION = "2021.9.7";
+var WV_VERSION = "2022.4.16";
 /** Auto-save password. Increase to reset auto-save config. @const */
 var AS_PASSWORD = "v1";
 /** @const */
-var WV_WHATSNEW = `v2021.9.7:
+var WV_WHATSNEW = `v2022.4.16:
+- Glodenox: Zoom-related fixes
+
+v2021.9.7:
 - Glodenox: fixes for the latest WME version
 
 v2021.3.5:
