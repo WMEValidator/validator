@@ -155,7 +155,7 @@ function F_SHOWREPORT(reportFormat) {
 			zoom = WM.getZoom();
 		}
 		var c = center.clone()
-			.transform(WM.projection, WM.displayProjection);
+			.transform(nW.Config.map.projection.local, nW.Config.map.projection.remote);
 		return window.location.origin
 			+ window.location.pathname
 			+ '?zoomLevel=' + zoom
