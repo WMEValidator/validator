@@ -284,7 +284,7 @@ function F_VALIDATE(disabledHL) {
 
 		var bounds = this.$rawNode.geometry.bounds;
 		this._center = new OpenLayers.LonLat(bounds.left, bounds.bottom)
-			.transform(WM.projection, WM.displayProjection);
+			.transform(nW.Config.map.projection.local, nW.Config.map.projection.remote);
 		// round the lon/lat
 		this._center.lon = Math.round(this._center.lon * 1e5) / 1e5;
 		this._center.lat = Math.round(this._center.lat * 1e5) / 1e5;
@@ -766,7 +766,7 @@ function F_VALIDATE(disabledHL) {
 	SimpleOBJECT.prototype.getCenter = function () {
 		if (this._center) return this._center;
 		this._center = this.$rawObject.geometry.bounds.getCenterLonLat().clone()
-			.transform(WM.projection, WM.displayProjection);
+			.transform(nW.Config.map.projection.local, nW.Config.map.projection.remote);
 		// round the lon/lat
 		this._center.lon = Math.round(this._center.lon * 1e5) / 1e5;
 		this._center.lat = Math.round(this._center.lat * 1e5) / 1e5;
