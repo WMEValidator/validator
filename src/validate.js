@@ -1351,9 +1351,9 @@ function F_VALIDATE(disabledHL) {
 		if (prop)
 			prop.innerHTML = defHTML;
 		else {
-			var objectProperties = document.getElementsByClassName("selection-icon")[0];
+			var objectProperties = document.getElementsByClassName("address-edit")[0];
 			if (!objectProperties)
-				objectProperties = document.getElementsByClassName("landmark")[0];
+				objectProperties = document.getElementsByClassName("venue-edit-general")[0];
 
 			if (objectProperties) {
 				var d = document.createElement("div");
