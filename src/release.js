@@ -31,10 +31,10 @@ var WV_VERSION = "2022.8.25";
 var AS_PASSWORD = "v1";
 /** @const */
 var WV_WHATSNEW = `v2022.8.25:
-- dalverson: update US and default wiki links
+- DaveAcincy: update US and default wiki links
 
 v2022.8.23:
-- dalverson: fix for coordinates not transforming for PLs
+- DaveAcincy: fix for coordinates not transforming for PLs
 
 v2022.4.16:
 - Glodenox: Zoom-related fixes

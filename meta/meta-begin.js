@@ -16,7 +16,7 @@
 // @contributor         davidakachaos
 // @contributor         jangliss
 // @contributor         Glodenox
-// @contributor         dalverson
+// @contributor         DaveAcincy
 // ==/UserScript==
 /*
  * WME Validator uses Open Source GPLv3 license, i.e. you may copy,
