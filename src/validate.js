@@ -1349,7 +1349,7 @@ function F_VALIDATE(disabledHL) {
 		}
 
 		if (prop)
-			prop.innerHTML = defHTML;
+			prop.innerHTML = createSafeHtml(defHTML);
 		else {
 			var objectProperties = document.getElementsByClassName("address-edit")[0];
 			if (!objectProperties)
@@ -1357,7 +1357,7 @@ function F_VALIDATE(disabledHL) {
 
 			if (objectProperties) {
 				var d = document.createElement("div");
-				d.innerHTML = defHTML;
+				d.innerHTML = createSafeHtml(defHTML);
 				d.id = "i" + defID;
 				d.style.cssText = "text-transform: none; padding: 5px;"
 				prop = objectProperties.appendChild(d)
@@ -1431,7 +1431,7 @@ function F_VALIDATE(disabledHL) {
 		if (!selectedIssues.length) {
 			// update properties
 			if (prop && (_REP.$isLimitPerCheck || skippedObject))
-				prop.innerHTML = newProp;
+				prop.innerHTML = createSafeHtml(newProp);
 			return;
 		}
 
@@ -1574,7 +1574,7 @@ function F_VALIDATE(disabledHL) {
 
 		// update properties
 		if (prop)
-			prop.innerHTML = newProp;
+			prop.innerHTML = createSafeHtml(newProp);
 	} // updateObjectProperties
 
 	/**

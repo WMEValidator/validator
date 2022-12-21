@@ -469,6 +469,7 @@ function F_INIT() {
 		R = UW.require;
 		WME_BETA = /beta/.test(location.href);
 	}
+	setupPolicy();
 
 	// Google Analytics
 	var _gaq = UW["_gaq"];
@@ -1160,7 +1161,7 @@ function F_LOGOUT() {
 		"changelayer": onChangeLayer,
 	});
 	WSM.events.un({
-		"selectionchanged": ForceHLAllObjects
+		"selectionchanged": delayForceHLAllObjects
 	});
 	WC.events.un({
 		"loadstart": onLoadStart,

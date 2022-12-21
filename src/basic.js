@@ -22,6 +22,24 @@
  * BASIC FUNCTIONS
  *************************************************************************/
 
+var policySafeHTML = null;
+
+function setupPolicy() {
+    if (typeof(trustedTypes) !== "undefined") {
+        policySafeHTML = trustedTypes.createPolicy("policySafeHTML", {
+            createHTML: (innerText) => innerText
+        });
+	}
+}
+
+function createSafeHtml(text) {
+    if (policySafeHTML !== null) {
+        return policySafeHTML.createHTML(text);
+    } else {
+        return text;
+    }
+}
+
 /**
  * Escape message string
  * @param {string} msg
@@ -269,6 +287,14 @@ function HLAllObjects() {
 function ForceHLAllObjects() {
 	_RT.$isMapChanged = true;
 	HLAllObjects();
+}
+
+/**
+ * Delay then Force Highlight objects
+ *  This is used to wait for DOM to populate before filling in problem details in left panel.
+ */
+function delayForceHLAllObjects() {
+	setTimeout(ForceHLAllObjects, 100);
 }
 
 /**

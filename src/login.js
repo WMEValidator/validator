@@ -1244,7 +1244,7 @@ function F_LOGIN() {
 		"changelayer": onChangeLayer,
 	});
 	WSM.events.on({
-		"selectionchanged": ForceHLAllObjects
+		"selectionchanged": delayForceHLAllObjects
 	});
 	WC.events.on({
 		"loadstart": onLoadStart,
