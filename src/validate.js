@@ -2650,6 +2650,24 @@ function F_VALIDATE(disabledHL) {
 			}// global speed limit check
 
 			// GROUP isDrivable
+			// on named segment, make sure theres a city on primary or alt
+			if (!cityLen && streetLen && RT_RAMP !== roadType && RT_FREEWAY !== roadType) {
+				var noCity = true;
+				if (alts.length) {
+					for (var i = 0; i < alts.length; i++) {
+						if (alts[i].$city) {
+							noCity = false;
+							break;
+						}
+					}
+				}
+				if (noCity ) {
+					if (hasHNs && isLimitOk(54) && address.isOkFor(54))  segment.report(54);
+					if (!hasHNs && isLimitOk(55) && address.isOkFor(55))  segment.report(55);
+				}
+			}
+
+			// GROUP isDrivable
 			if (DIR_UNKNOWN === direction
 				&& isLimitOk(25)
 				&& address.isOkFor(25))
