@@ -1349,7 +1349,7 @@ function F_VALIDATE(disabledHL) {
 		}
 
 		if (prop)
-			prop.innerHTML = defHTML;
+			prop.innerHTML = createSafeHtml(defHTML);
 		else {
 			var objectProperties = document.getElementsByClassName("address-edit")[0];
 			if (!objectProperties)
@@ -1357,7 +1357,7 @@ function F_VALIDATE(disabledHL) {
 
 			if (objectProperties) {
 				var d = document.createElement("div");
-				d.innerHTML = defHTML;
+				d.innerHTML = createSafeHtml(defHTML);
 				d.id = "i" + defID;
 				d.style.cssText = "text-transform: none; padding: 5px;"
 				prop = objectProperties.appendChild(d)
@@ -1431,7 +1431,7 @@ function F_VALIDATE(disabledHL) {
 		if (!selectedIssues.length) {
 			// update properties
 			if (prop && (_REP.$isLimitPerCheck || skippedObject))
-				prop.innerHTML = newProp;
+				prop.innerHTML = createSafeHtml(newProp);
 			return;
 		}
 
@@ -1574,7 +1574,7 @@ function F_VALIDATE(disabledHL) {
 
 		// update properties
 		if (prop)
-			prop.innerHTML = newProp;
+			prop.innerHTML = createSafeHtml(newProp);
 	} // updateObjectProperties
 
 	/**
@@ -2648,6 +2648,24 @@ function F_VALIDATE(disabledHL) {
 					}
 				}
 			}// global speed limit check
+
+			// GROUP isDrivable
+			// on named segment, make sure theres a city on primary or alt
+			if (!cityLen && streetLen && RT_RAMP !== roadType && RT_FREEWAY !== roadType && (isLimitOk(54) || isLimitOk(55))) {
+				var noCity = true;
+				if (alts.length) {
+					for (var i = 0; i < alts.length; i++) {
+						if (alts[i].$city) {
+							noCity = false;
+							break;
+						}
+					}
+				}
+				if (noCity ) {
+					if (hasHNs && isLimitOk(54) && address.isOkFor(54))  segment.report(54);
+					if (!hasHNs && isLimitOk(55) && address.isOkFor(55))  segment.report(55);
+				}
+			}
 
 			// GROUP isDrivable
 			if (DIR_UNKNOWN === direction
