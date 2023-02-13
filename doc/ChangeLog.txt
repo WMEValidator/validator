@@ -1,5 +1,10 @@
 Current changes:
 
+v2023.2.13:
+- DaveAcincy: New checks for US:
+  * #54 "No city on segment with HNs"
+  * #55 "No city on named segment"
+
 v2022.8.25:
 - DaveAcincy: update US and default wiki links
 

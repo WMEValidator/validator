@@ -21,6 +21,7 @@
 /**
  * Validate current view
  */
+/** @suppress {strictMissingProperties} */
 function F_VALIDATE(disabledHL) {
 	if (!_RT.$isMapChanged)
 		return;

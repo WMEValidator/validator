@@ -26,11 +26,16 @@
  * WV RELEASE INFORMATION
  */
 /** WME Validator version @const */
-var WV_VERSION = "2022.8.25";
+var WV_VERSION = "2023.2.13";
 /** Auto-save password. Increase to reset auto-save config. @const */
 var AS_PASSWORD = "v1";
 /** @const */
-var WV_WHATSNEW = `v2022.8.25:
+var WV_WHATSNEW = `v2023.2.13:
+- DaveAcincy: New checks for US:
+  * #54 "No city on segment with HNs"
+  * #55 "No city on named segment"
+
+v2022.8.25:
 - DaveAcincy: update US and default wiki links
 
 v2022.8.23:

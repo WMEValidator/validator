@@ -163,6 +163,7 @@ function async(func, param, inter) {
 /**
  * Clear Watch Dogs
  */
+/** @suppress {strictMissingProperties} */
 function clearWD() {
 	// kill WGs
 	window.clearTimeout(_RT.$WDmoveID);
@@ -188,6 +189,7 @@ function updateTimer(nstate) {
 /**
  * Set run time state
  */
+/** @suppress {strictMissingProperties} */
 function setRTState(nstate) {
 	// you cannot pause on stop
 	if (RTStateIs(ST_STOP) && ST_PAUSE === nstate)
@@ -205,6 +207,7 @@ function setRTState(nstate) {
 /**
  * Clear report
  */
+/** @suppress {strictMissingProperties} */
 function clearReport() {
 	_RT.$seen = {};
 	_RT.$revalidate = {};
@@ -247,6 +250,7 @@ function beep(dur, oscType) {
 /**
  * Set error flag
  */
+/** @suppress {strictMissingProperties} */
 function setErrorFlag() { _RT.$error = true }
 
 /**
@@ -256,6 +260,7 @@ function isErrorFlag() { return _RT.$error }
 /**
  * Clear error flag
  */
+/** @suppress {strictMissingProperties} */
 function clearErrorFlag() { _RT.$error = false }
 
 /**
@@ -284,6 +289,7 @@ function HLAllObjects() {
 /**
  * Force Highlight objects
  */
+/** @suppress {strictMissingProperties} */
 function ForceHLAllObjects() {
 	_RT.$isMapChanged = true;
 	HLAllObjects();
@@ -300,6 +306,7 @@ function delayForceHLAllObjects() {
 /**
  * Reset Defaults
  */
+/** @suppress {strictMissingProperties} */
 function resetDefaults() {
 	_UI.pMain.pFilter.oEnablePlaces.CHECKED = false;
 	_UI.pMain.pFilter.oExcludeNonEditables.CHECKED = true;
@@ -442,6 +449,7 @@ function getFilteredSeverityObj(oldSeverity, checkIDs, checkToHL) {
 /**
  * Check filter
  */
+/** @suppress {strictMissingProperties} */
 function checkFilter(severity, objectCopy, seenObjects) {
 	if (seenObjects) {
 		if (objectCopy.$objectID in seenObjects
@@ -683,6 +691,7 @@ function onLogin() {
 /**
  * Merge End Handler
  */
+/** @suppress {strictMissingProperties} */
 function onMergeEnd() {
 	_RT.$isMapChanged = true;
 	// kill WDs
@@ -719,22 +728,27 @@ function onChangeLayer(e) {
 /**
  * Segments Changed Handler
  */
+/** @suppress {strictMissingProperties} */
 function onSegmentsChanged(e) {
 	_RT.$isMapChanged = true;
 	sync(F_ONSEGMENTSCHANGED, e);
 }
+
 /**
  * Segments Removed Handler
  */
+/** @suppress {strictMissingProperties} */
 function onSegmentsRemoved(e) {
 	_RT.$isMapChanged = true;
 	if (1 === e.length)
 		if (RTStateIs(ST_STOP) || RTStateIs(ST_PAUSE))
 			sync(F_ONSEGMENTSCHANGED, e);
 }
+
 /**
  * Segments Added Handler
  */
+/** @suppress {strictMissingProperties} */
 function onSegmentsAdded(e) {
 	_RT.$isMapChanged = true;
 }
@@ -742,13 +756,16 @@ function onSegmentsAdded(e) {
 /**
  * Nodes Changed Handler
  */
+/** @suppress {strictMissingProperties} */
 function onNodesChanged(e) {
 	_RT.$isMapChanged = true;
 	sync(F_ONNODESCHANGED, e);
 }
+
 /**
  * Nodes Removed Handler
  */
+/** @suppress {strictMissingProperties} */
 function onNodesRemoved(e) {
 	_RT.$isMapChanged = true;
 	if (1 === e.length)
@@ -759,6 +776,7 @@ function onNodesRemoved(e) {
 /**
 * Recover from switching isImperial pref
 */
+/** @suppress {strictMissingProperties} */
 function onChangeIsImperial() {
 	clearReport();
 	_RT.$HLedObjects = {};
@@ -770,12 +788,14 @@ function onChangeIsImperial() {
 /**
  * Venues Added Handler
  */
+/** @suppress {strictMissingProperties} */
 function onVenuesAdded(e) {
 	_RT.$isMapChanged = true;
 }
 /**
  * Venues Changed Handler
  */
+/** @suppress {strictMissingProperties} */
 function onVenuesChanged(e) {
 	_RT.$isMapChanged = true;
 	sync(F_ONVENUESCHANGED, e);
@@ -783,6 +803,7 @@ function onVenuesChanged(e) {
 /**
  * Venues Removed Handler
  */
+/** @suppress {strictMissingProperties} */
 function onVenuesRemoved(e) {
 	_RT.$isMapChanged = true;
 	if (1 === e.length)
