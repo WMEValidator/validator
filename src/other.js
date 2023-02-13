@@ -73,6 +73,7 @@ function F_ONVENUESCHANGED(e) {
 /**
  * On Change Layer Handler
  */
+/** @suppress {strictMissingProperties} */
 function F_ONCHANGELAYER(e) {
 	// Trigger of layer change was not by a layer (ie WMETB Config Dialog)
 	if (!e.hasOwnProperty('layer')) {
@@ -100,6 +101,7 @@ function F_ONCHANGELAYER(e) {
 /**
  * On Move End Handler
  */
+/** @suppress {strictMissingProperties} */
 function F_ONMOVEEND() {
 	var c = WM.getCenter();
 
@@ -128,6 +130,7 @@ function F_ONMOVEEND() {
 /**
  * On Load Start Handler
  */
+/** @suppress {strictMissingProperties} */
 function F_ONLOADSTART() {
 	var c = WM.getCenter();
 
@@ -146,6 +149,7 @@ function F_ONLOADSTART() {
 /**
  * Switch all layers but roads off
  */
+/** @suppress {strictMissingProperties} */
 function F_LAYERSOFF() {
 	// TODO:
 	//  Waze.Config.segments.zoomToRoadType[SCAN_ZOOM] = -1;
@@ -169,6 +173,7 @@ function F_LAYERSOFF() {
 /**
  * Switch all layers back on
  */
+/** @suppress {strictMissingProperties} */
 function F_LAYERSON() {
 	//  if(!_RT.$layersVisibility || _UI.pSettings.pScanner.oShowLayers.CHECKED)
 	if (!_RT.$layersVisibility || GL_SHOWLAYERS)
@@ -203,6 +208,7 @@ function F_PAUSE() {
 /**
  * Stop scanning
  */
+/** @suppress {strictMissingProperties} */
 function F_STOP() {
 	if (!RTStateIs(ST_STOP)) {
 		beep(100, "square");
@@ -227,6 +233,7 @@ function F_STOP() {
 /**
  * Merge End Handler
  */
+/** @suppress {strictMissingProperties} */
 function F_ONMERGEEND() {
 	/** @const */
 	var c = WM.getCenter();
@@ -384,6 +391,7 @@ function F_ONMERGEEND() {
 /**
  * Run Handler
  */
+/** @suppress {strictMissingProperties} */
 function F_ONRUN() {
 	// clear error flag
 	clearErrorFlag();
@@ -718,6 +726,7 @@ function F_ONWARNING(e) {
 /**
  * Update User Interface
  */
+/** @suppress {strictMissingProperties} */
 function F_UPDATEUI(e) {
 	/**
 	 * Destroj HLs

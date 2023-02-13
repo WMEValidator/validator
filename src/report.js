@@ -21,6 +21,7 @@
 /**
  * Show generated report
  */
+/** @suppress {strictMissingProperties} */
 function F_SHOWREPORT(reportFormat) {
 	// shortcuts
 	/** @const */
