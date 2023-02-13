@@ -2651,7 +2651,7 @@ function F_VALIDATE(disabledHL) {
 
 			// GROUP isDrivable
 			// on named segment, make sure theres a city on primary or alt
-			if (!cityLen && streetLen && RT_RAMP !== roadType && RT_FREEWAY !== roadType) {
+			if (!cityLen && streetLen && RT_RAMP !== roadType && RT_FREEWAY !== roadType && (isLimitOk(54) || isLimitOk(55))) {
 				var noCity = true;
 				if (alts.length) {
 					for (var i = 0; i < alts.length; i++) {
