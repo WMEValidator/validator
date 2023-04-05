@@ -26,11 +26,14 @@
  * WV RELEASE INFORMATION
  */
 /** WME Validator version @const */
-var WV_VERSION = "2023.2.13";
+var WV_VERSION = "2023.3.8";
 /** Auto-save password. Increase to reset auto-save config. @const */
 var AS_PASSWORD = "v1";
 /** @const */
-var WV_WHATSNEW = `v2023.2.13:
+var WV_WHATSNEW = `v2023.3.8:
+- justins83: Minor fixes in #29 to match USA naming guidance
+
+v2023.2.13:
 - DaveAcincy: New checks for US:
   * #54 "No city on segment with HNs"
   * #55 "No city on named segment"
@@ -50,19 +53,6 @@ v2021.9.7:
 v2021.3.5:
 - Glodenox: fixes for the latest WME version
 
-v2020.11.1:
-- paulvdwyn: update Motorway naming for BE
-
-v2020.10.25:
-- davidakachaos: updated Wiki links for BE/NL
-
-v2020.04.12:
-- davidakachaos: fixes for the latest WME
-
-v2019.09.24:
-- davidakachaos: Added new places checks!
-- davidakachaos: Added Dutch translations for places checks
-- other minor fixes
 Please report any issues/suggestions on the forum:
 https://www.waze.com/forum/viewtopic.php?t=76488
 

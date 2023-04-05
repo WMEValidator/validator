@@ -1,5 +1,8 @@
 Current changes:
 
+v2023.3.8:
+- justins83: Minor fixes in #29 to match USA naming guidance
+
 v2023.2.13:
 - DaveAcincy: New checks for US:
   * #54 "No city on segment with HNs"
