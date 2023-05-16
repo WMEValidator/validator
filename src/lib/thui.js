@@ -472,7 +472,7 @@ _THUI.appendUI = function (parent, uiObj, uiPrefix, uiName) {
 		case _THUI.BUTTON:
 			iel = document.createElement("button");
 			//      if(te) iel.appendChild(document.createTextNode(te));
-			if (te) iel.innerHTML = te;
+			if (te) iel.innerHTML = createSafeHtml(te);
 			oel = null;
 			ote = "";
 			break;
@@ -512,7 +512,7 @@ _THUI.appendUI = function (parent, uiObj, uiPrefix, uiName) {
 	// add text to the outer element if present
 	if (ote) {
 		var spanEl = document.createElement("span");
-		spanEl.innerHTML = ote;
+		spanEl.innerHTML = createSafeHtml(ote);
 		// to switch on/off validator?
 		spanEl.style.pointerEvents = "none";
 		// remove all spans

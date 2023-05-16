@@ -21,7 +21,7 @@
 /**
  * Login new user
  */
-function F_LOGIN() {
+async function F_LOGIN() {
 	log("login " + WLM.user.userName);
 
 	///////////////////////////////////////////////////////////////////////
@@ -1211,24 +1211,21 @@ function F_LOGIN() {
 	WM.addLayer(_RT.$HLlayer);
 	_RT.$HLlayer.setVisibility(_UI.pSettings.pScanner.oHLReported.CHECKED);
 	WM.raiseLayer(_RT.$HLlayer, 99);
-	// prevent double tabs when switching between isImperial pref
-	$('#sidepanel-' + ID_PREFIX + '').remove();
-	$('#tab-' + ID_PREFIX + '').remove();
 
-	// Create Validator tab
-	$('#user-tabs ul').append('<li id="tab-' + ID_PREFIX + '">'
-		+ '<a data-toggle="tab" href="#sidepanel-' + ID_PREFIX + '">'
-		+ '<span class="fa fa-check-square-o"></span>'
-		// + '<span class="c' + CL_COLLAPSE + '"> Validator:</span>'
-		+ ' Validator'
-		+ '</a></li>'
-	);
-	$('#user-tabs+div.tab-content').append(
-		'<div class="tab-pane" id="sidepanel-' + ID_PREFIX + '"></div>'
-	);
+	var tabLabel;
+	var tabPane;
+	// create userscript tab
+	var res = W.userscripts.registerSidebarTab("validator");
+	tabLabel = res.tabLabel;
+	tabPane = res.tabPane;
+	tabLabel.innerText = " Validator";
+	await W.userscripts.waitForElementConnected(tabPane);
+	$(tabLabel.parentElement).prepend(
+		$('<span>', {class:'fa fa-check-square-o'})
+		);
+
 	// append user interface after the details or ad the bottom
-	_THUI.appendUI(document.getElementById("sidepanel-" + ID_PREFIX),
-		_UI, "i" + ID_PREFIX);
+	_THUI.appendUI(tabPane, _UI, "i" + ID_PREFIX);
 
 	async(F_UPDATEUI);
 	// for the highlights
