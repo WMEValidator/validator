@@ -1,5 +1,9 @@
 Current changes:
 
+v2023.5.17:
+- DaveAcincy: change severity of #54 and #55
+- DaveAcincy: use new API to add script tab
+
 v2023.3.8:
 - justins83: Minor fixes in #29 to match USA naming guidance
 

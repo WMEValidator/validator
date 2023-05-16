@@ -26,11 +26,15 @@
  * WV RELEASE INFORMATION
  */
 /** WME Validator version @const */
-var WV_VERSION = "2023.3.8";
+var WV_VERSION = "2023.5.17";
 /** Auto-save password. Increase to reset auto-save config. @const */
 var AS_PASSWORD = "v1";
 /** @const */
-var WV_WHATSNEW = `v2023.3.8:
+var WV_WHATSNEW = `v2023.5.17:
+- DaveAcincy: change severity of #54 and #55
+- DaveAcincy: use new API to add script tab
+
+v2023.3.8:
 - justins83: Minor fixes in #29 to match USA naming guidance
 
 v2023.2.13:
@@ -46,12 +50,6 @@ v2022.8.23:
 
 v2022.4.16:
 - Glodenox: Zoom-related fixes
-
-v2021.9.7:
-- Glodenox: fixes for the latest WME version
-
-v2021.3.5:
-- Glodenox: fixes for the latest WME version
 
 Please report any issues/suggestions on the forum:
 https://www.waze.com/forum/viewtopic.php?t=76488
