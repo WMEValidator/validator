@@ -487,6 +487,15 @@ var W = {
 	},
 	controller: {},
 	prefs: {},
+	userscripts: {
+		registerSidebarTab: function (name) { },
+		waitForElementConnected: function (pane) { }
+	}
+};
+
+var RegisterSidebarTab = {
+	tabPane: {},
+	tabLabel: {}
 };
 
 ///////////////////////////////////////////////////////////////////////////
