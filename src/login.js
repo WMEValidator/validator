@@ -22,7 +22,7 @@
  * Login new user
  */
 async function F_LOGIN() {
-	log("login " + WLM.user.userName);
+	log("login " + WLM.user.attributes.userName);
 
 	///////////////////////////////////////////////////////////////////////
 	// Support Functions
@@ -148,13 +148,13 @@ async function F_LOGIN() {
 		$cachedTopCCode: "",
 		// top (logged in) user
 		$topUser: {
-			$userID: WLM.user.id,
-			$userName: WLM.user.userName,
-			$userLevel: WLM.user.normalizedLevel,
-			$isCM: WLM.user.editableCountryIDs ?
-				0 !== WLM.user.editableCountryIDs.length : false,
-			$countryIDs: WLM.user.editableCountryIDs ?
-				WLM.user.editableCountryIDs : [],
+			$userID: WLM.user.attributes.id,
+			$userName: WLM.user.attributes.userName,
+			$userLevel: WLM.user.attributes.rank +1,
+			$isCM: WLM.user.attributes.editableCountryIDs ?
+				0 !== WLM.user.attributes.editableCountryIDs.length : false,
+			$countryIDs: WLM.user.attributes.editableCountryIDs ?
+				WLM.user.attributes.editableCountryIDs : [],
 		},
 		// top (current) map center
 		$topCenter: null,
@@ -180,7 +180,7 @@ async function F_LOGIN() {
 		// map of segment IDs to revalidate
 		$revalidate: {},
 		// current user
-		$curUserName: WLM.user.userName,
+		$curUserName: WLM.user.attributes.userName,
 		// error flag
 		$error: false,
 		// no editable segment was found - show a message
