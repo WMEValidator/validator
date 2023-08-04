@@ -120,7 +120,7 @@ function F_VALIDATE(disabledHL) {
 	 */
 	function getUserName(objID) {
 		var u = WMo.users.getObjectById(objID);
-		return u ? u.attributes.userName : objID.toString();
+		return u ? (u.userName===undefined ? u.attributes.userName : u.userName ) : objID.toString();
 	}
 
 	/**
@@ -130,7 +130,7 @@ function F_VALIDATE(disabledHL) {
 	 */
 	function getUserLevel(objID) {
 		var u = WMo.users.getObjectById(objID);
-		return u ? u.attributes.rank +1 : 0;
+		return u ? (u.rank===undefined ? u.attributes.rank +1 : u.rank +1 ) : 0;
 	}
 
 	/**
