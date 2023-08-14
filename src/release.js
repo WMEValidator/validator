@@ -26,11 +26,14 @@
  * WV RELEASE INFORMATION
  */
 /** WME Validator version @const */
-var WV_VERSION = "2023.5.17";
+var WV_VERSION = "2023.8.14";
 /** Auto-save password. Increase to reset auto-save config. @const */
 var AS_PASSWORD = "v1";
 /** @const */
-var WV_WHATSNEW = `v2023.5.17:
+var WV_WHATSNEW = `v2023.8.14:
+- DaveAcincy: updates for latest WME
+
+v2023.5.17:
 - DaveAcincy: change severity of #54 and #55
 - DaveAcincy: use new API to add script tab
 
