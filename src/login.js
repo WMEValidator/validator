@@ -22,7 +22,7 @@
  * Login new user
  */
 async function F_LOGIN() {
-	log("login " + WLM.user.userName);
+	log("login " + WLM.user.userName===undefined ? WLM.user.attributes.userName : WLM.user.userName);
 
 	///////////////////////////////////////////////////////////////////////
 	// Support Functions
@@ -148,13 +148,9 @@ async function F_LOGIN() {
 		$cachedTopCCode: "",
 		// top (logged in) user
 		$topUser: {
-			$userID: WLM.user.id,
-			$userName: WLM.user.userName,
-			$userLevel: WLM.user.normalizedLevel,
-			$isCM: WLM.user.editableCountryIDs ?
-				0 !== WLM.user.editableCountryIDs.length : false,
-			$countryIDs: WLM.user.editableCountryIDs ?
-				WLM.user.editableCountryIDs : [],
+			$userID: WLM.user.id===undefined ? WLM.user.attributes.id : WLM.user.id,
+			$userName: WLM.user.userName===undefined ? WLM.user.attributes.userName : WLM.user.userName,
+			$userLevel: WLM.user.rank===undefined ? WLM.user.attributes.rank +1 : WLM.user.rank +1,
 		},
 		// top (current) map center
 		$topCenter: null,
@@ -180,7 +176,7 @@ async function F_LOGIN() {
 		// map of segment IDs to revalidate
 		$revalidate: {},
 		// current user
-		$curUserName: WLM.user.userName,
+		$curUserName: WLM.user.userName===undefined ? WLM.user.attributes.userName : WLM.user.userName,
 		// error flag
 		$error: false,
 		// no editable segment was found - show a message
@@ -197,6 +193,13 @@ async function F_LOGIN() {
 		//          "da", "lt", "zh"],
 		$untranslatedLngs: ["IT"],
 	};
+	if (WLM.user.editableCountryIDs===undefined) {
+		_RT.$topUser.$isCM = WLM.user.attributes.editableCountryIDs ? 0 !== WLM.user.attributes.editableCountryIDs.length : false;
+		_RT.$topUser.$countryIDs = WLM.user.attributes.editableCountryIDs ? WLM.user.attributes.editableCountryIDs : [];
+	} else {
+		_RT.$topUser.$isCM = WLM.user.editableCountryIDs ? 0 !== WLM.user.editableCountryIDs.length : false;
+		_RT.$topUser.$countryIDs = WLM.user.editableCountryIDs ? WLM.user.editableCountryIDs : [];
+	}
 
 	///////////////////////////////////////////////////////////////////////
 	// WV Checks
