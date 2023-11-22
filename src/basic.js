@@ -299,8 +299,14 @@ function ForceHLAllObjects() {
  * Delay then Force Highlight objects
  *  This is used to wait for DOM to populate before filling in problem details in left panel.
  */
-function delayForceHLAllObjects() {
-	setTimeout(ForceHLAllObjects, 100);
+function delayForceHLAllObjects(e) {
+  const ldf = Wa.app.layout.model.attributes.loadingFeatures;
+  const ty = (typeof e == 'object') ? (e.type===undefined ? '#' : e.type) : '#';
+  if (ldf) {
+    //console.log('dlyFrcHL - ldfeat ' + ldf + ' ty ' + ty);
+    setTimeout(function () { delayForceHLAllObjects(e); },50);
+  }
+  else { ForceHLAllObjects(); }
 }
 
 /**
@@ -704,11 +710,11 @@ function onMergeEnd() {
 /**
  * Move End Handler
  */
-function onMoveEnd() {
+function onMoveEnd(e) {
 	if (RTStateIs(ST_RUN) || RTStateIs(ST_CONTINUE))
 		async(F_ONMOVEEND);
 	else
-		ForceHLAllObjects();
+		delayForceHLAllObjects(e);
 }
 
 /**

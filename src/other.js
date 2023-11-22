@@ -576,11 +576,11 @@ function F_INIT() {
 				this.$city = oc.attributes.isEmpty ? "" : oc.attributes.name;
 				var o = WMo.states.getObjectById(oc.attributes.stateID);
 				if (o)
-					this.$state = o.name===undefined ? o.attributes.name : o.name;
+					this.$state = o.attributes.name;
 				this.$countryID = oc.attributes.countryID;
 				o = WMo.countries.getObjectById(oc.attributes.countryID);
 				if (o)
-					this.$country = o.name===undefined ? o.attributes.name : o.name;
+					this.$country = o.attributes.name;
 			}
 			this.$hash = this.$cityID + this.$countryID;
 

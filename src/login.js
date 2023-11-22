@@ -22,7 +22,7 @@
  * Login new user
  */
 async function F_LOGIN() {
-	log("login " + WLM.user.userName===undefined ? WLM.user.attributes.userName : WLM.user.userName);
+	log("login " + WLM.user.attributes.userName);
 
 	///////////////////////////////////////////////////////////////////////
 	// Support Functions
@@ -148,9 +148,9 @@ async function F_LOGIN() {
 		$cachedTopCCode: "",
 		// top (logged in) user
 		$topUser: {
-			$userID: WLM.user.id===undefined ? WLM.user.attributes.id : WLM.user.id,
-			$userName: WLM.user.userName===undefined ? WLM.user.attributes.userName : WLM.user.userName,
-			$userLevel: WLM.user.rank===undefined ? WLM.user.attributes.rank +1 : WLM.user.rank +1,
+			$userID: WLM.user.attributes.id,
+			$userName: WLM.user.attributes.userName,
+			$userLevel: WLM.user.attributes.rank +1,
 		},
 		// top (current) map center
 		$topCenter: null,
@@ -193,13 +193,8 @@ async function F_LOGIN() {
 		//          "da", "lt", "zh"],
 		$untranslatedLngs: ["IT"],
 	};
-	if (WLM.user.editableCountryIDs===undefined) {
-		_RT.$topUser.$isCM = WLM.user.attributes.editableCountryIDs ? 0 !== WLM.user.attributes.editableCountryIDs.length : false;
-		_RT.$topUser.$countryIDs = WLM.user.attributes.editableCountryIDs ? WLM.user.attributes.editableCountryIDs : [];
-	} else {
-		_RT.$topUser.$isCM = WLM.user.editableCountryIDs ? 0 !== WLM.user.editableCountryIDs.length : false;
-		_RT.$topUser.$countryIDs = WLM.user.editableCountryIDs ? WLM.user.editableCountryIDs : [];
-	}
+	_RT.$topUser.$isCM = WLM.user.attributes.editableCountryIDs ? 0 !== WLM.user.attributes.editableCountryIDs.length : false;
+	_RT.$topUser.$countryIDs = WLM.user.attributes.editableCountryIDs ? WLM.user.attributes.editableCountryIDs : [];
 
 	///////////////////////////////////////////////////////////////////////
 	// WV Checks
@@ -1240,7 +1235,7 @@ async function F_LOGIN() {
 	});
 	WM.events.on({
 		"moveend": onMoveEnd,
-		"zoomend": HLAllObjects,
+		"zoomend": delayForceHLAllObjects,
 		"changelayer": onChangeLayer,
 	});
 	WSM.events.on({
