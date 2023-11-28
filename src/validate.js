@@ -1731,7 +1731,7 @@ function F_VALIDATE(disabledHL) {
 		}
 
 		// emulate WMECH_color
-		var segmentGeometry = Wa.userscripts.getFeatureElementByDataModel(rawSegment);
+		var segmentGeometry = nW.userscripts.getFeatureElementByDataModel(rawSegment);
 		if (segmentGeometry) { // continue; // this breaks looking for segments when WMECH_color isn't here!
 			// if we have it, else ignore this.
 			var strokeColor = segmentGeometry.getAttribute("stroke").toUpperCase();
@@ -2663,9 +2663,9 @@ function F_VALIDATE(disabledHL) {
 						}
 					}
 				}
-				if (noCity ) {
-					if (hasHNs && isLimitOk(54) && address.isOkFor(54))  segment.report(54);
-					if (!hasHNs && isLimitOk(55) && address.isOkFor(55))  segment.report(55);
+				if (noCity) {
+					if (hasHNs && isLimitOk(54) && address.isOkFor(54)) segment.report(54);
+					if (!hasHNs && isLimitOk(55) && address.isOkFor(55)) segment.report(55);
 				}
 			}
 

@@ -76,6 +76,7 @@ var OpenLayers = {
 	},
 	Projection: function (a) { },
 	GeometryPoint: {
+		coordinates: [],
 		getPoint: function () { }
 	}
 };
@@ -186,6 +187,7 @@ Waze.SEGMENT = function () {
 		bounds: {},
 		distanceTo: function (l, o) { },
 		getGeodesicLength: function (p) { },
+		getOLGeometry: function () { },
 	};
 	this.getAddress = function () { };
 	this.getDirection = function () { };
@@ -242,6 +244,7 @@ Waze.VENUE = function () {
 		distanceTo: function (l, o) { },
 		getGeodesicArea: function (p) { },
 		getCentroid: function () { },
+		getOLGeometry: function () { },
 	};
 	this.getAddress = function () { };
 	this.getNavigationPoints = function () { };
@@ -316,20 +319,20 @@ Waze.DRIVEPROFILE = function () {
 }
 
 /** @constructor */
-Waze.ROADCLOSURE = function() {
+Waze.ROADCLOSURE = function () {
 	this.id = "",
-	this.segID = 0,
-	this.active = true,
-	this.forward = true,
-	this.createdBy = 0,
-	this.createdOn = 0,
-	this.updatedBy = 0,
-	this.updatedOn = 0,
-	this.location = "",
-	this.reason = "",
-	this.endDate = "",
-	this.startDate = "",
-	this.state = null
+		this.segID = 0,
+		this.active = true,
+		this.forward = true,
+		this.createdBy = 0,
+		this.createdOn = 0,
+		this.updatedBy = 0,
+		this.updatedOn = 0,
+		this.location = "",
+		this.reason = "",
+		this.endDate = "",
+		this.startDate = "",
+		this.state = null
 }
 
 var CITY = {
@@ -397,7 +400,7 @@ var W = {
 		olMap: {
 			addLayer: function (a) { },
 			dragging: false,
-			projection: {},	
+			projection: {},
 			getCenter: function () { },
 			getControlsByClass: function (c) { },
 			getExtent: function () { },
@@ -441,6 +444,9 @@ var W = {
 		selectedItems: [],
 	}, // selectionManager
 	model: {
+		attributes: {
+			loadingFeatures: false,
+		},
 		isLeftHand: false,
 		isImperial: false,
 		events: { on: 0, un: 0 },
@@ -489,7 +495,8 @@ var W = {
 	prefs: {},
 	userscripts: {
 		registerSidebarTab: function (name) { },
-		waitForElementConnected: function (pane) { }
+		waitForElementConnected: function (pane) { },
+		getFeatureElementByDataModel: function (obj) { }
 	}
 };
 

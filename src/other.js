@@ -456,14 +456,13 @@ function F_ONLOGIN() {
 function F_INIT() {
 	// init shortcuts
 	UW = window;
-	Wa = UW.W;
 	nW = UW.W;
 	WLM = nW.loginManager;
 	WSM = nW.selectionManager;
 	WM = nW.map;
 	WMo = nW.model;
 	WC = nW.controller;
-	if (!Wa || !WLM || !WLM.user || !WSM || !WM || !WMo || !WC || !$("#user-tabs")) {
+	if (!nW || !WLM || !WLM.user || !WSM || !WM || !WMo || !WC || !$("#user-tabs")) {
 		log("waiting for WME...")
 		async(F_INIT, null, 1e3);
 		return;

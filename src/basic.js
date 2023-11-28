@@ -25,19 +25,19 @@
 var policySafeHTML = null;
 
 function setupPolicy() {
-    if (typeof(trustedTypes) !== "undefined") {
-        policySafeHTML = trustedTypes.createPolicy("policySafeHTML", {
-            createHTML: (innerText) => innerText
-        });
+	if (typeof (trustedTypes) !== "undefined") {
+		policySafeHTML = trustedTypes.createPolicy("policySafeHTML", {
+			createHTML: (innerText) => innerText
+		});
 	}
 }
 
 function createSafeHtml(text) {
-    if (policySafeHTML !== null) {
-        return policySafeHTML.createHTML(text);
-    } else {
-        return text;
-    }
+	if (policySafeHTML !== null) {
+		return policySafeHTML.createHTML(text);
+	} else {
+		return text;
+	}
 }
 
 /**
@@ -300,13 +300,11 @@ function ForceHLAllObjects() {
  *  This is used to wait for DOM to populate before filling in problem details in left panel.
  */
 function delayForceHLAllObjects(e) {
-  const ldf = Wa.app.layout.model.attributes.loadingFeatures;
-  //const ty = (typeof e == 'object') ? (e.type===undefined ? '#' : e.type) : '#';
-  if (ldf) {
-    //console.log('dlyFrcHL - ldfeat ' + ldf + ' ty ' + ty);
-    setTimeout(function () { delayForceHLAllObjects(e); },50);
-  }
-  else { ForceHLAllObjects(); }
+	const ldf = nW.app.layout.model.attributes.loadingFeatures;
+	if (ldf) {
+		setTimeout(function () { delayForceHLAllObjects(e); }, 50);
+	}
+	else { ForceHLAllObjects(); }
 }
 
 /**
