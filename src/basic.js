@@ -301,7 +301,7 @@ function ForceHLAllObjects() {
  */
 function delayForceHLAllObjects(e) {
   const ldf = Wa.app.layout.model.attributes.loadingFeatures;
-  const ty = (typeof e == 'object') ? (e.type===undefined ? '#' : e.type) : '#';
+  //const ty = (typeof e == 'object') ? (e.type===undefined ? '#' : e.type) : '#';
   if (ldf) {
     //console.log('dlyFrcHL - ldfeat ' + ldf + ' ty ' + ty);
     setTimeout(function () { delayForceHLAllObjects(e); },50);

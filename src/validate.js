@@ -1731,7 +1731,6 @@ function F_VALIDATE(disabledHL) {
 		}
 
 		// emulate WMECH_color
-		var geoID = rawSegment.getOLGeometry().id;
 		var segmentGeometry = Wa.userscripts.getFeatureElementByDataModel(rawSegment);
 		if (segmentGeometry) { // continue; // this breaks looking for segments when WMECH_color isn't here!
 			// if we have it, else ignore this.
