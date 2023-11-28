@@ -120,7 +120,7 @@ function F_VALIDATE(disabledHL) {
 	 */
 	function getUserName(objID) {
 		var u = WMo.users.getObjectById(objID);
-		return u ? (u.userName===undefined ? u.attributes.userName : u.userName ) : objID.toString();
+		return u ? u.attributes.userName : objID.toString();
 	}
 
 	/**
@@ -130,7 +130,7 @@ function F_VALIDATE(disabledHL) {
 	 */
 	function getUserLevel(objID) {
 		var u = WMo.users.getObjectById(objID);
-		return u ? (u.rank===undefined ? u.attributes.rank +1 : u.rank +1 ) : 0;
+		return u ? u.attributes.rank + 1 : 0;
 	}
 
 	/**
@@ -633,7 +633,7 @@ function F_VALIDATE(disabledHL) {
 			this.$entryExitPoints = attrs.entryExitPoints;
 			this.$alts = attrs.aliases;
 			this.$address = new _WV.SimpleADDRESS(attrs.streetID);
-			this.$geometry = attrs.geometry;
+			this.$geometry = raw.getOLGeometry();
 			this.$phone = attrs.phone;
 			this.$url = attrs.url;
 			this.$isPoint = raw.isPoint();
@@ -766,7 +766,8 @@ function F_VALIDATE(disabledHL) {
 	 */
 	SimpleOBJECT.prototype.getCenter = function () {
 		if (this._center) return this._center;
-		this._center = this.$rawObject.geometry.bounds.getCenterLonLat().clone()
+		const bounds = this.$rawObject.getOLGeometry().getBounds();
+		this._center = bounds.getCenterLonLat().clone()
 			.transform(nW.Config.map.projection.local, nW.Config.map.projection.remote);
 		// round the lon/lat
 		this._center.lon = Math.round(this._center.lon * 1e5) / 1e5;
@@ -1218,7 +1219,7 @@ function F_VALIDATE(disabledHL) {
 		/** @struct */
 		var obj = {
 			$severity: filteredSeverity,
-			$geometry: rawObject.geometry,
+			$geometry: rawObject.getOLGeometry(),
 		};
 		_RT.$HLedObjects[objectID] = obj;
 	}
@@ -1730,7 +1731,7 @@ function F_VALIDATE(disabledHL) {
 		}
 
 		// emulate WMECH_color
-		var segmentGeometry = document.getElementById(rawSegment.geometry.id);
+		var segmentGeometry = Wa.userscripts.getFeatureElementByDataModel(rawSegment);
 		if (segmentGeometry) { // continue; // this breaks looking for segments when WMECH_color isn't here!
 			// if we have it, else ignore this.
 			var strokeColor = segmentGeometry.getAttribute("stroke").toUpperCase();
@@ -3410,8 +3411,10 @@ function F_VALIDATE(disabledHL) {
 			if (venue.$entryExitPoints && venue.$entryExitPoints.length
 				&& isLimitOk(254)) {
 				var stopPoint = venue.$entryExitPoints[0].getPoint();
+				var spt = new OpenLayers.Geometry.Point(stopPoint.coordinates[0], stopPoint.coordinates[1]);
+				stopPoint = spt.transform(nW.Config.map.projection.remote, nW.Config.map.projection.local);
 				var areaCenter = venue.$geometry.getCentroid();
-				if (stopPoint.equals(areaCenter)
+				if (areaCenter && areaCenter.equals(stopPoint)
 					&& address.isOkFor(254))
 					venue.report(254);
 			}
