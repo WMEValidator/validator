@@ -1,5 +1,8 @@
 Current changes:
 
+v2023.11.28:
+- DaveAcincy: updates for latest WME
+
 v2023.8.14:
 - DaveAcincy: updates for latest WME
 

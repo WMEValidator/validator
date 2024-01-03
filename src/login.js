@@ -150,7 +150,7 @@ async function F_LOGIN() {
 		$topUser: {
 			$userID: WLM.user.attributes.id,
 			$userName: WLM.user.attributes.userName,
-			$userLevel: WLM.user.attributes.rank +1,
+			$userLevel: WLM.user.attributes.rank + 1,
 		},
 		// top (current) map center
 		$topCenter: null,
@@ -176,7 +176,7 @@ async function F_LOGIN() {
 		// map of segment IDs to revalidate
 		$revalidate: {},
 		// current user
-		$curUserName: WLM.user.userName===undefined ? WLM.user.attributes.userName : WLM.user.userName,
+		$curUserName: WLM.user.userName === undefined ? WLM.user.attributes.userName : WLM.user.userName,
 		// error flag
 		$error: false,
 		// no editable segment was found - show a message
@@ -1219,8 +1219,8 @@ async function F_LOGIN() {
 	tabLabel.innerText = " Validator";
 	await W.userscripts.waitForElementConnected(tabPane);
 	$(tabLabel.parentElement).prepend(
-		$('<span>', {class:'fa fa-check-square-o'})
-		);
+		$('<span>', { class: 'fa fa-check-square-o' })
+	);
 
 	// append user interface after the details or ad the bottom
 	_THUI.appendUI(tabPane, _UI, "i" + ID_PREFIX);

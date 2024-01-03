@@ -527,8 +527,6 @@ var WD_LONG = 1e4;
 /**
  * Shortcuts
  */
-/** Waze @const */
-var Wa = null;
 /** new W @const */
 var nW = null;
 /** Waze.map @const */
