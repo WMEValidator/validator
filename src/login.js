@@ -1238,9 +1238,10 @@ async function F_LOGIN() {
 		"zoomend": delayForceHLAllObjects,
 		"changelayer": onChangeLayer,
 	});
-	WSM.events.on({
-		"selectionchanged": delayForceHLAllObjects
-	});
+	if (typeof WSM.addEventListener === 'function')
+		WSM.addEventListener('selectionchanged', delayForceHLAllObjects);
+	else
+		WSM.events.on({'selectionchanged': delayForceHLAllObjects});
 	WC.events.on({
 		"loadstart": onLoadStart,
 	});
