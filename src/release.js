@@ -26,11 +26,15 @@
  * WV RELEASE INFORMATION
  */
 /** WME Validator version @const */
-var WV_VERSION = "2023.11.28";
+var WV_VERSION = "2024.01.16";
 /** Auto-save password. Increase to reset auto-save config. @const */
 var AS_PASSWORD = "v1";
 /** @const */
-var WV_WHATSNEW = `v2023.11.28:
+var WV_WHATSNEW = `v2024.01.16:
+- DaveAcincy: updates for latest WME/WME beta
+- DaveAcincy: fix checks of rest areas in US (#257 and #258)
+
+v2023.11.28:
 - DaveAcincy: updates for latest WME
 
 v2023.8.14:
@@ -47,15 +51,6 @@ v2023.2.13:
 - DaveAcincy: New checks for US:
   * #54 "No city on segment with HNs"
   * #55 "No city on named segment"
-
-v2022.8.25:
-- DaveAcincy: update US and default wiki links
-
-v2022.8.23:
-- DaveAcincy: fix for coordinates not transforming for PLs
-
-v2022.4.16:
-- Glodenox: Zoom-related fixes
 
 Please report any issues/suggestions on the forum:
 https://www.waze.com/forum/viewtopic.php?t=76488

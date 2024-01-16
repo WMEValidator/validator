@@ -1,5 +1,9 @@
 Current changes:
 
+v2024.01.16:
+- DaveAcincy: updates for latest WME/WME beta
+- DaveAcincy: fix checks of rest areas for US (#257 and #258)
+
 v2023.11.28:
 - DaveAcincy: updates for latest WME
 
