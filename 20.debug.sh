@@ -1,4 +1,4 @@
-#!/bin/sh
+#!/bin/sh -e
 
 . ./00.config.sh
 

@@ -1,4 +1,4 @@
-#!/bin/sh
+#!/bin/sh -e
 
 echo "===> Formatting ${DST_DIR}/${EXT_FILE_NAME}..."
 

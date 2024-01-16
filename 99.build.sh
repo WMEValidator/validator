@@ -1,4 +1,4 @@
-#!/bin/sh
+#!/bin/sh -e
 
 echo "===> Building ${DST_DIR}/${EXT_FILE_NAME}"
 
@@ -54,11 +54,6 @@ cat "${SRC_DIR}/meta/i18n-end.js" >> "${LOC_FILE}"
 	--jscomp_off es5Strict \
 	--charset UTF-8 \
 	${EXTRA_PARAMS}
-
-if [ $? != 0 ]; then
-	read -p "Stop on error. Press enter to exit..."
-	exit 1
-fi
 
 mkdir -p "${DST_DIR}"
 cat "${SRC_DIR}/meta/meta-begin.js" \
