@@ -766,8 +766,7 @@ function F_VALIDATE(disabledHL) {
 	 */
 	SimpleOBJECT.prototype.getCenter = function () {
 		if (this._center) return this._center;
-		const bounds = this.$rawObject.getOLGeometry().getBounds();
-		this._center = bounds.getCenterLonLat().clone()
+		this._center = this.$rawObject.getOLGeometry().getBounds().getCenterLonLat().clone()
 			.transform(nW.Config.map.projection.local, nW.Config.map.projection.remote);
 		// round the lon/lat
 		this._center.lon = Math.round(this._center.lon * 1e5) / 1e5;

@@ -1174,10 +1174,7 @@ function F_LOGOUT() {
 		"zoomend": HLAllObjects,
 		"changelayer": onChangeLayer,
 	});
-	if (typeof WSM.removeEventListener === 'function')
-		WSM.removeEventListener('selectionchanged', delayForceHLAllObjects);
-	else
-		WSM.events.un({'selectionchanged': delayForceHLAllObjects});
+	WSM.removeEventListener('selectionchanged', delayForceHLAllObjects);
 	WC.events.un({
 		"loadstart": onLoadStart,
 	});

@@ -70,6 +70,8 @@ var OpenLayers = {
 	},
 	Geometry: {
 		Point: function (a, b) { },
+		getCentroid: function () { },
+		getBounds: function () { },
 	},
 	Style: function (a, b) { },
 	Layer: {
@@ -237,6 +239,7 @@ Waze.VENUE = function () {
 	this.isGasStation = function () { };
 	/** @type {Object} */
 	this.bounds;
+	this.getOLGeometry = function () { };
 	this.geometry = {
 		id: "",
 		/** @type {Object} */
@@ -265,6 +268,7 @@ Waze.VENUE = function () {
 				estimatedNumberOfSpots: "",
 				hasTBR: false,
 				lotType: [],
+				parkingType: [],
 				paymentType: [],
 			},
 		},
@@ -383,6 +387,13 @@ String.prototype.startsWith = function (a) { };
 var W = {
 	app: {
 		getAppRegionCode: function () { },
+		layout: {
+			model: {
+				attributes: {
+					loadingFeatures: false,
+				},
+			},
+		},
 	},
 	accelerators: {
 		events: {
