@@ -1,5 +1,8 @@
 Current changes:
 
+2024.01.26:
+- DaveAcincy: fixes for extension version (#109)
+
 v2024.01.16:
 - DaveAcincy: updates for latest WME/WME beta
 - DaveAcincy: fix checks of rest areas for US (#257 and #258)

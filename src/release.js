@@ -26,11 +26,14 @@
  * WV RELEASE INFORMATION
  */
 /** WME Validator version @const */
-var WV_VERSION = "2024.01.16";
+var WV_VERSION = "2024.01.26";
 /** Auto-save password. Increase to reset auto-save config. @const */
 var AS_PASSWORD = "v1";
 /** @const */
-var WV_WHATSNEW = `v2024.01.16:
+var WV_WHATSNEW = `v2024.01.26:
+- DaveAcincy: fixes for extension version (#109)
+
+v2024.01.16:
 - DaveAcincy: updates for latest WME/WME beta
 - DaveAcincy: fix checks of rest areas in US (#257 and #258)
 
