@@ -242,7 +242,7 @@ function F_ONMERGEEND() {
 	if (RTStateIs(ST_RUN) && _RT.$nextCenter && !c.equals(_RT.$nextCenter))
 		return;
 	/** @const */
-	var e = WM.getExtent();
+	var e = nW.map.getOLExtent();
 	/** @const */
 	var ew = e.getWidth();
 	/** @const */
@@ -411,7 +411,7 @@ function F_ONRUN() {
 	_RT.$firstStep = true;
 
 	// save current view
-	var e = WM.getExtent();
+	var e = nW.map.getOLExtent();
 	_RT.$startExtent = e;
 	_RT.$startCenter = WM.getCenter();
 	_RT.$startZoom = WM.getZoom();

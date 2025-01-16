@@ -283,7 +283,7 @@ function F_VALIDATE(disabledHL) {
 
 		if (!this.$rawNode) return null;
 
-		var bounds = this.$rawNode.geometry.bounds;
+		var bounds = this.$rawNode.getOLGeometry().bounds;
 		this._center = new OpenLayers.LonLat(bounds.left, bounds.bottom)
 			.transform(nW.Config.map.projection.local, nW.Config.map.projection.remote);
 		// round the lon/lat
@@ -600,7 +600,7 @@ function F_VALIDATE(disabledHL) {
 			if ("length" in attrs)
 				this.$length = attrs.length;
 			else
-				this.$length = Math.round(raw.geometry.getGeodesicLength(WM.projection));
+				this.$length = Math.round(raw.getOLGeometry().getGeodesicLength(WM.projection));
 			// TODO: this.$isToll = raw.isTollRoad();
 			this.$alts = attrs.streetIDs.map(function (objID) {
 				return new _WV.SimpleADDRESS(objID);
@@ -661,7 +661,7 @@ function F_VALIDATE(disabledHL) {
 
 		// mark some properties as readonly
 		Object.defineProperties(this, {
-			$rawSegment: { enumerable: false },
+			$rawObject: { enumerable: false },
 			_nodeA: { enumerable: false },
 			$nodeA: { get: this.getNodeA },
 			$nodeAID: { writable: false },
@@ -1392,7 +1392,7 @@ function F_VALIDATE(disabledHL) {
 			}
 		} // for all selected objects
 
-		var newProp = '<b style="display:block"><a target="_blank" href="' + PFX_FORUM + FORUM_HOME + '">WME Validator</a> ' + trS("props.reports") + ':</b>'
+		var newProp = '<b style="display:block"><a target="_blank" href="' + PFX_DISCUSS + DISCUSS_HOME + '">WME Validator</a> ' + trS("props.reports") + ':</b>'
 			;
 		if (_REP.$isLimitPerCheck) {
 			newProp += '<div class="c' + CL_RIGHTTIP + ' c' + CL_NOTE + '">'
@@ -1870,9 +1870,9 @@ function F_VALIDATE(disabledHL) {
 				var baseAngle = rawNode.getAngleToSegment(rawSegment);
 				for (var i = 0; i < nodeA.$otherSegmentsLen; i++) {
 					var otherSegment = nodeA.$otherSegments[i];
-					if (!otherSegment.$rawSegment) continue;
+					if (!otherSegment.$rawObject) continue;
 
-					var curAngle = rawNode.getAngleToSegment(otherSegment.$rawSegment);
+					var curAngle = rawNode.getAngleToSegment(otherSegment.$rawObject);
 					var angle = Math.abs(baseAngle - curAngle);
 					if (angle > 180) angle = 360 - angle;
 
@@ -1890,9 +1890,9 @@ function F_VALIDATE(disabledHL) {
 				var baseAngle = rawNode.getAngleToSegment(rawSegment);
 				for (var i = 0; i < nodeB.$otherSegmentsLen; i++) {
 					var otherSegment = nodeB.$otherSegments[i];
-					if (!otherSegment.$rawSegment) continue;
+					if (!otherSegment.$rawObject) continue;
 
-					var curAngle = rawNode.getAngleToSegment(otherSegment.$rawSegment);
+					var curAngle = rawNode.getAngleToSegment(otherSegment.$rawObject);
 					var angle = Math.abs(baseAngle - curAngle);
 					if (angle > 180) angle = 360 - angle;
 
@@ -2149,7 +2149,7 @@ function F_VALIDATE(disabledHL) {
 				}
 				if ((!nodeB.$isPartial || !nextNode.$isPartial)
 					&& otherSegment.$segmentID !== segmentID
-					&& otherSegment.$rawSegment
+					&& otherSegment.$rawObject
 					&& (1e4 > (otherSegment.$length + segmentLen) || 1e3 > segmentLen)
 					&& otherSegment.$address.$street === street
 					&& otherSegment.$address.$city === city
@@ -2219,7 +2219,7 @@ function F_VALIDATE(disabledHL) {
 				}
 				if ((!nodeA.$isPartial || !nextNode.$isPartial)
 					&& otherSegment.$segmentID !== segmentID
-					&& otherSegment.$rawSegment
+					&& otherSegment.$rawObject
 					&& 1e4 > (otherSegment.$length + segmentLen)
 					&& otherSegment.$address.$street === street
 					&& otherSegment.$address.$city === city
@@ -2372,9 +2372,9 @@ function F_VALIDATE(disabledHL) {
 					var baseAngle = rawNode.getAngleToSegment(rawSegment);
 					for (var i = 0; i < nodeA.$outConnectionsLen; i++) {
 						var otherSegment = nodeA.$outConnections[i];
-						if (!otherSegment.$rawSegment) continue;
+						if (!otherSegment.$rawObject) continue;
 
-						var curAngle = rawNode.getAngleToSegment(otherSegment.$rawSegment);
+						var curAngle = rawNode.getAngleToSegment(otherSegment.$rawObject);
 						var angle = Math.abs(baseAngle - curAngle);
 						if (angle > 180) angle = 360 - angle;
 
@@ -2406,9 +2406,9 @@ function F_VALIDATE(disabledHL) {
 					var baseAngle = rawNode.getAngleToSegment(rawSegment);
 					for (var i = 0; i < nodeB.$outConnectionsLen; i++) {
 						var otherSegment = nodeB.$outConnections[i];
-						if (!otherSegment.$rawSegment) continue;
+						if (!otherSegment.$rawObject) continue;
 
-						var curAngle = rawNode.getAngleToSegment(otherSegment.$rawSegment);
+						var curAngle = rawNode.getAngleToSegment(otherSegment.$rawObject);
 						var angle = Math.abs(baseAngle - curAngle);
 						if (angle > 180) angle = 360 - angle;
 
@@ -2451,7 +2451,7 @@ function F_VALIDATE(disabledHL) {
 								&& isLimitOk(46)) {
 								for (var i = 0; i < nodeA.$otherSegmentsLen; i++) {
 									var otherSegment = nodeA.$otherSegments[i];
-									if (!otherSegment.$rawSegment) continue;
+									if (!otherSegment.$rawObject) continue;
 
 									// if(one of other segments at node A is drivable
 									// AND in connection is possible (two way or dir to node B))
@@ -2482,7 +2482,7 @@ function F_VALIDATE(disabledHL) {
 								&& isLimitOk(47)) {
 								for (var i = 0; i < nodeB.$otherSegmentsLen; i++) {
 									var otherSegment = nodeB.$otherSegments[i];
-									if (!otherSegment.$rawSegment) continue;
+									if (!otherSegment.$rawObject) continue;
 									// if(one of other segments at node B is drivable
 									// AND in connection is possible (two way or dir to node B))
 									if (RR_TRAIL < otherSegment.$typeRank
@@ -2520,7 +2520,7 @@ function F_VALIDATE(disabledHL) {
 								&& isLimitOk(102)) {
 								for (var i = 0; i < nodeA.$otherSegmentsLen; i++) {
 									var otherSegment = nodeA.$otherSegments[i];
-									if (!otherSegment.$rawSegment) continue;
+									if (!otherSegment.$rawObject) continue;
 									// if(one of other segments at node A is drivable
 									// AND no private
 									// AND out connection is possible (two way or dir to node B))
@@ -2551,7 +2551,7 @@ function F_VALIDATE(disabledHL) {
 								&& isLimitOk(103)) {
 								for (var i = 0; i < nodeB.$otherSegmentsLen; i++) {
 									var otherSegment = nodeB.$otherSegments[i];
-									if (!otherSegment.$rawSegment) continue;
+									if (!otherSegment.$rawObject) continue;
 									// if(one of other segments at node B is drivable
 									// AND ni private
 									// AND in connection is possible (two way or dir to node B))
@@ -2733,14 +2733,14 @@ function F_VALIDATE(disabledHL) {
 					&& 5 < segmentLen
 					// only for dead-ends
 					&& !nodeA.$otherSegmentsLen
-					&& nodeA.$rawNode.geometry.bounds
+					&& nodeA.$rawNode.getOLGeometry().bounds
 					&& isLimitOk(107)
 					&& address.isOkFor(107)) {
 					// check if any other segment is close to the node A
 					var IDs = nodeA.$rawNode.attributes.segIDs;
 					var pt = new OpenLayers.Geometry.Point(
-						nodeA.$rawNode.geometry.bounds.left,
-						nodeA.$rawNode.geometry.bounds.bottom
+						nodeA.$rawNode.getOLGeometry().bounds.left,
+						nodeA.$rawNode.getOLGeometry().bounds.bottom
 					);
 					for (var segKey in WMo.segments.objects) {
 						var seg = WMo.segments.objects[segKey];
@@ -2757,7 +2757,7 @@ function F_VALIDATE(disabledHL) {
 
 						// check if node A is not connected to the segment
 						// only for dead-ends!
-						if (LIMIT_TOLERANCE > seg.geometry.distanceTo(pt, null)) {
+						if (LIMIT_TOLERANCE > seg.getOLGeometry().distanceTo(pt, null)) {
 							// other segment is not editable
 							if (!seg.arePropertiesEditable())
 								segment.$forceNonEditable = true;
@@ -2792,7 +2792,7 @@ function F_VALIDATE(disabledHL) {
 					&& address.isOkFor(78)) {
 					for (var i = 0; i < nodeA.$otherSegmentsLen; i++) {
 						var otherSegment = nodeA.$otherSegments[i];
-						if (!otherSegment.$rawSegment) continue;
+						if (!otherSegment.$rawObject) continue;
 						// same endpoints
 						if (RR_TRAIL < otherSegment.$typeRank
 							&& nodeAID && nodeBID
@@ -2872,10 +2872,10 @@ function F_VALIDATE(disabledHL) {
 						&& 2 === nodeB.$otherSegmentsLen
 						&& isLimitOk(79)
 						&& address.isOkFor(79)
-						&& nodeA.$otherSegments[0].$rawSegment
-						&& nodeA.$otherSegments[1].$rawSegment
-						&& nodeB.$otherSegments[0].$rawSegment
-						&& nodeB.$otherSegments[1].$rawSegment
+						&& nodeA.$otherSegments[0].$rawObject
+						&& nodeA.$otherSegments[1].$rawObject
+						&& nodeB.$otherSegments[0].$rawObject
+						&& nodeB.$otherSegments[1].$rawObject
 						&& nodeA.$otherSegments[0].$address.$street
 
 						&& nodeA.$otherSegments[0].$type
@@ -2916,14 +2916,14 @@ function F_VALIDATE(disabledHL) {
 					&& 5 < segmentLen
 					// only for dead-ends
 					&& !nodeB.$otherSegmentsLen
-					&& nodeB.$rawNode.geometry.bounds
+					&& nodeB.$rawNode.getOLGeometry().bounds
 					&& isLimitOk(108)
 					&& address.isOkFor(108)) {
 					// check if any other segment is close to the node B
 					var IDs = nodeB.$rawNode.attributes.segIDs;
 					var pt = new OpenLayers.Geometry.Point(
-						nodeB.$rawNode.geometry.bounds.left,
-						nodeB.$rawNode.geometry.bounds.bottom
+						nodeB.$rawNode.getOLGeometry().bounds.left,
+						nodeB.$rawNode.getOLGeometry().bounds.bottom
 					);
 					for (var segKey in WMo.segments.objects) {
 						var seg = WMo.segments.objects[segKey];
@@ -2938,7 +2938,7 @@ function F_VALIDATE(disabledHL) {
 							>= SimpleOBJECT.prototype.getTypeRank(seg.attributes.roadType))
 							continue;
 
-						if (LIMIT_TOLERANCE > seg.geometry.distanceTo(pt, null)) {
+						if (LIMIT_TOLERANCE > seg.getOLGeometry().distanceTo(pt, null)) {
 							// other segment is not editable
 							if (!seg.arePropertiesEditable())
 								segment.$forceNonEditable = true;
@@ -3091,7 +3091,7 @@ function F_VALIDATE(disabledHL) {
 					&& address.isOkFor(114)) {
 					for (var i = 0; i < nodeA.$otherSegmentsLen; i++) {
 						var otherSegment = nodeA.$otherSegments[i];
-						if (!otherSegment.$rawSegment) continue;
+						if (!otherSegment.$rawObject) continue;
 
 						// if one of other segments at node A is drivable
 						if (RR_TRAIL < otherSegment.$typeRank) {
@@ -3110,7 +3110,7 @@ function F_VALIDATE(disabledHL) {
 					&& address.isOkFor(115)) {
 					for (var i = 0; i < nodeB.$otherSegmentsLen; i++) {
 						var otherSegment = nodeB.$otherSegments[i];
-						if (!otherSegment.$rawSegment) continue;
+						if (!otherSegment.$rawObject) continue;
 
 						// if one of other segments at node B is drivable
 						if (RR_TRAIL < otherSegment.$typeRank) {

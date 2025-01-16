@@ -156,6 +156,7 @@ Waze.NODE = function () {
 	/** @type {Object} */
 	this.bounds;
 	this.getAngleToSegment;
+	this.getOLGeometry = function () { };
 	this.geometry = {
 		id: "",
 		/** @type {Object} */
@@ -408,6 +409,7 @@ var W = {
 			getLayerVisibilityBitmask: function () { },
 			_getLayerVisibilityBitmask: function () { },
 		},
+		getOLExtent: function () { },
 		olMap: {
 			addLayer: function (a) { },
 			dragging: false,

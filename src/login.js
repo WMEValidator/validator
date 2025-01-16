@@ -176,7 +176,7 @@ async function F_LOGIN() {
 		// map of segment IDs to revalidate
 		$revalidate: {},
 		// current user
-		$curUserName: WLM.user.userName === undefined ? WLM.user.attributes.userName : WLM.user.userName,
+		$curUserName: WLM.user.attributes.userName,
 		// error flag
 		$error: false,
 		// no editable segment was found - show a message
@@ -465,7 +465,7 @@ async function F_LOGIN() {
 	}
 	listOfPacks = (listOfPacks ? listOfPacks : "No external localization packs found");
 	listOfPacks += '<br><b>See</b> <a target="_blank" href="'
-		+ PFX_FORUM + FORUM_LOCAL + '">'
+		+ PFX_DISCUSS + DISCUSS_LOCAL + '">'
 		+ 'how to create a localization pack</a>';
 
 	// Generate $checks
@@ -560,6 +560,7 @@ async function F_LOGIN() {
 					.replace('W:', PFX_WIKI)
 					.replace('P:', PFX_PEDIA)
 					.replace('F:', PFX_FORUM)
+					.replace('D:', PFX_DISCUSS)
 					;
 				check.PROBLEMLINK[ccode] = encodeURI(l);
 				if (-1 !== l.indexOf(PFX_WIKI) || -1 !== l.indexOf(PFX_PEDIA))
@@ -575,6 +576,7 @@ async function F_LOGIN() {
 					.replace('W:', PFX_WIKI)
 					.replace('P:', PFX_PEDIA)
 					.replace('F:', PFX_FORUM)
+					.replace('D:', PFX_DISCUSS)
 					;
 				check.SOLUTIONLINK[ccode] = encodeURI(l);
 				if (-1 !== l.indexOf(PFX_WIKI || -1 !== l.indexOf(PFX_PEDIA)))
@@ -754,7 +756,7 @@ async function F_LOGIN() {
 			CLASS: CL_TRANSLATETIP,
 			//      NODISPLAY: 1,
 			TEXT: "Please help to "
-				+ '<a target="_blank" href="' + PFX_FORUM + FORUM_LOCAL + '">'
+				+ '<a target="_blank" href="' + PFX_DISCUSS + DISCUSS_LOCAL + '">'
 				+ 'translate Validator!</a>',
 			TITLE: trS("about.tip"),
 		},
@@ -1050,7 +1052,7 @@ async function F_LOGIN() {
 				CLASS: CL_PANEL,
 				NODISPLAY: 1,
 				TEXT: '<p><b>WME Validator</b>'
-					+ '<br>Version ' + WV_VERSION + ' <a target="_blank" href="' + PFX_FORUM + FORUM_HOME + '">check for updates</a>'
+					+ '<br>Version ' + WV_VERSION + ' <a target="_blank" href="' + PFX_DISCUSS + DISCUSS_HOME + '">check for updates</a>'
 					+ '<br>&copy; 2013-2018 Andriy Berestovskyy</p>'
 					+ '<p><b>Built-in localization packs for:</b><br>'
 					+ listOfIntPacks
