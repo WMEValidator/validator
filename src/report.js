@@ -374,6 +374,7 @@ function F_SHOWREPORT(reportFormat) {
 			.replace(new RegExp('^W:'), PFX_WIKI)
 			.replace(new RegExp('^P:'), PFX_PEDIA)
 			.replace(new RegExp('^F:'), PFX_FORUM)
+			.replace(new RegExp('^D:'), PFX_DISCUSS)
 			;
 		var origData = (oldPack[label] || '');
 		if (origData) {
@@ -382,12 +383,14 @@ function F_SHOWREPORT(reportFormat) {
 				.replace(new RegExp('^W:'), PFX_WIKI)
 				.replace(new RegExp('^P:'), PFX_PEDIA)
 				.replace(new RegExp('^F:'), PFX_FORUM)
+				.replace(new RegExp('^D:'), PFX_DISCUSS)
 				;
 			// preserve old data
 			var oldDataEN = (oldPack[label + '.en'] || '')
 				.replace(new RegExp('^W:'), PFX_WIKI)
 				.replace(new RegExp('^P:'), PFX_PEDIA)
 				.replace(new RegExp('^F:'), PFX_FORUM)
+				.replace(new RegExp('^D:'), PFX_DISCUSS)
 				;
 			if (oldDataEN) {
 				if (oldDataEN === defData) {
@@ -1296,8 +1299,8 @@ function F_SHOWREPORT(reportFormat) {
 		FR += trS("report.forum");
 		FR += ' ';
 		FR += Ba;
-		FR += PFX_FORUM;
-		FR += FORUM_HOME;
+		FR += PFX_DISCUSS;
+		FR += DISCUSS_HOME;
 		FR += Ca;
 		FR += trS("report.forum.link");
 		FR += Ea;

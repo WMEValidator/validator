@@ -117,6 +117,8 @@ var PFX_PEDIA = 'https://wazeopedia.waze.com/wiki/';
 /** @const */
 var PFX_FORUM = 'https://www.waze.com/forum/viewtopic.php?';
 /** @const */
+var PFX_DISCUSS = 'https://www.waze.com/discuss/';
+/** @const */
 var FORUM_HOME = 't=76488';
 /** @const */
 var FORUM_FAQ = 't=76488&p=666476#p666476';
@@ -124,3 +126,11 @@ var FORUM_FAQ = 't=76488&p=666476#p666476';
 var FORUM_LOCAL = 't=76488&p=661300#p661185';
 /** @const */
 var FORUM_CUSTOM = 't=76488&p=749456#p749456';
+/** @const */
+var DISCUSS_HOME = 't/script-wme-validator/44877';
+/** @const */
+var DISCUSS_FAQ = 't/script-wme-validator/44877/88';
+/** @const */
+var DISCUSS_LOCAL = 't/script-wme-validator/44877';
+/** @const */
+var DISCUSS_CUSTOM = 't/script-wme-validator/44877/667';
