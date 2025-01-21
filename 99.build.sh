@@ -30,7 +30,7 @@ done
 echo
 cat "${SRC_DIR}/meta/i18n-end.js" >> "${LOC_FILE}"
 
-"${COMPILER}" \
+${COMPILER} \
 	--language_in ECMASCRIPT_2017 \
 	--js "${SRC_DIR}/src/release.js" \
 	--js "${LOC_FILE}" \
