@@ -26,11 +26,14 @@
  * WV RELEASE INFORMATION
  */
 /** WME Validator version @const */
-var WV_VERSION = "2025.01.20";
+var WV_VERSION = "2025.01.22";
 /** Auto-save password. Increase to reset auto-save config. @const */
 var AS_PASSWORD = "v1";
 /** @const */
-var WV_WHATSNEW = `v2025.01.20:
+var WV_WHATSNEW = `v2025.01.22:
+- fix the build.
+
+v2025.01.20:
 - DaveAcincy: fix for #78 (2 seg loop) and some others.
 - DaveAcincy: updates for discuss forum.
 - DaveAcincy: remove some console warnings for deprecated function calls.

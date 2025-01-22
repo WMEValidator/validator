@@ -1,12 +1,15 @@
 Current changes:
 
-2025.01.20:
+v2025.01.22:
+- fix the build.
+
+v2025.01.20:
 - DaveAcincy: fix for #78 (2 seg loop) and some others.
 - DaveAcincy: updates for discuss forum.
 - DaveAcincy: remove some console warnings for deprecated function calls.
 - DaveAcincy: update US and default wiki links.
 
-2024.01.26:
+v2024.01.26:
 - DaveAcincy: fixes for extension version (#109)
 
 v2024.01.16:
