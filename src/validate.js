@@ -283,7 +283,7 @@ function F_VALIDATE(disabledHL) {
 
 		if (!this.$rawNode) return null;
 
-		var bounds = this.$rawNode.getOLGeometry().bounds;
+		var bounds = this.$rawNode.getOLGeometry().getBounds();
 		this._center = new OpenLayers.LonLat(bounds.left, bounds.bottom)
 			.transform(nW.Config.map.projection.local, nW.Config.map.projection.remote);
 		// round the lon/lat
@@ -2733,19 +2733,17 @@ function F_VALIDATE(disabledHL) {
 					&& 5 < segmentLen
 					// only for dead-ends
 					&& !nodeA.$otherSegmentsLen
-					&& nodeA.$rawNode.getOLGeometry().bounds
+					&& nodeA.$rawNode.getOLGeometry().getBounds()
 					&& isLimitOk(107)
 					&& address.isOkFor(107)) {
 					// check if any other segment is close to the node A
 					var IDs = nodeA.$rawNode.attributes.segIDs;
-					var pt = new OpenLayers.Geometry.Point(
-						nodeA.$rawNode.getOLGeometry().bounds.left,
-						nodeA.$rawNode.getOLGeometry().bounds.bottom
-					);
+					const bd = nodeA.$rawNode.getOLGeometry().getBounds();
+					var pt = new OpenLayers.Geometry.Point(bd.left, bd.bottom);
 					for (var segKey in WMo.segments.objects) {
 						var seg = WMo.segments.objects[segKey];
 						if (segmentID === seg.getID()) continue;
-						if (!seg.geometry) continue;
+						if (!seg.getOLGeometry()) continue;
 						// different elevations
 						if (elevation !== seg.attributes.level) continue;
 						// only for non-deleted segments
@@ -2916,19 +2914,17 @@ function F_VALIDATE(disabledHL) {
 					&& 5 < segmentLen
 					// only for dead-ends
 					&& !nodeB.$otherSegmentsLen
-					&& nodeB.$rawNode.getOLGeometry().bounds
+					&& nodeB.$rawNode.getOLGeometry().getBounds()
 					&& isLimitOk(108)
 					&& address.isOkFor(108)) {
 					// check if any other segment is close to the node B
 					var IDs = nodeB.$rawNode.attributes.segIDs;
-					var pt = new OpenLayers.Geometry.Point(
-						nodeB.$rawNode.getOLGeometry().bounds.left,
-						nodeB.$rawNode.getOLGeometry().bounds.bottom
-					);
+					const bd = nodeB.$rawNode.getOLGeometry().getBounds();
+					var pt = new OpenLayers.Geometry.Point(bd.left, bd.bottom);
 					for (var segKey in WMo.segments.objects) {
 						var seg = WMo.segments.objects[segKey];
 						if (segmentID === seg.getID()) continue;
-						if (!seg.geometry) continue;
+						if (!seg.getOLGeometry()) continue;
 						// different elevations
 						if (elevation !== seg.attributes.level) continue;
 						// only for non-deleted segments
