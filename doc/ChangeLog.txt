@@ -1,5 +1,8 @@
 Current changes:
 
+v2025.02.26:
+- DaveAcincy: fix for #107 and #108.
+
 v2025.01.22:
 - fix the build.
 
