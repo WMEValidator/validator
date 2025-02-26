@@ -153,8 +153,6 @@ var Waze = {
 };
 /** @constructor */
 Waze.NODE = function () {
-	/** @type {Object} */
-	this.bounds;
 	this.getAngleToSegment;
 	this.getOLGeometry = function () { };
 	this.geometry = {
@@ -182,8 +180,6 @@ Waze.SEGMENT = function () {
 	this.arePropertiesEditable = function () { };
 	this.hasRestrictions = function () { };
 	this.getFlagAttributes = function () { };
-	/** @type {Object} */
-	this.bounds;
 	this.geometry = {
 		id: "",
 		/** @type {Object} */
@@ -238,8 +234,6 @@ Waze.VENUE = function () {
 	this.is2D = function () { };
 	this.isParkingLot = function () { };
 	this.isGasStation = function () { };
-	/** @type {Object} */
-	this.bounds;
 	this.getOLGeometry = function () { };
 	this.geometry = {
 		id: "",

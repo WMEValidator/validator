@@ -1761,7 +1761,7 @@ function F_VALIDATE(disabledHL) {
 		// check if start extent contains segment center
 		/*
 		if(RTStateIs(ST_RUN)
-			&& !_RT.$startExtent.containsBounds(rawSegment.bounds, true, true))
+			&& !_RT.$startExtent.containsBounds(rawSegment.getBounds(), true, true))
 			continue;
 		*/
 
