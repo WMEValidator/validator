@@ -2588,7 +2588,6 @@ function F_VALIDATE(disabledHL) {
 				var foundPublicConnection = checkPublicConnection(segment, null);
 				if (!foundPublicConnection) {
 					// We might have a isolated segment. Could be a Restricted Gate
-					// See https://wazeopedia.waze.com/wiki/USA/Private_Installations#Specialty_Gate:_Restricted_Gate
 					if (nodeA.$otherSegmentsLen == 1 && nodeB.$otherSegmentsLen == 1) {
 						// both sides are connected to just one private segment
 						var nodeASegment = nodeA.$otherSegments[0];
