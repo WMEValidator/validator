@@ -1,6 +1,6 @@
 // ==UserScript==
 // @name                WME Validator
-// @version             2025.02.26
+// @version             2026.06.01
 // @description         This script validates a map area in Waze Map Editor, highlights issues and generates a very detailed report with wiki references and solutions
 // @match               https://beta.waze.com/*editor*
 // @match               https://www.waze.com/*editor*
@@ -18,6 +18,7 @@
 // @contributor         jangliss
 // @contributor         Glodenox
 // @contributor         DaveAcincy
+// @contributor         miguelovergara
 // ==/UserScript==
 /*
  * WME Validator uses Open Source GPLv3 license, i.e. you may copy,
@@ -30,7 +31,7 @@
  * https://github.com/WMEValidator/
  *
  * For questions please use official forum:
- * https://www.waze.com/forum/viewtopic.php?f=819&t=76488
+ * https://www.waze.com/discuss/t/script-wme-validator-v2025-02-26-places-beta/44877
  *
  * Report bugs on GitHub Issues Tracker:
  * https://github.com/WMEValidator/validator/issues
