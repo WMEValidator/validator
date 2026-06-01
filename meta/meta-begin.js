@@ -9,7 +9,7 @@
 // @grant               none
 // @icon                https://raw.githubusercontent.com/WMEValidator/release/master/img/WV-icon96.png
 // @namespace           a
-// @homepage            https://www.waze.com/forum/viewtopic.php?f=819&t=76488
+// @homepage            https://www.waze.com/discuss/t/script-wme-validator-v2025-02-26-places-beta/44877
 // @author              Andriy Berestovskyy <berestovskyy@gmail.com>
 // @copyright           2013-2018 Andriy Berestovskyy
 // @license             GPLv3
