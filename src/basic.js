@@ -80,7 +80,7 @@ function escRE(e) {
  * @param {boolean=} newLine
  */
 function getMsg(mType, msg, newLine) {
-	return "WME Validator v" + WV_VERSION
+	return "Validator"
 		+ (mType ? " " + mType : "")
 		+ (msg ? ":"
 			+ (newLine ? "\n" : " ")
@@ -93,6 +93,17 @@ function getMsg(mType, msg, newLine) {
  */
 function log(msg) {
 	window.console.log(getMsg("", msg));
+}
+function tlog(message, data = '') {
+	//if (!debug) return;
+
+	const t = new Date;
+	const h = t.getHours();
+	const m = t.getMinutes();
+	const s = t.getSeconds();
+	const ms = `${t.getMilliseconds()}`.padStart(3, '0');
+
+	console.log(`${h}:${m}:${s}.${ms} VAL: ${message}`, data);
 }
 
 /**
@@ -300,8 +311,12 @@ function ForceHLAllObjects() {
  *  This is used to wait for DOM to populate before filling in problem details in left panel.
  */
 function delayForceHLAllObjects(e) {
-	const ldf = nW.app.layout.model.attributes.loadingFeatures;
-	if (ldf) {
+	const ldf = W.app.attributes.loadingFeatures;
+	const ae = document.getElementsByClassName("address-edit");
+	const selection = wmeSDK.Editing.getSelection();
+	let needLeftP = false;
+	if (ae.length == 0 && selection && selection.ids.length > 0 && ((selection.objectType == "segment") || (selection.objectType == "venue"))) { needLeftP = true; }
+	if (ldf || needLeftP) {
 		setTimeout(function () { delayForceHLAllObjects(e); }, 50);
 	}
 	else { ForceHLAllObjects(); }
@@ -476,23 +491,23 @@ function checkFilter(severity, objectCopy, seenObjects) {
 		&& _UI.pMain.pFilter.oExcludeNotes.CHECKED)
 		return false;
 
-	if (objectCopy.$userID !== _RT.$topUser.$userID
+	if (objectCopy.$userName !== _RT.$topUser.$userName
 		&& !_UI.pMain.pSearch.oIncludeYourEdits.NODISPLAY
 		&& _UI.pMain.pSearch.oIncludeYourEdits.CHECKED)
 		return false;
 
 	if (!_UI.pMain.pSearch.oIncludeUpdatedBy.NODISPLAY
 		&& _UI.pMain.pSearch.oIncludeUpdatedBy.VALUE) {
-		var cache = _RT.$includeUpdatedByCache;
-		var hash = objectCopy.$userID;
+		let cache = _RT.$includeUpdatedByCache;
+		let hash = objectCopy.$userID;
 
 		if (hash in cache) {
 			if (!cache[hash])
 				return false;
 		}
 		else {
-			var forUser = _UI.pMain.pSearch.oIncludeUpdatedBy.VALUE;
-			var curUser = _REP.$users[objectCopy.$userID];
+			let forUser = _UI.pMain.pSearch.oIncludeUpdatedBy.VALUE;
+			let curUser = _REP.$users[objectCopy.$userName];
 			try {
 				cache[hash] = false;
 				// check if the user tries to match another user
@@ -536,23 +551,23 @@ function checkFilter(severity, objectCopy, seenObjects) {
 		if (!objectCopy.$cityID)
 			return false;
 
-		var cache = _RT.$includeCityNameCache;
-		var hash = objectCopy.$cityID;
+		let cache = _RT.$includeCityNameCache;
+		let hash = objectCopy.$cityID;
 
 		if (hash in cache) {
 			if (!cache[hash])
 				return false;
 		}
 		else {
-			var forCity = _UI.pMain.pSearch.oIncludeCityName.VALUE;
-			var curCity = _REP.$cities[objectCopy.$cityID];
+			let forCity = _UI.pMain.pSearch.oIncludeCityName.VALUE;
+			let curCity = _REP.$cities[objectCopy.$cityID];
 			try {
 				cache[hash] = false;
 				if (!_WV.checkAccessFor(forCity,
 					function (e) {
 						// escape user input
 						e = escRE(e);
-						var r = new RegExp("^" + e + "$", "i");
+						let r = new RegExp("^" + e + "$", "i");
 						return r.test(curCity);
 					})
 				)
@@ -714,6 +729,14 @@ function onMoveEnd(e) {
 	else
 		delayForceHLAllObjects(e);
 }
+function onZoomEnd(e) {
+	//showTimes('onZoomEnd');
+	delayForceHLAllObjects(e);
+}
+function onSelChanged(e) {
+	//showTimes('onSelChanged');
+	delayForceHLAllObjects(e);
+}
 
 /**
  * Load Start Handler
@@ -728,11 +751,65 @@ function onLoadStart() {
 function onChangeLayer(e) {
 	sync(F_ONCHANGELAYER, e);
 }
+function onObjectsChanged(e) {
+	//const ln = e.objectIds.length;
+	//const tx = ln == 0 ? '' : ', id: ' + e.objectIds[0];
+	//tlog(e.dataModelName + ' objects changed, count: ' + ln + tx);
+	if (e.dataModelName == 'segments') {
+		_RT.$isMapChanged = true;
+		sync(F_ONSEGMENTSCHANGED, e.objectIds);
+	}
+	else if (e.dataModelName == 'venues') {
+		_RT.$isMapChanged = true;
+		sync(F_ONVENUESCHANGED, e.objectIds);
+	}
+	else if (e.dataModelName == 'nodes') {
+		_RT.$isMapChanged = true;
+		sync(F_ONNODESCHANGED, e.objectIds);
+	}
+}
+function onObjectsRemoved(e) {
+	//const ln = e.objectIds.length;
+	//const tx = ln == 0 ? '' : ', id: ' + e.objectIds[0];
+	//tlog(e.dataModelName + ' objects removed, count: ' + ln + tx);
+	if (e.dataModelName == 'segments') {
+		_RT.$isMapChanged = true;
+		if (1 === e.objectIds.length) {
+			if (RTStateIs(ST_STOP) || RTStateIs(ST_PAUSE)) {
+				sync(F_ONSEGMENTSCHANGED, e.objectIds);
+			}
+		}
+	}
+	else if (e.dataModelName == 'venues') {
+		_RT.$isMapChanged = true;
+		if (1 === e.objectIds.length) {
+			if (RTStateIs(ST_STOP) || RTStateIs(ST_PAUSE)) {
+				sync(F_ONVENUESCHANGED, e.objectIds);
+			}
+		}
+	}
+	else if (e.dataModelName == 'nodes') {
+		_RT.$isMapChanged = true;
+		if (1 === e.objectIds.length) {
+			if (RTStateIs(ST_STOP) || RTStateIs(ST_PAUSE)) {
+				sync(F_ONNODESCHANGED, e.objectIds);
+			}
+		}
+	}
+}
+function onObjectsAdded(e) {
+	//const ln = e.objectIds.length;
+	//const tx = ln == 0 ? '' : ', id: ' + e.objectIds[0];
+	//tlog(e.dataModelName + ' objects added, count: ' + ln + tx);
+	if (e.dataModelName == 'segments' || e.dataModelName == 'venues') {
+		_RT.$isMapChanged = true;
+	}
+}
 
 /**
  * Segments Changed Handler
  */
-/** @suppress {strictMissingProperties} */
+/** @suppress {strictMissingProperties} 
 function onSegmentsChanged(e) {
 	_RT.$isMapChanged = true;
 	sync(F_ONSEGMENTSCHANGED, e);
@@ -741,7 +818,7 @@ function onSegmentsChanged(e) {
 /**
  * Segments Removed Handler
  */
-/** @suppress {strictMissingProperties} */
+/** @suppress {strictMissingProperties} 
 function onSegmentsRemoved(e) {
 	_RT.$isMapChanged = true;
 	if (1 === e.length)
@@ -752,7 +829,7 @@ function onSegmentsRemoved(e) {
 /**
  * Segments Added Handler
  */
-/** @suppress {strictMissingProperties} */
+/** @suppress {strictMissingProperties} 
 function onSegmentsAdded(e) {
 	_RT.$isMapChanged = true;
 }
@@ -760,7 +837,7 @@ function onSegmentsAdded(e) {
 /**
  * Nodes Changed Handler
  */
-/** @suppress {strictMissingProperties} */
+/** @suppress {strictMissingProperties} 
 function onNodesChanged(e) {
 	_RT.$isMapChanged = true;
 	sync(F_ONNODESCHANGED, e);
@@ -769,7 +846,7 @@ function onNodesChanged(e) {
 /**
  * Nodes Removed Handler
  */
-/** @suppress {strictMissingProperties} */
+/** @suppress {strictMissingProperties} 
 function onNodesRemoved(e) {
 	_RT.$isMapChanged = true;
 	if (1 === e.length)
@@ -781,25 +858,29 @@ function onNodesRemoved(e) {
 * Recover from switching isImperial pref
 */
 /** @suppress {strictMissingProperties} */
-function onChangeIsImperial() {
-	clearReport();
-	_RT.$HLedObjects = {};
-	_RT.$HLlayer.destroyFeatures();
-	_RT.$isMapChanged = true;
-	async(F_LOGIN);
+function onChangeUserSettings() {
+	const s = wmeSDK.Settings.getUserSettings();
+	if (_RT.$isImperial != s.isImperial) {
+		tlog('isImperial changed to: ' + s.isImperial);
+		clearReport();
+		_RT.$HLedObjects = {};
+		wmeSDK.Map.removeAllFeaturesFromLayer( { layerName: GL_LAYERNAME } );
+		_RT.$isMapChanged = true;
+		async(F_LOGIN);
+	}
 }
 
 /**
  * Venues Added Handler
  */
-/** @suppress {strictMissingProperties} */
+/** @suppress {strictMissingProperties} 
 function onVenuesAdded(e) {
 	_RT.$isMapChanged = true;
 }
 /**
  * Venues Changed Handler
  */
-/** @suppress {strictMissingProperties} */
+/** @suppress {strictMissingProperties} 
 function onVenuesChanged(e) {
 	_RT.$isMapChanged = true;
 	sync(F_ONVENUESCHANGED, e);
@@ -807,10 +888,10 @@ function onVenuesChanged(e) {
 /**
  * Venues Removed Handler
  */
-/** @suppress {strictMissingProperties} */
+/** @suppress {strictMissingProperties} 
 function onVenuesRemoved(e) {
 	_RT.$isMapChanged = true;
 	if (1 === e.length)
 		if (RTStateIs(ST_STOP) || RTStateIs(ST_PAUSE))
 			sync(F_ONVENUESCHANGED, e);
-}
+} */

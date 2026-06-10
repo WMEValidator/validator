@@ -91,14 +91,15 @@ function isEmpty(obj) {
  * https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Array/forEach#An_object_copy_function
  */
 function deepCopy(obj) {
+	let cpy;
 	switch (classCode(obj)) {
 		case CC_ARRAY:
-			var cpy = [];
+			cpy = [];
 			for (var i = 0, len = obj.length; i < len; i++)
 				cpy[i] = deepCopy(obj[i]);
 			return cpy;
 		case CC_OBJECT:
-			var cpy = {};
+			cpy = {};
 			for (var attr in obj)
 				if (obj.hasOwnProperty(attr))
 					cpy[attr] = deepCopy(obj[attr]);
@@ -140,17 +141,19 @@ function deepCompare(obj1, obj2) {
 }
 
 function getDirection(seg) {
-	return (seg.attributes.fwdDirection ? 1 : 0) + (seg.attributes.revDirection ? 2 : 0);
+	// only one of these 3 booleans is true for any segment
+	return (seg.isAtoB ? 1 : 0) + (seg.isBtoA ? 2 : 0) + (seg.isTwoWay ? 3 : 0);
 };
 
 function getLocalizedValue(val, country) {
-	var ipu = OpenLayers.INCHES_PER_UNIT;
-	var mph = false;
+	//var ipu = OpenLayers.INCHES_PER_UNIT;
+	const IPU_MILE = 63360;
+	const IPU_KM = 39370;
+	let mph = false;
 	if ((country == "United Kingdom") ||
 		(country == "Jersey") ||
 		(country == "Guernsey") ||
 		(country == "United States"))
 		mph = true;
-	return mph ?
-		Math.round(val * ipu["km"] / ipu["mi"]) : val;
+	return mph ? Math.round(val * IPU_KM / IPU_MILE) : val;
 }
