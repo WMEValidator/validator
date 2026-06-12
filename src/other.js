@@ -23,15 +23,18 @@
  */
 function F_ONSEGMENTSCHANGED(e) {
 	// add nearby segments to _RT.$revalidate
-	var changedNodes = [];
-	for (var i = 0; i < e.length; i++) {
-		var nodeIDs = [e[i].attributes.fromNodeID, e[i].attributes.toNodeID];
-		for (var j = 0; j < nodeIDs.length; j++) {
-			var nodeID = nodeIDs[j];
-			if (!nodeID) continue;
-			var node = WMo.nodes.getObjectById(nodeID);
-			if (node)
-				changedNodes.push(node);
+	let changedNodes = [];
+	for (let i = 0; i < e.length; i++) {
+		const sg = wmeSDK.DataModel.Segments.getById({segmentId: e[i]} );
+		if (sg) {
+			var nodeIDs = [sg.fromNodeId, sg.toNodeId];
+			for (let j = 0; j < nodeIDs.length; j++) {
+				let nodeID = nodeIDs[j];
+				if (!nodeID) continue;
+				let node = wmeSDK.DataModel.Nodes.getById({nodeId: nodeID} );
+				if (node)
+					changedNodes.push(node);
+			}
 		}
 	}
 	if (changedNodes.length)
@@ -43,12 +46,18 @@ function F_ONSEGMENTSCHANGED(e) {
  */
 function F_ONNODESCHANGED(e) {
 	// add nearby segments to _RT.$revalidate
-	var reHL = false;
-	for (var i = 0; i < e.length; i++) {
-		var ids = e[i].attributes.segIDs;
-		for (var j = 0; j < ids.length; j++)
-			_RT.$revalidate[ids[j]] = true,
-				reHL = true;
+	let reHL = false;
+	for (let i = 0; i < e.length; i++) {
+		let nd = e[i];
+		if (typeof nd === 'number') { nd = wmeSDK.DataModel.Nodes.getById({nodeId: nd} ); }
+		//console.log('VAL NODES CHANGED ' + i, nd);
+		if (nd) {
+			let ids = nd.hasOwnProperty('connectedSegmentIds') ? nd.connectedSegmentIds :nd.attributes.segIDs;
+
+			for (let j = 0; j < ids.length; j++)
+				_RT.$revalidate[ids[j]] = true,
+					reHL = true;
+		}
 	}
 	// revalidate all the objects
 	if (reHL)
@@ -62,7 +71,7 @@ function F_ONVENUESCHANGED(e) {
 	// add nearby venues to _RT.$revalidate
 	var reHL = false;
 	for (var i = e.length - 1; i >= 0; i--) {
-		var id = e[i].attributes.id;
+		var id = e[i];
 		_RT.$revalidate[id] = true;
 		reHL = true;
 	}
@@ -76,10 +85,10 @@ function F_ONVENUESCHANGED(e) {
 /** @suppress {strictMissingProperties} */
 function F_ONCHANGELAYER(e) {
 	// Trigger of layer change was not by a layer (ie WMETB Config Dialog)
-	if (!e.hasOwnProperty('layer')) {
+	if (!e.hasOwnProperty('layerName')) {
 		return;
 	}
-	if (-1 !== e.layer.id.indexOf(GL_TBPREFIX)) {
+/*	if (-1 !== e.layer.id.indexOf(GL_TBPREFIX)) {
 		if (!e.layer.visibility) {
 			for (var segmentID in WMo.segments.objects) {
 				if (!WMo.segments.objects.hasOwnProperty(segmentID)) continue;
@@ -88,10 +97,9 @@ function F_ONCHANGELAYER(e) {
 		}
 		ForceHLAllObjects();
 	}
-	else
-		if (GL_LAYERUNAME === e.layer.uniqueName
-			&& e.layer.visibility !== _UI.pSettings.pScanner.oHLReported.CHECKED
-		) {
+	else */
+		if (GL_LAYERNAME === e.layerName
+			&& wmeSDK.Map.isLayerVisibile({ layerName: GL_LAYERNAME }) !== _UI.pSettings.pScanner.oHLReported.CHECKED) {
 			// switch Validator on/off
 			_RT.$switchValidator = true;
 			async(F_UPDATEUI);
@@ -103,18 +111,18 @@ function F_ONCHANGELAYER(e) {
  */
 /** @suppress {strictMissingProperties} */
 function F_ONMOVEEND() {
-	var c = WM.getCenter();
+	const c = wmeSDK.Map.getMapCenter();
 
 	if (-1 === _RT.$WDmoveID
 		&& -1 === _RT.$WDloadID
-		&& c.equals(_RT.$nextCenter)
+		&& ptEqual(c,_RT.$nextCenter)
 	)
 		_RT.$WDmoveID = window.setTimeout(onMergeEnd, WD_SHORT);
 	else {
 		// autopause on user move
 		if (RTStateIs(ST_RUN) && !_RT.$firstStep
-			&& !c.equals(_RT.$nextCenter)
-			&& !c.equals(_RT.$startCenter)
+			&& !ptEqual(c,_RT.$nextCenter)
+			&& !ptEqual(c,_RT.$startCenter)
 		) {
 			_RT.$curMessage = {
 				TEXT: trS("msg.autopaused.text"),
@@ -132,18 +140,30 @@ function F_ONMOVEEND() {
  */
 /** @suppress {strictMissingProperties} */
 function F_ONLOADSTART() {
-	var c = WM.getCenter();
+	const c = wmeSDK.Map.getMapCenter();
 
 	// kill move WD
 	window.clearTimeout(_RT.$WDmoveID);
 
 	if (-1 === _RT.$WDloadID
-		&& c.equals(_RT.$nextCenter)
+		&& ptEqual(c,_RT.$nextCenter)
 	)
 		_RT.$WDloadID = window.setTimeout(onMergeEnd, WD_LONG);
 
 	_RT.$WDmoveID = -1;
 
+}
+
+/**
+ * Pass in a layer switcher DOM selector. If its currently checked/enabled, disable it and add to layerToggle list
+ */
+function disableLayer( sel )
+{
+	const l = document.querySelector(sel);
+	if (l && l.checked) {
+		l.click();
+		_RT.layerToggle.push(sel);
+	}
 }
 
 /**
@@ -154,20 +174,15 @@ function F_LAYERSOFF() {
 	// TODO:
 	//  Waze.Config.segments.zoomToRoadType[SCAN_ZOOM] = -1;
 
-	_RT.$HLlayer.destroyFeatures();
-	//  if(_RT.$layersVisibility || _UI.pSettings.pScanner.oShowLayers.CHECKED)
-	if (_RT.$layersVisibility || GL_SHOWLAYERS)
+	wmeSDK.Map.removeAllFeaturesFromLayer( { layerName: GL_LAYERNAME } );
+	if (GL_SHOWLAYERS)
 		return;
-	WM.layers.forEach(function (el) {
-		if (el.displayInLayerSwitcher && GL_LAYERUNAME !== el.uniqueName) {
-			if (el.getVisibility())
-				_RT.$layersVisibility += "T";
-			else
-				_RT.$layersVisibility += "F";
+	_RT.layerToggle = [];
+	disableLayer('#layer-switcher-group_display');
+	disableLayer('#layer-switcher-group_permanent_hazards');
+	disableLayer("#layer-switcher-group_issues_tracker");
+	disableLayer("#layer-switcher-group_places");
 
-			el.setVisibility(false);
-		}
-	});
 }
 
 /**
@@ -175,19 +190,15 @@ function F_LAYERSOFF() {
  */
 /** @suppress {strictMissingProperties} */
 function F_LAYERSON() {
-	//  if(!_RT.$layersVisibility || _UI.pSettings.pScanner.oShowLayers.CHECKED)
-	if (!_RT.$layersVisibility || GL_SHOWLAYERS)
+	if (_RT.layerToggle.length == 0 || GL_SHOWLAYERS)
 		return;
-	var j = 0;
-	WM.layers.forEach(function (el) {
-		if (el.displayInLayerSwitcher && GL_LAYERUNAME !== el.uniqueName) {
-			if (_RT.$layersVisibility.length > j) {
-				el.setVisibility("T" === _RT.$layersVisibility.charAt(j));
-				j++;
-			}
-		}
-	});
-	_RT.$layersVisibility = "";
+
+	for (let l = 0; l<_RT.layerToggle.length; l++) {
+		const ll = document.querySelector(_RT.layerToggle[l]);
+		ll.click();
+	}
+	_RT.layerToggle = [];
+
 }
 
 /**
@@ -214,8 +225,7 @@ function F_STOP() {
 		beep(100, "square");
 		// restore current view
 		if (_RT.$startCenter) {
-			WM.panTo(_RT.$startCenter);
-			WM.zoomTo(_RT.$startZoom);
+			wmeSDK.Map.setMapCenter({ lonLat: _RT.$startCenter, zoomLevel: _RT.$startZoom} );
 		}
 		if (!_REP.$maxSeverity)
 			_RT.$curMessage = {
@@ -231,38 +241,64 @@ function F_STOP() {
 }
 
 /**
+ * Compares two points, passed in as lonLat object
+ */
+function ptEqual(a,b)
+{
+	const aa = turf.point( [a.lon, a.lat] );
+	const bb = turf.point( [b.lon, b.lat] );
+	const eq = turf.booleanEqual(aa,bb);
+	return eq;
+}
+
+/**
  * Merge End Handler
  */
 /** @suppress {strictMissingProperties} */
 function F_ONMERGEEND() {
+	const ldf = W.app.attributes.loadingFeatures;
+	if (ldf ) {
+		setTimeout(F_ONMERGEEND, 50);
+		return;
+	}
 	/** @const */
-	var c = WM.getCenter();
+	const c = wmeSDK.Map.getMapCenter();
 
 	// skip all but next center runs
-	if (RTStateIs(ST_RUN) && _RT.$nextCenter && !c.equals(_RT.$nextCenter))
+	if (RTStateIs(ST_RUN) && _RT.$nextCenter && !ptEqual(c,_RT.$nextCenter)) {
 		return;
-	/** @const */
-	var e = nW.map.getOLExtent();
-	/** @const */
-	var ew = e.getWidth();
-	/** @const */
-	var eh = e.getHeight();
+	}
+	//tlog("ONMERGEEND called...");
+
+	const [left, bottom, right, top] = wmeSDK.Map.getMapExtent();
+	const p1 = turf.point( [left,top]);
+	const p2 = turf.point( [right,top]);
+	const p3 = turf.point( [left,bottom]);
+	const ew = turf.distance(p1,p2,u_meters);
+	const eh = turf.distance(p1,p3,u_meters);
+
 	/** @const */
 	var ew2 = ew / 2;
 	/** @const */
 	var eh2 = eh / 2;
 	var s = _RT.$startExtent;
-	if (!s) s = new UW.OpenLayers.Bounds();
+	if (!s) {
+		s = { left, bottom, right, top};
+		//showExtent(s, 'ONMERGE set s: ');
+	}
+	const s1 = turf.point( [s.left,s.top]);
+	const s2 = turf.point( [s.right,s.top]);
+	const s3 = turf.point( [s.left,s.bottom]);
+
 	/** @const */
 	var cx = c.lon;
 	/** @const */
 	var cy = c.lat;
 	/** @const */
 	var dir = Math.round(_RT.$direction / Math.abs(_RT.$direction));
-	/** @const */
-	var sw = s.getWidth();
-	/** @const */
-	var sh = s.getHeight();
+
+	const sw = turf.distance(s1,s2,u_meters);
+	const sh = turf.distance(s1,s3,u_meters);
 
 	// calculate real step X and Y
 	/** @const */
@@ -278,8 +314,7 @@ function F_ONMERGEEND() {
 		if (_RT.$nextCenter) {
 			setRTState(ST_RUN);
 			// restore current view and continue
-			WM.zoomTo(SCAN_ZOOM);
-			WM.panTo(_RT.$nextCenter);
+			wmeSDK.Map.setMapCenter({ lonLat: _RT.$nextCenter, zoomLevel: SCAN_ZOOM} );
 			clearWD();
 			return;
 		}
@@ -298,17 +333,20 @@ function F_ONMERGEEND() {
 	if (_RT.$firstStep) {
 		// make first step
 		_RT.$firstStep = false;
-		var newX = s.left + ew2;
-		var newY = s.top - eh2;
-		// save current view for pause
-		_RT.$nextCenter = new UW.OpenLayers.LonLat(newX, newY);
-		WM.zoomTo(SCAN_ZOOM);
-		WM.panTo(_RT.$nextCenter);
+		_RT.$curStep = 1;
+		_RT.$stepCount = kxMax * kyMax;
+		const startPt = turf.point([s.left,s.top]);
+		let newPtA = turf.destination(startPt,ew2,90, u_meters);
+		let newPt = turf.destination(newPtA,eh2,0, u_meters);
+		_RT.$nextCenter = { lon:newPt.geometry.coordinates[0], lat: newPt.geometry.coordinates[1] };
+		showPt(_RT.$nextCenter, 'ONMERGE FIRSTSTEP nxCen: ');
+		wmeSDK.Map.setMapCenter({ lonLat: _RT.$nextCenter, zoomLevel: SCAN_ZOOM} );
 		clearWD();
 		return;
 	}
 
 	// do the job!
+	//tlog("ONMERGEEND DO VALIDATE ...");
 	sync(F_VALIDATE, false);
 
 	///////////////////////////////////////////////////////////////////////
@@ -319,7 +357,7 @@ function F_ONMERGEEND() {
 	var deltaY = Number.MAX_VALUE;
 	var kx = 0;
 	var ky = 0;
-	for (var i = 0; ; i++) {
+/*	for (var i = 0; ; i++) {
 		var x = s.left + ew2 + i * stepX;
 		var y = s.top - eh2 - i * stepY;
 		if (x > s.right && y < s.bottom) break;
@@ -329,14 +367,15 @@ function F_ONMERGEEND() {
 
 		cd = Math.abs(y - cy);
 		if (cd < deltaY) deltaY = cd, ky = i;
-	}
+	} */
 	updateTimer(ST_RUN);
-	var curStep = ky * kxMax + (0 < dir ? kx : kxMax - kx);
-	if (4 < curStep) {
-		if (0 === curStep % 5) {
+	_RT.$curStep++;
+	//var curStep = ky * kxMax + (0 < dir ? kx : kxMax - kx);
+	if (4 < _RT.$curStep) {
+		//if (0 === curStep % 5) {
 			//var maxStep = (kyMax*(kxMax - 1));
 			var maxStep = kyMax * kxMax;
-			var minETA = (maxStep / curStep - 1) * _RT.$timer.$secInRun / 60;
+			var minETA = (maxStep / _RT.$curStep - 1) * _RT.$timer.$secInRun / 60;
 			var strMsg = (1 > minETA) ?
 				trS("msg.scanning.text.soon")
 				: trSO("msg.scanning.text", { "n": Math.round(minETA) })
@@ -345,32 +384,41 @@ function F_ONMERGEEND() {
 				TEXT: strMsg,
 				TITLE: trS("msg.scanning.tip"),
 			};
-		}
+		//}
 	}
 
 	// 2. Make an X step
 	kx = kx + dir;
 
 	// 3. Check if new X is within start extent
-	var newX = s.left + ew2 + kx * stepX;
+	let newX; // = s.left + ew2 + kx * stepX;
+	const startPt = turf.point([cx,cy]);
+	let newPt = turf.destination(startPt,stepX,90, u_meters);
+	newX = newPt.geometry.coordinates[0];
 	if (newX < s.left || newX > s.right
 		// or if center is closer to the start border that the edge
-		|| Math.abs(newX - s.left) < Math.abs(newX - ew2 - s.left)
-		|| Math.abs(newX - s.right) < Math.abs(newX + ew2 - s.right)
+		// || Math.abs(newX - s.left) < Math.abs(newX - ew2 - s.left)  // #######
+		// || Math.abs(newX - s.right) < Math.abs(newX + ew2 - s.right)
 	) {
 		// step back
 		newX = s.left + ew2 + (kx - dir) * stepX;
+		const startPt = turf.point([s.left,cy]);
+		let newPtA = turf.destination(startPt,ew2,90, u_meters);
+		newPt = turf.destination(newPtA,stepY,180, u_meters);
+		newX = newPt.geometry.coordinates[0];
+		//showPt(newPt, 'ONMERGE move down nxCen: ');
 		// change direction
-		_RT.$direction = -_RT.$direction;
+		//_RT.$direction = -_RT.$direction;
 		// make an Y step
 		ky++;
 	}
 
 	// 4. Check if new Y is within start extent
-	var newY = s.top - eh2 - ky * stepY;
+	//var newY = s.top - eh2 - ky * stepY;
+	let newY = newPt.geometry.coordinates[1];
 	if (newY < s.bottom
 		// or if center is closer to the start border that the edge
-		|| Math.abs(newY - s.bottom) < Math.abs(newY - eh2 - s.bottom)
+		// ### || Math.abs(newY - s.bottom) < Math.abs(newY - eh2 - s.bottom)
 	) {
 		// finished!
 		// check if any editable objects was found
@@ -381,11 +429,37 @@ function F_ONMERGEEND() {
 		return;
 	}
 
-	_RT.$nextCenter = new UW.OpenLayers.LonLat(newX, newY);
+	_RT.$nextCenter = { lon: newX, lat: newY };
+	showPt(_RT.$nextCenter, 'ONMERGE PAN step ' + _RT.$curStep +' nxCen: ');
 	// pan map
-	WM.zoomTo(SCAN_ZOOM);
-	WM.panTo(_RT.$nextCenter);
+	wmeSDK.Map.setMapCenter({ lonLat: _RT.$nextCenter, zoomLevel: SCAN_ZOOM} );
 	clearWD();
+}
+function showcoord( f )
+{
+	return f.toString().substring(0,7) + ' ';
+}
+function showPt( p, tx )
+{
+	let e;
+	if (p.geometry) {
+		const cc = p.geometry.coordinates;
+		e = showcoord(cc[0]);
+		e += showcoord(cc[1]);
+	}
+	else {
+		e = showcoord(p.lon);
+		e += showcoord(p.lat);
+	}
+	console.info('VAL ' + tx + e)
+}
+function showExtent( ex, tx )
+{
+	let e = showcoord(ex.left);
+	e += showcoord(ex.bottom);
+	e += showcoord(ex.right);
+	e += showcoord(ex.top);
+	console.info('VAL ' + tx + e);
 }
 
 /**
@@ -411,25 +485,26 @@ function F_ONRUN() {
 	_RT.$firstStep = true;
 
 	// save current view
-	var e = nW.map.getOLExtent();
-	_RT.$startExtent = e;
-	_RT.$startCenter = WM.getCenter();
-	_RT.$startZoom = WM.getZoom();
+	let [left, bottom, right, top] = wmeSDK.Map.getMapExtent();
+	_RT.$startExtent = {left, bottom, right, top};
+	showExtent(_RT.$startExtent, 'ONRUN start: ');
+	_RT.$startCenter = wmeSDK.Map.getMapCenter();
+	_RT.$startZoom = wmeSDK.Map.getZoomLevel();
 	_RT.$nextCenter = null;
 	_RT.$moveEndCenter = null;
 
 	//  clearReport();
 
-	_RT.$nextCenter = new UW.OpenLayers.LonLat(e.left, e.top);
-	WM.panTo(_RT.$nextCenter);
-	WM.zoomTo(SCAN_ZOOM);
+	_RT.$nextCenter = { lon:left, lat: top };
+	showPt(_RT.$nextCenter, 'ONRUN start nxCen: ');
+	wmeSDK.Map.setMapCenter({ lonLat: _RT.$nextCenter, zoomLevel: SCAN_ZOOM} );
 }
 
 /**
  * Login Handler
  */
 function F_ONLOGIN() {
-	if (WLM.user) {
+	if (wmeSDK.State.isLoggedIn()) {
 		if (!_WV.$loggedIn) {
 			// set the flag and do login
 			_WV.$loggedIn = true;
@@ -455,43 +530,55 @@ function F_ONLOGIN() {
  */
 function F_INIT() {
 	// init shortcuts
-	UW = window;
-	nW = UW.W;
-	WLM = nW.loginManager;
-	WSM = nW.selectionManager;
-	WM = nW.map;
-	WMo = nW.model;
-	WC = nW.controller;
-	if (!nW || !WLM || !WLM.user || !WSM || !WM || !WMo || !WC || !$("#user-tabs")) {
+	//UW = window;
+	//nW = UW.W;
+	//WLM = nW.loginManager;
+//	WSM = nW.selectionManager;
+	//WM = nW.map;
+	//WMo = nW.model;
+	//WC = nW.controller;
+/*	if (!nW || !WLM || !WLM.user || !WSM || !WM || !WMo || !WC || !$("#user-tabs")) {
 		log("waiting for WME...")
 		async(F_INIT, null, 1e3);
 		return;
-	}
+	} */
 	// Now we surely have WM as map, but stuff moved to W.map.olMap for us
 	// So we redefine WM here to use olMap instead, now we have map loaded.
-	WM = nW.map.olMap;
+	//WM = nW.map.olMap;
 
 	// detect new WME version
-	if (classCodeDefined(UW.require)) {
-		R = UW.require;
-		WME_BETA = /beta/.test(location.href);
-	}
+	WME_BETA = /beta/.test(location.href);
 	setupPolicy();
 
 	// Google Analytics
-	var _gaq = UW["_gaq"];
+	/*var _gaq = UW["_gaq"];
 	if (_gaq) {
 		_gaq.push(["WME_Validator._setAccount", "UA-46853768-3"]);
 		_gaq.push(["WME_Validator._setDomainName", "waze.com"]);
 		_gaq.push(["WME_Validator._trackPageview"]);
-	}
+	} */
+
+	// check for .address-edit added to the edit-panel
+	const panelObserver = new MutationObserver((mutations) => {
+		mutations.forEach(function(mutation) {
+			for (let i = 0; i < mutation.addedNodes.length; i++) {
+				const addedNode = mutation.addedNodes[i];
+
+				// Only fire up if it's a node
+				if (addedNode.nodeType === Node.ELEMENT_NODE) {
+					if (addedNode.querySelector('.address-edit')) {
+						//log('address-edit added to DOM');
+						addPanelDetails();
+					}
+				}
+			}
+		});
+	});
+	panelObserver.observe(document.getElementById('edit-panel'), { childList: true , subtree: true });
 
 	_WV.$loggedIn = false;
 	// install login/logout handler
-	WLM.events.on({
-		"loginStatus": onLogin,
-		"login": onLogin
-	});
+	wmeSDK.Events.on({ eventName: "wme-logged-in", eventHandler:onLogin });
 
 	// do login or wait for user
 	async(F_ONLOGIN);
@@ -570,16 +657,16 @@ function F_INIT() {
 
 		if (objID) {
 			this.$cityID = objID;
-			var oc = WMo.cities.getObjectById(objID);
+			var oc = wmeSDK.DataModel.Cities.getById( {cityId: objID} );
 			if (oc) {
-				this.$city = oc.attributes.isEmpty ? "" : oc.attributes.name;
-				var o = WMo.states.getObjectById(oc.attributes.stateID);
+				this.$city = oc.isEmpty ? "" : oc.name;
+				var o = wmeSDK.DataModel.States.getById( {stateId: oc.stateId} );
 				if (o)
-					this.$state = o.attributes.name;
-				this.$countryID = oc.attributes.countryID;
-				o = WMo.countries.getObjectById(oc.attributes.countryID);
+					this.$state = o.name;
+				this.$countryID = oc.countryId;
+				o = wmeSDK.DataModel.Countries.getById( {countryId: oc.countryId} );
 				if (o)
-					this.$country = o.attributes.name;
+					this.$country = o.name;
 			}
 			this.$hash = this.$cityID + this.$countryID;
 
@@ -683,19 +770,19 @@ function F_INIT() {
 		this.$streetID = 0;
 		/** @type {string} */
 		this.$street = "";
-
-		if (objID) {
+		if (objID?.isEmpty) {
+		}
+		else if (objID?.street) {
+			this.$streetID = objID.street.id;
+		} else if (objID) {
 			this.$streetID = objID;
-			var o = WMo.streets.getObjectById(objID);
+		}
+
+		if (this.$streetID) {
+			let o = wmeSDK.DataModel.Streets.getById({streetId: this.$streetID}) ;//WMo.streets.getObjectById(objID);
 			if (o) {
-				if (o.hasOwnProperty('isEmpty')) {
-					this.$street = o.isEmpty ? '' : o.name;
-					_WV.SimpleCITY.call(this, o.cityID)
-				}
-				else {
-					this.$street = o.attributes.isEmpty ? '' : o.attributes.name;
-					_WV.SimpleCITY.call(this, o.attributes.cityID);
-				}
+				this.$street = o.isEmpty ? '' : o.name;
+				_WV.SimpleCITY.call(this, o.cityId)
 			}
 			else {
 				this.$street = GL_NOID;
@@ -738,7 +825,7 @@ function F_UPDATEUI(e) {
 	 */
 	function destroyHLs() {
 		_RT.$HLedObjects = {};
-		_RT.$HLlayer.destroyFeatures();
+		wmeSDK.Map.removeAllFeaturesFromLayer( { layerName: GL_LAYERNAME } );
 	}
 	/**
 	 * Updates report buttons
@@ -779,7 +866,7 @@ function F_UPDATEUI(e) {
 		}
 
 		// update start button
-		if (15 < WM.getZoom()) {
+		if (15 < wmeSDK.Map.getZoomLevel()) {
 			btns.bScan.CLASS = "btn btn-default";
 			btns.bScan.DISABLED = true;
 			btns.bScan.TITLE = trS("button.scan.tip.NA");
@@ -818,8 +905,8 @@ function F_UPDATEUI(e) {
 	 * Returns simple representation of top city and country
 	 */
 	function getTopCity() {
-		var i = WMo.segments.topCityID;
-		if (i) return new _WV.SimpleCITY(i);
+		let i = wmeSDK.DataModel.Cities.getTopCity();
+		if (i) return new _WV.SimpleCITY(i.id);
 
 		return new _WV.SimpleCITY(0);
 	}
@@ -973,8 +1060,7 @@ function F_UPDATEUI(e) {
 				setRTState(ST_CONTINUE);
 				// restore start view and continue
 				if (_RT.$startCenter) {
-					WM.zoomTo(_RT.$startZoom);
-					WM.panTo(_RT.$startCenter);
+					wmeSDK.Map.setMapCenter({ lonLat: _RT.$startCenter, zoomLevel: _RT.$startZoom} );
 				}
 				clearWD();
 				break;
@@ -1019,12 +1105,12 @@ function F_UPDATEUI(e) {
 			!_UI.pSettings.pScanner.oHLReported.CHECKED;
 		if (_UI.pSettings.pScanner.oHLReported.CHECKED) {
 			ForceHLAllObjects();
-			_RT.$HLlayer.setVisibility(true);
+			wmeSDK.Map.setLayerVisibility( { layerName: GL_LAYERNAME, visibility: true });
 		}
 		else {
 			ForceHLAllObjects();
 			destroyHLs();
-			_RT.$HLlayer.setVisibility(false);
+			wmeSDK.Map.setLayerVisibility( { layerName: GL_LAYERNAME, visibility: false });
 		}
 		_RT.$switchValidator = false;
 	}
@@ -1114,7 +1200,7 @@ function F_UPDATEUI(e) {
 	if (RTStateIs(ST_STOP) && !_REP.$maxSeverity) {
 		// always display a zoom out message
 		if (!_UI.pMain.NODISPLAY) {
-			if (15 < WM.getZoom())
+			if (15 < wmeSDK.Map.getZoomLevel())
 				_RT.$curMessage = {
 					TEXT: _UI.pSettings.pScanner.oHLReported.CHECKED ?
 						trS("msg.pan.text")
@@ -1166,35 +1252,28 @@ function F_LOGOUT() {
 	_UI = {};
 
 	// unregister event handlers
-	WMo.events.un({
-		"mergeend": onMergeEnd,
-	});
-	WM.events.un({
-		"moveend": onMoveEnd,
-		"zoomend": HLAllObjects,
-		"changelayer": onChangeLayer,
-	});
-	WSM.removeEventListener('selectionchanged', delayForceHLAllObjects);
-	WC.events.un({
-		"loadstart": onLoadStart,
-	});
+	eventOff("wme-map-move-end",onMoveEnd);
+	eventOff("wme-map-zoom-changed",onZoomEnd);
+	eventOff("wme-map-layer-changed",onChangeLayer);
+	eventOff("wme-selection-changed",  onSelChanged);
+	eventOff("wme-data-model-objects-added", onObjectsAdded );
+	eventOff("wme-data-model-objects-changed", onObjectsChanged );
+	eventOff("wme-data-model-objects-removed", onObjectsRemoved );
 
-	// monitor segments, venues and nodes changes
-	WMo.segments.events.un({
-		"objectsadded": onSegmentsAdded,
-		"objectschanged": onSegmentsChanged,
-		"objectsremoved": onSegmentsRemoved,
-	});
-	WMo.venues.events.un({
-		"objectsadded": onVenuesAdded,
-		"objectschanged": onVenuesChanged,
-		"objectsremoved": onVenuesRemoved,
-	});
-	WMo.nodes.events.un({
-		"objectschanged": onNodesChanged,
-		"objectsremoved": onNodesRemoved,
-	});
+}
+function eventOff( eventName, eventHandler ) {
+	try {
+		wmeSDK.Events.off({ eventName, eventHandler });
+	} catch(e) {
+		console.info('VAL Events.off failed ' + eventName);
+	}
 }
 
 // call the init function when the library is initialized
-async(F_INIT, null, 0);
+window.SDK_INITIALIZED.then(() => {
+	wmeSDK = getWmeSdk({ scriptId, scriptName });
+	wmeSDK.Events.once({ eventName: 'wme-ready' }).then(async () => {
+		F_INIT();
+	});
+});
+

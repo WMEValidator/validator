@@ -521,6 +521,9 @@ window.viewHelpers = {
 	formatRank: function (r) { }
 };
 window.require = {};
+window.SDK_INITIALIZED = {};
+var getWmeSdk = function(e) { };
+var turf = {};
 
 ///////////////////////////////////////////////////////////////////////////
 // Other externs
@@ -537,3 +540,34 @@ Error.prepareStackTrace = function (a, b) { };
 
 var WME_Validator_I18n = {};
 window.WME_Validator_I18n = {};
+
+var wmeSDKref = {
+	DataModel: {
+		Cities: {
+			getById: function () { },
+		},
+		Countries: {
+			getById: function () { },
+		},
+		States: {
+			getById: function () { },
+		},
+		Streets: {
+			getById: function () { },
+		},
+	},
+	Editing: {
+		getSelection: function () { },
+	},
+	Events: {
+		on: function () { },
+		once: function () { },
+	},
+	Sidebar: {
+		registerScriptTab: function () { },
+	},
+	State: {
+		getUserInfo: function () { },
+		isLoggedIn: function () { },
+	},
+}

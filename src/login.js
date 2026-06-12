@@ -22,8 +22,7 @@
  * Login new user
  */
 async function F_LOGIN() {
-	log("login " + WLM.user.attributes.userName);
-
+	log("login " + wmeSDK.State.getUserInfo().userName);
 	///////////////////////////////////////////////////////////////////////
 	// Support Functions
 	/**
@@ -148,17 +147,16 @@ async function F_LOGIN() {
 		$cachedTopCCode: "",
 		// top (logged in) user
 		$topUser: {
-			$userID: WLM.user.attributes.id,
-			$userName: WLM.user.attributes.userName,
-			$userLevel: WLM.user.attributes.rank + 1,
+			$userName: wmeSDK.State.getUserInfo().userName,
+			$userLevel: wmeSDK.State.getUserInfo().rank + 1,
 		},
 		// top (current) map center
 		$topCenter: null,
 		// watch dog
 		$WDmoveID: -1,
 		$WDloadID: -1,
-		// current layers visibility
-		$layersVisibility: "",
+		// current layers that were toggled off
+		layerToggle: [],
 		// current state
 		$state: ST_STOP,
 		// current direction
@@ -176,7 +174,7 @@ async function F_LOGIN() {
 		// map of segment IDs to revalidate
 		$revalidate: {},
 		// current user
-		$curUserName: WLM.user.attributes.userName,
+		$curUserName: wmeSDK.State.getUserInfo().userName,
 		// error flag
 		$error: false,
 		// no editable segment was found - show a message
@@ -193,8 +191,9 @@ async function F_LOGIN() {
 		//          "da", "lt", "zh"],
 		$untranslatedLngs: ["IT"],
 	};
-	_RT.$topUser.$isCM = WLM.user.attributes.editableCountryIDs ? 0 !== WLM.user.attributes.editableCountryIDs.length : false;
-	_RT.$topUser.$countryIDs = WLM.user.attributes.editableCountryIDs ? WLM.user.attributes.editableCountryIDs : [];
+	_RT.$topUser.$isCM = wmeSDK.State.getUserInfo().isCountryManager;
+	_RT.$topUser.$countryIDs = wmeSDK.State.getManagedCountries();
+	_RT.$isImperial = wmeSDK.Settings.getUserSettings().isImperial;
 
 	///////////////////////////////////////////////////////////////////////
 	// WV Checks
@@ -256,10 +255,10 @@ async function F_LOGIN() {
 		["#00A8FF", , true, "House numbers"],
 		["#F7B020", , true, "Segment with time restrictions"]
 	];
-	for (var i = CK_TBFIRST; i <= CK_TBLAST; i++) {
-		var cc = TBchecks[i - CK_TBFIRST];
-		var cp = cc[4] || defTBProblem;
-		var cpl = cc[5];
+	for (let i = CK_TBFIRST; i <= CK_TBLAST; i++) {
+		let cc = TBchecks[i - CK_TBFIRST];
+		let cp = cc[4] || defTBProblem;
+		let cpl = cc[5];
 		if (!classCodeDefined(cpl))
 			cpl = defTBProblemLink;
 
@@ -295,12 +294,12 @@ async function F_LOGIN() {
 		["#FFFF01", , true, "Filter by city (alt. city)"],
 		["#00FF00", , true, "Filter by editor"]
 	];
-	for (var i = CK_WMECHFIRST; i <= CK_WMECHLAST; i++) {
-		var cc = WMECHchecks[i - CK_WMECHFIRST];
+	for (let i = CK_WMECHFIRST; i <= CK_WMECHLAST; i++) {
+		let cc = WMECHchecks[i - CK_WMECHFIRST];
 		/** @const */
-		var cp = defWMECHProblem;
+		let cp = defWMECHProblem;
 		/** @const */
-		var cpl = defWMECHProblemLink;
+		let cpl = defWMECHProblemLink;
 
 		defTranslation[i + '.enabled'] = true;
 		defTranslation[i + '.color'] = cc[0];
@@ -316,8 +315,8 @@ async function F_LOGIN() {
 		"Ramp", "Primary Street", "Street", "Parking Lot Road",
 		"Railroad", "Private Road"];
 	// Generate custom checks descriptions in EN
-	for (var i = CK_TYPEFIRST; i <= CK_TYPELAST; i++) {
-		var streetName = streetNames[i - CK_TYPEFIRST];
+	for (let i = CK_TYPEFIRST; i <= CK_TYPELAST; i++) {
+		let streetName = streetNames[i - CK_TYPEFIRST];
 		defTranslation[i + '.severity'] = "W";
 		defTranslation[i + '.title'] = "Must be a " + streetName;
 		defTranslation[i + '.problem'] = "This segment must be a " + streetName;
@@ -325,7 +324,7 @@ async function F_LOGIN() {
 			+ streetName + " or change the road name";
 	}
 	// Generate custom checks descriptions in EN
-	for (var i = CK_CUSTOMFIRST; i <= CK_CUSTOMLAST; i++) {
+	for (let i = CK_CUSTOMFIRST; i <= CK_CUSTOMLAST; i++) {
 		defTranslation[i + '.title'] = "Custom check";
 		defTranslation[i + '.severity'] = "W";
 		defTranslation[i + '.problem'] = "The segment matched custom conditions";
@@ -356,9 +355,9 @@ async function F_LOGIN() {
 		157: 2,
 		158: 2
 	};
-	for (var i = CK_LOCKFIRST; i <= CK_LOCKLAST; i++) {
-		var lockName = streetNames[i - CK_LOCKFIRST];
-		var lockLevel = lockLevels[i];
+	for (let i = CK_LOCKFIRST; i <= CK_LOCKLAST; i++) {
+		let lockName = streetNames[i - CK_LOCKFIRST];
+		let lockLevel = lockLevels[i];
 		defTranslation[i + '.title'] = "No lock on " + lockName;
 		defTranslation[i + '.problem'] = "The " + lockName + " segment should be locked at least to Lvl ${n}";
 		defTranslation[i + '.solution'] = "Lock the segment";
@@ -377,9 +376,9 @@ async function F_LOGIN() {
 	};
 	/** @const */
 	var streetDefRegExp = "!/.?/";
-	for (var i = CK_STREETTNFIRST; i <= CK_STREETTNLAST; i++) {
-		var streetName = streetNames[i - CK_STREETTNFIRST];
-		var streetRegExp = streetRegExps[CK_STREETTNFIRST] || streetDefRegExp;
+	for (let i = CK_STREETTNFIRST; i <= CK_STREETTNLAST; i++) {
+		let streetName = streetNames[i - CK_STREETTNFIRST];
+		let streetRegExp = streetRegExps[CK_STREETTNFIRST] || streetDefRegExp;
 		if (i < 165 || i > 167)
 			defTranslation[i + '.severity'] = "W";
 		defTranslation[i + '.title'] = "Incorrect " + streetName + " name";
@@ -397,13 +396,13 @@ async function F_LOGIN() {
 
 	// init internal translations
 	var listOfIntPacks = '';
-	for (var translationsKey in _translations) {
-		var translation = _translations[translationsKey];
+	for (let translationsKey in _translations) {
+		let translation = _translations[translationsKey];
 		mirrorChecks(translation);
 		_I18n.addTranslation(translation);
 
 		// update listOfIntPacks
-		var country = translation[".country"];
+		let country = translation[".country"];
 		if (!country) continue;
 		if (classCodeIs(country, CC_ARRAY))
 			country = country[0];
@@ -429,17 +428,17 @@ async function F_LOGIN() {
 
 	// add external translations
 	var listOfPacks = '';
-	for (var gObject in window) {
+	for (let gObject in window) {
 		if (!window.hasOwnProperty(gObject)) continue;
 		if (-1 !== gObject.indexOf("WME_Validator")) {
-			var translation = window[gObject];
+			let translation = window[gObject];
 			log("found localization pack: " + gObject.replace('WME_Validator_', ''));
 			mirrorChecks(translation);
 			_I18n.addTranslation(translation);
 
 			// update listOfPacks
 			if (".country" in translation) {
-				var country = translation[".country"];
+				let country = translation[".country"];
 				if (classCodeIs(country, CC_ARRAY))
 					country = country[0];
 				listOfPacks += '<b>' + country;
@@ -469,7 +468,7 @@ async function F_LOGIN() {
 		+ 'how to create a localization pack</a>';
 
 	// Generate $checks
-	for (var i = 1; i < MAX_CHECKS; i++) {
+	for (let i = 1; i < MAX_CHECKS; i++) {
 		var check = {
 			ENABLED: {},
 			PROBLEMLINK: {},
@@ -538,8 +537,8 @@ async function F_LOGIN() {
 
 		var defEnabled = false;
 		var arrCodes = [];
-		for (var ccode in _I18n.$translations) {
-			var translation = _I18n.$translations[ccode];
+		for (let ccode in _I18n.$translations) {
+			let translation = _I18n.$translations[ccode];
 			if (label in translation) {
 				var e = translation[label];
 				check.ENABLED[ccode] = e;
@@ -556,7 +555,7 @@ async function F_LOGIN() {
 			}
 
 			if (labelPL in translation) {
-				var l = translation[labelPL]
+				let l = translation[labelPL]
 					.replace('W:', PFX_WIKI)
 					.replace('P:', PFX_PEDIA)
 					.replace('F:', PFX_FORUM)
@@ -572,7 +571,7 @@ async function F_LOGIN() {
 						check.PROBLEMLINKTEXT[ccode] = trS('report.link.other');
 			}
 			if (labelSL in translation) {
-				var l = translation[labelSL]
+				let l = translation[labelSL]
 					.replace('W:', PFX_WIKI)
 					.replace('P:', PFX_PEDIA)
 					.replace('F:', PFX_FORUM)
@@ -1117,8 +1116,8 @@ async function F_LOGIN() {
 
 
 	// check for AudioContext
-	if (!classCodeDefined(UW.AudioContext)
-		&& !classCodeDefined(UW.webkitAudioContext)) {
+	if (!classCodeDefined(window.AudioContext)
+		&& !classCodeDefined(window.webkitAudioContext)) {
 		_UI.pSettings.pScanner.oSounds.CHECKED = false;
 		_UI.pSettings.pScanner.oSounds.NA = true;
 	}
@@ -1143,10 +1142,7 @@ async function F_LOGIN() {
 			// destroy UI
 			_UI = {};
 			// uninstall login/logout handler
-			WLM.events.un({
-				"afterloginchanged": onLogin,
-				"login": onLogin
-			});
+			eventOff( "wme-logged-in", onLogin );
 			return;
 		}
 	}
@@ -1165,7 +1161,7 @@ async function F_LOGIN() {
 	_THUI.loadValues(_UI, storageObj);
 
 	// create a styleMap with a custom default symbolizer
-	var styleMap = new OpenLayers.StyleMap({
+/*	var styleMap = new OpenLayers.StyleMap({
 		strokeWidth: HL_WIDTH,
 	});
 
@@ -1211,15 +1207,48 @@ async function F_LOGIN() {
 	WM.addLayer(_RT.$HLlayer);
 	_RT.$HLlayer.setVisibility(_UI.pSettings.pScanner.oHLReported.CHECKED);
 	WM.raiseLayer(_RT.$HLlayer, 99);
+	*/
+	const styleRules = [{
+		style: {
+				strokeWidth:HL_WIDTH,
+				//opacity: HL_OPACITY,
+				//
+			},
+		},
+		{
+			predicate: (properties)=>{
+				return properties.type == RS_NOTE;
+			},
+			style: {
+				strokeColor:GL_NOTECOLOR, graphicZIndex:10
+			}
+		},
+		{
+			predicate: (properties)=>{
+				return properties.type == RS_WARNING;
+			},
+			style: {
+				strokeColor:GL_WARNINGCOLOR, graphicZIndex:20
+			}
+		},
+		{
+			predicate: (properties)=>{
+				return properties.type == RS_ERROR;
+			},
+			style: {
+				strokeColor:GL_ERRORCOLOR, graphicZIndex:30
+			}
+		}
+	   ];
+	wmeSDK.Map.addLayer( { layerName: GL_LAYERNAME, styleRules } );
+	wmeSDK.Map.setLayerOpacity( { layerName: GL_LAYERNAME, opacity: HL_OPACITY })
 
-	var tabLabel;
-	var tabPane;
 	// create userscript tab
-	var res = W.userscripts.registerSidebarTab("validator");
-	tabLabel = res.tabLabel;
-	tabPane = res.tabPane;
+	let res = await wmeSDK.Sidebar.registerScriptTab();
+
+	let tabLabel = res.tabLabel;
+	let tabPane = res.tabPane;
 	tabLabel.innerText = " Validator";
-	await W.userscripts.waitForElementConnected(tabPane);
 	$(tabLabel.parentElement).prepend(
 		$('<span>', { class: 'fa fa-check-square-o' })
 	);
@@ -1232,36 +1261,22 @@ async function F_LOGIN() {
 	async(ForceHLAllObjects, null, 700);
 
 	// register event handlers
-	WMo.events.on({
-		"mergeend": onMergeEnd,
-	});
-	WM.events.on({
-		"moveend": onMoveEnd,
-		"zoomend": delayForceHLAllObjects,
-		"changelayer": onChangeLayer,
-	});
-	WSM.addEventListener('selectionchanged', delayForceHLAllObjects);
-	WC.events.on({
-		"loadstart": onLoadStart,
-	});
+	wmeSDK.Events.on({ eventName: "wme-map-data-loaded", eventHandler:onMergeEnd });
+	wmeSDK.Events.on({ eventName: "wme-map-move-end", eventHandler:onMoveEnd });
+	wmeSDK.Events.on({ eventName: "wme-map-zoom-changed", eventHandler:onZoomEnd });
+	wmeSDK.Events.on({ eventName: "wme-map-layer-changed", eventHandler:onChangeLayer });
+	wmeSDK.Events.on({eventName:"wme-selection-changed", eventHandler:onSelChanged});
+	//wmeSDK.Events.on({ eventName: "wme-selection-changed", eventHandler: delayForceHLAllObjects });
 
 	// monitor segments, venues and nodes changes
-	WMo.segments.on({
-		"objectsadded": onSegmentsAdded,
-		"objectschanged": onSegmentsChanged,
-		"objectsremoved": onSegmentsRemoved,
-	});
-	WMo.venues.on({
-		"objectsadded": onVenuesAdded,
-		"objectschanged": onVenuesChanged,
-		"objectsremoved": onVenuesRemoved,
-	});
-	WMo.nodes.on({
-		"objectschanged": onNodesChanged,
-		"objectsremoved": onNodesRemoved,
-	});
+	wmeSDK.Events.trackDataModelEvents({ dataModelName: "segments" });
+	wmeSDK.Events.trackDataModelEvents({ dataModelName: "venues" });
+	wmeSDK.Events.trackDataModelEvents({ dataModelName: "nodes" });
+	wmeSDK.Events.on({ eventName: "wme-data-model-objects-added", eventHandler: onObjectsAdded });
+	wmeSDK.Events.on({ eventName: "wme-data-model-objects-changed", eventHandler: onObjectsChanged });
+	wmeSDK.Events.on({ eventName: "wme-data-model-objects-removed", eventHandler: onObjectsRemoved });
+
 	// event to recreate tab after changing WME units
-	W.prefs.on({
-		"change:isImperial": onChangeIsImperial,
-	});
+	wmeSDK.Events.on({ eventName: "wme-user-settings-changed", eventHandler: onChangeUserSettings });
+
 }

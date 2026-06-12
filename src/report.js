@@ -152,17 +152,16 @@ function F_SHOWREPORT(reportFormat) {
 			zoom = _RT.$startZoom;
 		}
 		else {
-			center = WM.getCenter();
-			zoom = WM.getZoom();
+			center = wmeSDK.Map.getMapCenter();
+			zoom = wmeSDK.Map.getZoomLevel();
 		}
-		var c = center.clone()
-			.transform(nW.Config.map.projection.local, nW.Config.map.projection.remote);
+		//var c = center.clone().transform(nW.Config.map.projection.local, nW.Config.map.projection.remote);
 		return window.location.origin
 			+ window.location.pathname
 			+ '?zoomLevel=' + zoom
-			+ '&lat=' + Math.round(c.lat * 1e5) / 1e5
-			+ '&lon=' + Math.round(c.lon * 1e5) / 1e5
-			+ '&env=' + nW.app.getAppRegionCode()
+			+ '&lat=' + Math.round(center.lat * 1e5) / 1e5
+			+ '&lon=' + Math.round(center.lon * 1e5) / 1e5
+			+ '&env=' + wmeSDK.Settings.getRegionCode()
 			;
 	}
 
@@ -475,7 +474,7 @@ function F_SHOWREPORT(reportFormat) {
 			;
 
 		var newCountries = [];
-		for (var k in _I18n.$country2code) {
+		for (let k in _I18n.$country2code) {
 			if (ccode === _I18n.$country2code[k]
 				&& ucountry !== k)
 				newCountries.push(_I18n.capitalize(k));
@@ -507,8 +506,8 @@ function F_SHOWREPORT(reportFormat) {
 			if (ccode in _I18n.$code2dir)
 				pack[".dir"] = _I18n.$code2dir[ccode];
 
-			var newLngs = [];
-			for (var k in _I18n.$lng2code) {
+			let newLngs = [];
+			for (let k in _I18n.$lng2code) {
 				if (ccode === _I18n.$lng2code[k]
 					&& k !== lng)
 					newLngs.push(k);
@@ -522,7 +521,7 @@ function F_SHOWREPORT(reportFormat) {
 
 		// compare and add UI strings
 		if (lng) {
-			for (var label in _I18n.$defSet) {
+			for (let label in _I18n.$defSet) {
 				// skip meta labels and checks
 				if (/^\./.test(label)
 					|| /^[0-9]/.test(label))
@@ -534,17 +533,17 @@ function F_SHOWREPORT(reportFormat) {
 		}
 
 		// compare and add checks
-		var allLabels = _RT.$otherLabels.concat(_RT.$textLabels);
-		var arrDepCodes = _I18n.getDependantCodes(ccode);
-		for (var i = 1; i < MAX_CHECKS; i++) {
+		let allLabels = _RT.$otherLabels.concat(_RT.$textLabels);
+		let arrDepCodes = _I18n.getDependantCodes(ccode);
+		for (let i = 1; i < MAX_CHECKS; i++) {
 			// skip mirror checks
 			if ((CK_MIRRORFIRST + 100) <= i
 				&& (CK_MIRRORLAST + 100) >= i)
 				continue;
 			// check is enabled?
-			var label = i + '.enabled';
+			let label = i + '.enabled';
 
-			var checkEnabled = false;
+			let checkEnabled = false;
 			if (_I18n.$defSet[label] || oldPack[label])
 				checkEnabled = true;
 			if (!checkEnabled) {
@@ -562,12 +561,12 @@ function F_SHOWREPORT(reportFormat) {
 				continue;
 			}
 
-			for (var j = 0; j < allLabels.length; j++) {
-				var labelSfx = allLabels[j];
+			for (let j = 0; j < allLabels.length; j++) {
+				let labelSfx = allLabels[j];
 				label = i + '.' + labelSfx;
 
-				var defData = _I18n.$defSet[label];
-				var oldData = oldPack[label];
+				let defData = _I18n.$defSet[label];
+				let oldData = oldPack[label];
 
 				if (classCodeDefined(defData) || classCodeDefined(oldData)) {
 					if (-1 !== _RT.$textLabels.indexOf(labelSfx)) {
@@ -582,11 +581,11 @@ function F_SHOWREPORT(reportFormat) {
 								continue;
 							defData = deepCopy(defData || {});
 							oldData = deepCopy(oldData);
-							for (var k = CO_MIN; k <= CO_MAX; k++) {
+							for (let k = CO_MIN; k <= CO_MAX; k++) {
 								delete defData[k];
 								delete oldData[k];
 							}
-							for (var k in defData) {
+							for (let k in defData) {
 								if (!defData.hasOwnProperty(k)) continue;
 								if (/\.title$/.test(k))
 									delete defData[k];
@@ -608,23 +607,23 @@ function F_SHOWREPORT(reportFormat) {
 
 	// returns list of checks
 	function getListOfChecks(countryID, country) {
-		var ucountry = country.toUpperCase();
-		var ccode = "";
+		let ucountry = country.toUpperCase();
+		let ccode = "";
 		if (countryID)
 			ccode = _I18n.getCountryCode(ucountry);
 
-		var ret = trS("report.list.see") + ' ' + Bb
+		let ret = trS("report.list.see") + ' ' + Bb
 			+ trS("report.list.checks") + Eb + Br + Br;
 
-		var fallbacks = '';
+		let fallbacks = '';
 		if (ccode)
-			for (var i in _I18n.$country2code) {
+			for (let i in _I18n.$country2code) {
 				if (!_I18n.$country2code.hasOwnProperty(i)) continue;
 
 				if (i === ucountry)
 					continue;
 
-				var acode = _I18n.$country2code[i];
+				let acode = _I18n.$country2code[i];
 				if (ccode && acode !== ccode)
 					continue;
 
@@ -632,11 +631,11 @@ function F_SHOWREPORT(reportFormat) {
 					+ ' \u2192 '
 					+ country + Br;
 			}
-		for (var i in _I18n.$code2code) {
+		for (let i in _I18n.$code2code) {
 			if (!_I18n.$code2code.hasOwnProperty(i)) continue;
 
-			var countryFrom = _I18n.getCapitalizedCountry(i);
-			var countryTo = _I18n.getCapitalizedCountry(_I18n.$code2code[i]);
+			let countryFrom = _I18n.getCapitalizedCountry(i);
+			let countryTo = _I18n.getCapitalizedCountry(_I18n.$code2code[i]);
 			if (ccode && i !== ccode && _I18n.$code2code[i] !== ccode)
 				continue;
 			if (country && countryFrom !== country && countryTo !== country)
@@ -751,7 +750,7 @@ function F_SHOWREPORT(reportFormat) {
 	}
 	// opens new browser window
 	function openWindow(data) {
-		var nw = UW.open("", "_blank");
+		let nw = window.open("", "_blank");
 		nw.document.write(data);
 		// UW.open("data:text/html;charset=UTF-8," + encodeURIComponent(data),
 		// 	"_blank");
@@ -794,7 +793,7 @@ function F_SHOWREPORT(reportFormat) {
 			FR = '';
 			encFR += encodeURIComponent(FRfooter);
 			FRfooter = '';
-			UW.open(encFR, "_blank");
+			window.open(encFR, "_blank");
 		}
 	}
 	// filter helpers
@@ -875,7 +874,7 @@ function F_SHOWREPORT(reportFormat) {
 	// _REP->$cityIDs->streetIDs->$objectIDs->$reportIDs
 	// traverse report and call a handler
 	function traverseReport(handler) {
-		var mapCenter = WM.getCenter();
+		let mapCenter = wmeSDK.Map.getMapCenter();
 
 		// get sorted cities
 		function getSortedCities() {
@@ -1153,8 +1152,8 @@ function F_SHOWREPORT(reportFormat) {
 		FR += '&lon=';
 		FR += obj.$objectCopy.$center.lon;
 		FR += '&env=';
-		FR += nW.app.getAppRegionCode();
-		FR += '&' + obj.$objectCopy.$model.name + '=';
+		FR += wmeSDK.Settings.getRegionCode();
+		FR += "&" + obj.$objectCopy.$objtype + "s=";
 		FR += obj.$objectCopy.$objectID;
 	}
 	// report item handler
@@ -1223,7 +1222,7 @@ function F_SHOWREPORT(reportFormat) {
 		getPermalink(obj);
 		FR += Ca
 		if (isBeta) FR += 'B:';
-		if (obj.$objectCopy.$model === WMo.segments) {
+		if (obj.$objectCopy.$objtype === 'segment') {
 			FR += obj.$objectCopy.$objectID;
 		} else {
 			// Use the name of a venue, when set.
@@ -1345,6 +1344,7 @@ function F_SHOWREPORT(reportFormat) {
 	// prepare report
 	setFormat(RF_HTML);
 	var t = trS("report.title");
+	let country;
 	switch (reportFormat) {
 		case RF_UPDATEMAXSEVERITY:
 			updateMaxSeverity();
@@ -1363,7 +1363,7 @@ function F_SHOWREPORT(reportFormat) {
 				true)))
 				break;
 			// prompt for country
-			var country = _RT.$topCity && _RT.$topCity.$country ?
+			country = _RT.$topCity && _RT.$topCity.$country ?
 				_RT.$topCity.$country
 				: window.prompt(
 					getMsg(wType,
@@ -1430,8 +1430,8 @@ function F_SHOWREPORT(reportFormat) {
 			);
 			break;
 		case RF_LIST:
-			var countryID = 0;
-			var country = "";
+			let countryID = 0;
+			country = "";
 			t = trS("report.list.title") + ' ';
 			// try top city
 			if (_RT.$topCity && _RT.$topCity.$country) {
@@ -1454,7 +1454,7 @@ function F_SHOWREPORT(reportFormat) {
 			break;
 		case RF_HTML:
 			// open new window
-			newWin = UW.open("", "_blank");
+			newWin = window.open("", "_blank");
 			FR += getHTMLHeader(t);
 			FR += getHeader(t);
 			// save header to insert save button
@@ -1475,7 +1475,7 @@ function F_SHOWREPORT(reportFormat) {
 			break;
 		case RF_BB:
 			// open new window
-			newWin = UW.open("", "_blank");
+			newWin = window.open("", "_blank");
 
 			var tf = t + " " + trS("report.share");
 			FR += getHTMLHeader(tf);
