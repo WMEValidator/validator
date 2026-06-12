@@ -26,11 +26,15 @@
  * WV RELEASE INFORMATION
  */
 /** WME Validator version @const */
-var WV_VERSION = "2025.02.26";
+var WV_VERSION = "2026.06.12";
 /** Auto-save password. Increase to reset auto-save config. @const */
 var AS_PASSWORD = "v1";
 /** @const */
-var WV_WHATSNEW = `v2025.02.26:
+var WV_WHATSNEW = `v2026.06.12:
+- DaveAcincy: migrating validator to use the WME SDK.
+- update US and Chile localizations.
+
+v2025.02.26:
 - DaveAcincy: fix for #107 and #108.
 
 v2025.01.22:

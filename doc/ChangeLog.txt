@@ -1,5 +1,9 @@
 Current changes:
 
+v2026.06.12:
+- DaveAcincy: migrating validator to use the WME SDK.
+- update US and Chile localizations.
+
 v2025.02.26:
 - DaveAcincy: fix for #107 and #108.
 
