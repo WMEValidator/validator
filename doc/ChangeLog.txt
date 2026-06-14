@@ -1,12 +1,13 @@
 Current changes:
 
-v2026.06.01:
-- adds '--language_out ECMASCRIPT_2017' in 99.build.sh to fix a build issue.
-- fixes ES-CL language by falling back to spanish language.
+v2026.06.13:
 - fixes wazeopedia issue links for waze discuss search links.
-- updates script meta headers with WME Validator page in waze discuss forum.
 - updates closure-compiler version called from v20230103 to v20260526.
 - adds CLAUDE.md basic init.
+
+v2026.06.12:
+- DaveAcincy: migrating validator to use the WME SDK.
+- update US and Chile localizations.
 
 v2025.02.26:
 - DaveAcincy: fix for #107 and #108.

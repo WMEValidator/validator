@@ -26,11 +26,15 @@
  * WV RELEASE INFORMATION
  */
 /** WME Validator version @const */
-var WV_VERSION = "2025.02.26";
+var WV_VERSION = "2026.06.12";
 /** Auto-save password. Increase to reset auto-save config. @const */
 var AS_PASSWORD = "v1";
 /** @const */
-var WV_WHATSNEW = `v2025.02.26:
+var WV_WHATSNEW = `v2026.06.12:
+- DaveAcincy: migrating validator to use the WME SDK.
+- update US and Chile localizations.
+
+v2025.02.26:
 - DaveAcincy: fix for #107 and #108.
 
 v2025.01.22:
@@ -68,10 +72,10 @@ v2023.2.13:
   * #55 "No city on named segment"
 
 Please report any issues/suggestions on the forum:
-https://www.waze.com/forum/viewtopic.php?t=76488
+https://www.waze.com/discuss/t/script-wme-validator-v2025-02-26-places-beta/44877
 
 See the full Change Log:
-https://www.waze.com/forum/viewtopic.php?f=819&t=76488&p=787161#p787161`
+https://www.waze.com/discuss/t/script-wme-validator-v2025-02-26-places-beta/44877`
 	;
 /** @const */
 var WV_LICENSE_VERSION = "1";
@@ -88,7 +92,7 @@ WME Validator source code is available on GitHub:
 https://github.com/WMEValidator/
 
 For questions please use official forum:
-https://www.waze.com/forum/viewtopic.php?f=819&t=76488
+https://www.waze.com/discuss/t/script-wme-validator-v2025-02-26-places-beta/44877
 
 Report bugs on GitHub Issues Tracker:
 https://github.com/WMEValidator/validator/issues
@@ -118,6 +122,12 @@ var LIMIT_TOTAL = 2e4;
  */
 /** @const */
 var MAX_CHECKS = 310;
+
+// IDs for SDK use
+const scriptName = 'Validator';
+const scriptId = 'validator';
+let wmeSDK;
+
 
 /*************************************************************************
  * URLs

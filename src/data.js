@@ -112,7 +112,7 @@ var GL_LAYERNAME = "WME Validator";
 /** @const */
 //var GL_LAYERBIT = 13;
 /** @const */
-var GL_LAYERUNAME = "WMEValidator";
+//var GL_LAYERUNAME = "WMEValidator";
 /** @const */
 var GL_LAYERACCEL = "toggleWMEValidator";
 /** @const */
@@ -304,7 +304,7 @@ var RS_MAX = 6;
 /** @const */
 var LIMIT_PERCHECK = 300;
 /** @const */
-var LIMIT_TOLERANCE = 6; // ~5m
+var LIMIT_TOLERANCE = 5; // ~5m
 /** @const */
 var LIMIT_DEBUG = 20;
 
@@ -465,6 +465,7 @@ var AS_NAME = "WME_Validator";
  */
 /** @const */
 var SZ_PANEL_HEIGHT = 190;
+let u_meters = { units: 'meters' }; // for turf distance calculations
 
 /**
  * Scan constants
@@ -520,7 +521,7 @@ var CO_MAX = 3;
  * Watch Dogs
  */
 /** @const */
-var WD_SHORT = 5;
+var WD_SHORT = 120;
 /** @const */
 var WD_LONG = 1e4;
 
@@ -528,18 +529,18 @@ var WD_LONG = 1e4;
  * Shortcuts
  */
 /** new W @const */
-var nW = null;
+//var nW = null;
 /** Waze.map @const */
-var WM = null;
+//var WM = null;
 /** Waze.loginManager @const */
-var WLM = null;
+//var WLM = null;
 /** Waze.selectionManager @const */
-var WSM = null;
+//var WSM = null;
 /** Waze.model @const */
-var WMo = null;
+//var WMo = null;
 /** Waze.controller @const */
-var WC = null;
+//var WC = null;
 /** unsafeWindow @const */
-var UW = null;
+//var UW = null;
 /** requite @const */
-var R = null;
+//var R = null;

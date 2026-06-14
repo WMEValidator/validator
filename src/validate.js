@@ -21,6 +21,7 @@
 /**
  * Validate current view
  */
+var skippedObject;
 /** @suppress {strictMissingProperties} */
 function F_VALIDATE(disabledHL) {
 	if (!_RT.$isMapChanged)
@@ -34,7 +35,7 @@ function F_VALIDATE(disabledHL) {
 		beep(10);
 
 	var options;
-	var skippedObject = false;
+	skippedObject = false;
 
 	if (disabledHL) {
 		updateObjectProperties([], true);
@@ -62,7 +63,7 @@ function F_VALIDATE(disabledHL) {
 	// 0. Prepare objects
 
 	// update map info
-	_RT.$topCenter = WM.getCenter();
+	_RT.$topCenter = wmeSDK.Map.getMapCenter();
 
 	// 1. Dispatch per view WHC event
 	if (_UI.pSettings.pScanner.oReportExt.CHECKED
@@ -117,21 +118,21 @@ function F_VALIDATE(disabledHL) {
 	 * Get user name
 	 * @returns {string}
 	 * @param {number} objID
-	 */
+	 * /
 	function getUserName(objID) {
 		var u = WMo.users.getObjectById(objID);
 		return u ? u.attributes.userName : objID.toString();
-	}
+	} */
 
 	/**
 	 * Get user level
 	 * @returns {number}
 	 * @param {number} objID
-	 */
+	 * /
 	function getUserLevel(objID) {
 		var u = WMo.users.getObjectById(objID);
 		return u ? u.attributes.rank + 1 : 0;
-	}
+	} */
 
 	/**
 	 * Simple node object constructor
@@ -191,13 +192,17 @@ function F_VALIDATE(disabledHL) {
 		/** @type {number} */
 		this.$inConnectionsLen = 0;
 
-		var n = WMo.nodes.getObjectById(objID);
+		var n = W.model.nodes.getObjectById(objID);
 		this.$rawNode = n;
+		this.rNode = null;
+		if (objID) {
+			this.rNode = wmeSDK.DataModel.Nodes.getById({nodeId: objID} );
+		}
 		if (n) {
 			this.$isPartial = n.attributes.partial;
 			this.$isEditable = true; // TODO: n.areConnectionsEditable();
 			// convert restrictions into an array
-			var co = n.attributes.restrictions;
+		/*	var co = n.attributes.restrictions;
 			for (var k in co) {
 				if (!co[k])
 					continue;
@@ -212,19 +217,20 @@ function F_VALIDATE(disabledHL) {
 					}
 				}
 
-			}
+			} */
 			this.$restrictionsLen = this._rawRestrictions.length;
 			// convert segIDs into an array
-			for (var i = 0; i < n.attributes.segIDs.length; i++) {
-				var si = n.attributes.segIDs[i];
+			for (let i = 0; i < this.rNode?.connectedSegmentIds.length; i++) {
+				let si = this.rNode.connectedSegmentIds[i];
 				// TODO: workaround for hangs at new segment save / 20150105
-				if (+segID === +si || !WMo.segments.getObjectById(si))
+				if (+segID === +si || !wmeSDK.DataModel.Segments.getById({segmentId: si})) {
 					continue;
+				}
 				this._rawOtherSegments.push(si);
 			}
 			this.$otherSegmentsLen = this._rawOtherSegments.length;
 			// convert connections into in/out arrays
-			co = n.attributes.connections;
+		/*	co = n.attributes.connections;
 			for (var k in co) {
 				if (!co[k])
 					continue;
@@ -242,7 +248,7 @@ function F_VALIDATE(disabledHL) {
 				// in connection
 				if (+segID === con1)
 					this._rawInConnections.push(con0);
-			}
+			} */
 		}
 		this.$outConnectionsLen = this._rawOutConnections.length;
 		this.$inConnectionsLen = this._rawInConnections.length;
@@ -281,11 +287,9 @@ function F_VALIDATE(disabledHL) {
 	SimpleNODE.prototype.getCenter = function () {
 		if (this._center) return this._center;
 
-		if (!this.$rawNode) return null;
+		if (!this.rNode) return null;
 
-		var bounds = this.$rawNode.getOLGeometry().getBounds();
-		this._center = new OpenLayers.LonLat(bounds.left, bounds.bottom)
-			.transform(nW.Config.map.projection.local, nW.Config.map.projection.remote);
+		this._center = { lon: this.rNode.geometry.coordinates[0], lat: this.rNode.geometry.coordinates[1] };
 		// round the lon/lat
 		this._center.lon = Math.round(this._center.lon * 1e5) / 1e5;
 		this._center.lat = Math.round(this._center.lat * 1e5) / 1e5;
@@ -311,7 +315,7 @@ function F_VALIDATE(disabledHL) {
 	SimpleNODE.prototype.getOutConnections = function () {
 		return this._outConnections ? this._outConnections :
 			this._outConnections = this._rawOutConnections.map(
-				function (e) { return new SimpleOBJECT(e, WMo.segments) });
+				function (e) { return new SimpleOBJECT(e, 'segment') });
 	}
 	/**
 	 * Get inward connection
@@ -320,7 +324,7 @@ function F_VALIDATE(disabledHL) {
 	SimpleNODE.prototype.getInConnections = function () {
 		return this._inConnections ? this._inConnections :
 			this._inConnections = this._rawInConnections.map(
-				function (e) { return new SimpleOBJECT(e, WMo.segments) });
+				function (e) { return new SimpleOBJECT(e, 'segment') });
 	}
 	/**
 	 * Get another segment
@@ -329,71 +333,8 @@ function F_VALIDATE(disabledHL) {
 	SimpleNODE.prototype.getOtherSegments = function () {
 		return this._otherSegments ? this._otherSegments :
 			this._otherSegments = this._rawOtherSegments.map(
-				function (e) { return new SimpleOBJECT(e, WMo.segments) });
+				function (e) { return new SimpleOBJECT(e, 'segment') });
 	}
-
-	/**
-	* Simple roadclosure object constructor
-	* @constructor
-	* @struct
-	* @param {Waze.ROADCLOSURE} obj
-	*/
-	function SimpleROADCLOSURE(obj) {
-		/** @type {string} */
-		this.$id = obj.id;
-		/** @type {number} */
-		this.$segID = obj.segID;
-		/** @type {boolean} */
-		this.$active = obj.active;
-		/** @type {string} */
-		this.$updatedOn = "";
-		/** @type {string} */
-		this.$updatedBy = "";
-		/** @type {number} */
-		this.$updatedByID = 0;
-		/** @type {number} */
-		this.$updatedByLevel = 0;
-		/** @type {string} */
-		this.$createdOn = "";
-		/** @type {string} */
-		this.$createdBy = "";
-		/** @type {number} */
-		this.$createdByID = 0;
-		/** @type {number} */
-		this.$createdByLevel = 0;
-
-		this.$startDate = Date.parse(obj.startDate);
-		this.$endDate = Date.parse(obj.endDate);
-		/** @type {string} */
-		this.$location = obj.location;
-		/** @type {string} */
-		this.$reason = obj.reason;
-
-		if (obj.updatedOn)
-			this.$updatedOn = formatDate('' + obj.updatedOn);
-		if (0 < obj.updatedBy) {
-			this.$updatedByID = obj.updatedBy;
-			this.$updatedBy = getUserName(obj.updatedBy);
-			this.$updatedByLevel = getUserLevel(obj.updatedBy);
-		}
-		if (obj.createdOn)
-			this.$createdOn = formatDate('' + obj.createdOn);
-		if (obj.createdBy) {
-			this.$createdByID = obj.createdBy;
-			this.$createdBy = getUserName(obj.createdBy);
-			this.$createdByLevel = getUserLevel(obj.createdBy);
-		}
-
-		/*
-		 * To avoid any issues with time zones, report expired
-		 * restrictions 1-2 days after.
-		 */
-		var past = new Date();
-		past.setDate(past.getDate() - 2); /* 2..days().ago() */
-		/** @type {boolean} */
-		this.$isInThePast = this.$endDate < past;
-	}
-
 
 	/**
 	 * Simple restriction object constructor
@@ -403,39 +344,49 @@ function F_VALIDATE(disabledHL) {
 	 * @param {number} segID
 	 */
 	function SimpleRESTRICTION(obj, segID) {
-		var timeFrame = obj.getTimeFrame();
 		// cached node
 		/** *type {SimpleOBJECT} */
 		this._to = null;
 		this.$to = null;
 		/** @type {number} */
 		this.$toID = segID;
-		/** @type {boolean} */
-		this.$allDay = timeFrame.isAllDay() || false;
-		/** @type {number} */
-		this.$days = timeFrame.getWeekdays();
 		/** @type {string} */
-		this.$description = (obj.getDescription() || "");
+		this.$description = "";
 		/** @type {boolean} */
 		this.$isEnabled = true; //obj.enabled || false;
-		/** @type {string} */
-		this.$fromDate = (timeFrame.getStartDate() || "");
-		/** @type {string} */
-		this.$fromTime = (timeFrame.getFromTime() || "");
-		/** @type {string} */
-		this.$toDate = (timeFrame.getEndDate() || "");
-		/** @type {string} */
-		this.$toTime = (timeFrame.getToTime() || "");
-
-		/*
-		 * To avoid any issues with time zones, report expired
-		 * restrictions 1-2 days after.
-		 */
-		var past = new Date();
-		past.setDate(past.getDate() - 2); /* 2..days().ago() */
 		/** @type {boolean} */
-		this.$isInThePast = new Date(this.$toDate + " " +
-			this.$toTime) < past;
+		this.$allDay = false;
+		/** @type {number} */
+		this.$days = 0;
+		/** @type {string} */
+		this.$fromDate = "";
+		/** @type {string} */
+		this.$fromTime = "";
+		/** @type {string} */
+		this.$toDate = "";
+		/** @type {string} */
+		this.$toTime = "";
+		/** @type {boolean} */
+		this.$isInThePast = false;
+		if (typeof obj.getTimeFrame === 'function') {
+			this.$description = (obj.getDescription() || "");
+			var timeFrame = obj.getTimeFrame();
+			this.$allDay = timeFrame.isAllDay() || false;
+			this.$days = timeFrame.getWeekdays();
+			this.$fromDate = (timeFrame.getStartDate() || "");
+			this.$fromTime = (timeFrame.getFromTime() || "");
+			this.$toDate = (timeFrame.getEndDate() || "");
+			this.$toTime = (timeFrame.getToTime() || "");
+
+			/*
+			 * To avoid any issues with time zones, report expired
+			 * restrictions 1-2 days after.
+			 */
+			var past = new Date();
+			past.setDate(past.getDate() - 2); /* 2..days().ago() */
+			this.$isInThePast = new Date(this.$toDate + " " +
+				this.$toTime) < past;
+		}
 
 		Object.defineProperties(this, {
 			_to: { enumerable: false },
@@ -458,20 +409,22 @@ function F_VALIDATE(disabledHL) {
 	 */
 	SimpleRESTRICTION.prototype.getTo = function () {
 		return this._to ? this._to :
-			this._to = new SimpleOBJECT('' + this.$toID, WMo.segments);
+			this._to = new SimpleOBJECT('' + this.$toID, 'segment');
 	};
 
 	/**
 	 * Simple representation of a segment constructor
 	 * @constructor
 	 * @struct
-	 * @param {string} objID
+	 * @param {Segment|Venue} rawobj
 	 */
-	function SimpleOBJECT(objID, model) {
-		this.$model = model;
-		var raw = this.$model.getObjectById(objID);
+	function SimpleOBJECT(rawobj, obtype) {
+		if (typeof rawobj === 'number') { rawobj = wmeSDK.DataModel.Segments.getById({segmentId: rawobj} );}
+		//this.$model = model;
+		this.$objtype = obtype;
+		var raw = rawobj;
 		// cached object
-		this.$rawObject = raw;
+		this.$rawObject = rawobj;
 		// cached node
 		/** *type {SimpleNODE} */
 		this._nodeA = null;
@@ -497,7 +450,7 @@ function F_VALIDATE(disabledHL) {
 		/** @type {string} */
 		this.$brand = "";
 		/** @type {string} */
-		this.$objectID = objID;
+		this.$objectID = rawobj.id;
 		/** *type {_WV.SimpleADDRESS} */
 		this.$address = null;
 		/** @type {boolean} */
@@ -549,17 +502,17 @@ function F_VALIDATE(disabledHL) {
 		/** @type {string} */
 		this.$updatedBy = "";
 		/** @type {number} */
-		this.$updatedByID = 0;
+		//this.$updatedByID = 0;
 		/** @type {number} */
-		this.$updatedByLevel = 0;
+		//this.$updatedByLevel = 0;
 		/** @type {string} */
 		this.$createdOn = "";
 		/** @type {string} */
 		this.$createdBy = "";
 		/** @type {number} */
-		this.$createdByID = 0;
+		//this.$createdByID = 0;
 		/** @type {number} */
-		this.$createdByLevel = 0;
+		//this.$createdByLevel = 0;
 		/** @type {Array} */
 		this.$alts = [];
 		/** @type {number} */
@@ -580,83 +533,93 @@ function F_VALIDATE(disabledHL) {
 		if (classCodeIs(raw, CC_UNDEFINED) || classCodeIs(raw, CC_NULL))
 			return;
 
-		var attrs = raw.attributes;
+		var attrs = raw;
 		// Set segment only properties
-		if (this.$model === WMo.segments) {
-			this.$nodeAID = attrs.fromNodeID;
-			this.$nodeBID = attrs.toNodeID;
+		if (this.$objtype === 'segment') {
+			this.$nodeAID = raw.fromNodeId;
+			this.$nodeBID = raw.toNodeId;
 			this.$isRoutable = this.isRoutable();
-			this.$isTurnALocked = attrs.revTurnsLocked;
-			this.$isTurnBLocked = attrs.fwdTurnsLocked;
-			this.$isRoundabout = classCodeDefined(attrs.junctionID)
-				&& null !== attrs.junctionID;
-			this.$hasHNs = attrs.hasHNs;
-			this.$hasRestrictions = raw.hasRestrictions();
-			this.$restrictions = attrs.restrictions;
-			this.$type = attrs.roadType;
-			this.$typeRank = this.getTypeRank(attrs.roadType);
+			const baseobj = W.model.segments.getObjectById(raw.id);
+			this.$isEditable = wmeSDK.DataModel.Segments.hasPermissions( { segmentId: this.$objectID });
+			this.$baseobj = baseobj;
+			this.$isTurnALocked = raw.areRevTurnsVerified;
+			this.$isTurnBLocked = raw.areFwdTurnsVerified;
+			this.$isRoundabout = null !== raw.junctionId;
+			this.$hasHNs = raw.hasHouseNumbers;
+			this.$hasRestrictions = raw.hasRestrictions;
+			this.$restrictions = raw.restrictions;
+			this.$type = raw.roadType;
+			this.$typeRank = this.getTypeRank(raw.roadType);
+			this.$rank = raw.rank + 1;
 			this.$direction = getDirection(raw);
-			this.$elevation = attrs.level;
-			if ("length" in attrs)
-				this.$length = attrs.length;
-			else
-				this.$length = Math.round(raw.getOLGeometry().getGeodesicLength(WM.projection));
+			this.$elevation = raw.elevationLevel;
+			if (raw.hasOwnProperty("length"))
+				this.$length = raw.length;
+			if (this.$length < 7)
+				this.$length = turf.length(raw.geometry, u_meters);
 			// TODO: this.$isToll = raw.isTollRoad();
-			this.$alts = attrs.streetIDs.map(function (objID) {
+			this.$alts = raw.alternateStreetIds.map(function (objID) {
 				return new _WV.SimpleADDRESS(objID);
 			});
-			this.$restrictionsLen = attrs.restrictions.length;
-			this.$address = new _WV.SimpleADDRESS(attrs.primaryStreetID);
+			this.$restrictionsLen = raw.restrictions.length;
+			this.$address = new _WV.SimpleADDRESS(raw.primaryStreetId);
 			// set speedlimits
-			this.$fwdMaxSpeed = getLocalizedValue(+attrs.fwdMaxSpeed, this.$address.$country);
-			this.$fwdMaxSpeedUnverified = attrs.fwdMaxSpeedUnverified;
-			this.$revMaxSpeed = getLocalizedValue(+attrs.revMaxSpeed, this.$address.$country);
-			this.$revMaxSpeedUnverified = attrs.revMaxSpeedUnverified;
-			this.$hasClosures = attrs.hasClosures;
-			if (raw.getFlagAttributes) {
-				this.$flags = raw.getFlagAttributes();
-			}
+			this.$fwdMaxSpeed = getLocalizedValue(+raw.fwdSpeedLimit, this.$address.$country);
+			this.$fwdMaxSpeedUnverified = !raw.isFwdSpeedLimitVerified;
+			this.$revMaxSpeed = getLocalizedValue(+raw.revSpeedLimit, this.$address.$country);
+			this.$revMaxSpeedUnverified = !raw.isRevSpeedLimitVerified;
+			this.$hasClosures = raw.hasClosures;
+			this.$flags = raw.flagAttributes;
+
 		} else {
+			attrs = raw;
 			// Set venue only properties
 			this.$name = attrs.name;
 			this.$brand = attrs.brand;
 			if (this.$brand === null) {
 				this.$brand = "";
 			}
+			this.$rank = raw.lockRank + 1;
 			this.$isApproved = attrs.approved;
-			this.$mainCategory = raw.getMainCategory();
+			this.$mainCategory = raw.categories[0];
 			this.$categories = attrs.categories;
-			this.$categoryAttributes = attrs.categoryAttributes;
+			this.$isParkingLot = (this.$mainCategory == 'PARKING_LOT');
+			if (this.$isParkingLot) {
+				const parkingType = wmeSDK.DataModel.Venues.ParkingLot.getParkingLotType( { venueId: this.$objectID }); // "PRIVATE" | "PUBLIC" | "RESTRICTED" | null
+				const costType = wmeSDK.DataModel.Venues.ParkingLot.getCostType( { venueId: this.$objectID }); // "FREE" | "LOW" | "MODERATE" | "EXPENSIVE" | "UNKNOWN"
+				const lotType = wmeSDK.DataModel.Venues.ParkingLot.getLotTypes( { venueId: this.$objectID }); // "MULTI_LEVEL" | "STREET_LEVEL" | "STREET_LEVEL_COVERED" | "UNDERGROUND"
+				const paymentType = wmeSDK.DataModel.Venues.ParkingLot.getPaymentMethods( { venueId: this.$objectID }); // "CASH"| "CHECKS"| "CREDIT" | "DEBIT_CARD"| "DIGITAL_WALLET"| "ELECTRONIC_PASS"| "MEMBERSHIP"| "PARKING_APP"| "PERMIT"| "PREPAID"| "SMS_CALL"
+				this.$parkAttr = { parkingType, costType, lotType, paymentType };
+			}
+			this.$categoryAttributes = '';
+			this.$isGasStation = false;
+			this.$categories.forEach((c, i) => {if (c == 'GAS_STATION') this.$isGasStation = true; });
 			this.$openingHours = attrs.openingHours;
 			this.$services = attrs.services;
 			this.$externalProviders = attrs.externalProviderIDs;
-			this.$entryExitPoints = attrs.entryExitPoints;
+			this.$entryExitPoints = attrs.navigationPoints;
 			this.$alts = attrs.aliases;
-			this.$address = new _WV.SimpleADDRESS(attrs.streetID);
-			this.$geometry = raw.getOLGeometry();
+			const adr = wmeSDK.DataModel.Venues.getAddress( { venueId: this.$objectID });
+			this.$address = new _WV.SimpleADDRESS(adr);
+			this.$geometry = raw.geometry;
 			this.$phone = attrs.phone;
 			this.$url = attrs.url;
-			this.$isPoint = raw.isPoint();
+			this.$isPoint = raw.geometry.type == 'Point';
+			this.$isEditable = wmeSDK.DataModel.Venues.hasPermissions( { venueId: this.$objectID });
+			this.$rank = attrs.lockRank + 1;
 		}
 
-		this.$isEditable = raw.arePropertiesEditable();
-
-		this.$lock = attrs.lockRank + 1;
-		this.$rank = attrs.rank + 1;
-
-		if (attrs.updatedOn)
-			this.$updatedOn = formatDate(attrs.updatedOn);
-		if (0 < attrs.updatedBy) {
-			this.$updatedByID = attrs.updatedBy;
-			this.$updatedBy = getUserName(attrs.updatedBy);
-			this.$updatedByLevel = getUserLevel(attrs.updatedBy);
+		this.$lock = raw.lockRank + 1;
+		let mod = raw.modificationData;
+		if (mod.updatedOn)
+			this.$updatedOn = formatDate(mod.updatedOn);
+		if (mod.updatedBy) {
+			this.$updatedByName = mod.updatedBy;
 		}
-		if (attrs.createdOn)
-			this.$createdOn = formatDate(attrs.createdOn);
-		if (attrs.createdBy) {
-			this.$createdByID = attrs.createdBy;
-			this.$createdBy = getUserName(attrs.createdBy);
-			this.$createdByLevel = getUserLevel(attrs.createdBy);
+		if (mod.createdOn)
+			this.$createdOn = formatDate(mod.createdOn);
+		if (mod.createdBy) {
+			this.$createdByName = mod.createdBy;
 		}
 
 		// mark some properties as readonly
@@ -685,13 +648,9 @@ function F_VALIDATE(disabledHL) {
 			$length: { writable: false },
 			$mainCategory: { writable: false },
 			$updatedOn: { writable: false },
-			$updatedBy: { writable: false },
-			$updatedByID: { writable: false },
-			$updatedByLevel: { writable: false },
+			$updatedByName: { writable: false },
 			$createdOn: { writable: false },
-			$createdBy: { writable: false },
-			$createdByID: { writable: false },
-			$createdByLevel: { writable: false },
+			$createdByName: { writable: false },
 			$restrictionsLen: { writable: false },
 		});
 	}
@@ -762,12 +721,21 @@ function F_VALIDATE(disabledHL) {
 	};
 	/**
 	 * Get center
-	 * @returns {OpenLayers.LonLat}
+	 * @returns {LonLat}
 	 */
 	SimpleOBJECT.prototype.getCenter = function () {
 		if (this._center) return this._center;
-		this._center = this.$rawObject.getOLGeometry().getBounds().getCenterLonLat().clone()
-			.transform(nW.Config.map.projection.local, nW.Config.map.projection.remote);
+		this._center = {};
+		const g = this.$rawObject.geometry;
+		if (g.type == 'Point') {
+			this._center.lon = g.coordinates[0];
+			this._center.lat = g.coordinates[1];
+		} else {
+			const c = turf.centroid(g);
+			this._center.lon = c.geometry.coordinates[0];
+			this._center.lat = c.geometry.coordinates[1];
+		}
+
 		// round the lon/lat
 		this._center.lon = Math.round(this._center.lon * 1e5) / 1e5;
 		this._center.lat = Math.round(this._center.lat * 1e5) / 1e5;
@@ -780,8 +748,8 @@ function F_VALIDATE(disabledHL) {
 	SimpleOBJECT.prototype.getRestrictions = function () {
 		var t;
 		return this._restrictions ? this._restrictions :
-			this._restrictions = this.$model == WMo.venues ? [] :
-				(t = this, this.$rawObject.attributes.restrictions.map(
+			this._restrictions = this.$objtype == 'venue' ? [] :
+				(t = this, this.$rawObject.restrictions.map(
 					function (e) {
 						return new SimpleRESTRICTION(e, t.$objectID)
 					})
@@ -814,16 +782,15 @@ function F_VALIDATE(disabledHL) {
 			/** @struct */
 			return {
 				$objectID: ss.$objectID,
-				$model: ss.$model,
+				$objtype: ss.$objtype,
 				$name: ss.$name,
 				$countryID: +ss.$address.$countryID,
 				$cityID: +ss.$address.$cityID,
 				$streetID: +ss.$address.$streetID,
 				$reportIDs: {},
-				$updated: ss.$updatedOn ? ss.$rawObject.attributes.updatedOn
-					: (ss.$createdOn ? ss.$rawObject.attributes.createdOn : 0),
-				$userID: ss.$updatedByID ? +ss.$updatedByID
-					: (ss.$createdByID ? +ss.$createdByID : 0),
+				$updated: ss.$updatedOn ? ss.$rawObject.modificationData.updatedOn
+					: (ss.$createdOn ? ss.$rawObject.modificationData.createdOn : 0),
+				$userName: ss.$updatedByName ? ss.$updatedByName : (ss.$createdByName ? ss.$createdByName : '') ,
 				$isEditable: ss.$isEditable
 					&& (ss.$nodeA.$isEditable || ss.$nodeA.$isPartial)
 					&& (ss.$nodeB.$isEditable || ss.$nodeB.$isPartial)
@@ -876,14 +843,14 @@ function F_VALIDATE(disabledHL) {
 		var objectCopy = rep.$objectIDs[this.$objectID];
 
 		// add an user
-		var uid = objectCopy.$userID;
+		var uid = objectCopy.$userName;
 		if (!(uid in _repU)) {
 			var n = "";
 
-			if (uid === this.$createdByID)
-				n = this.$createdBy;
+			if (uid === this.$createdByName)
+				n = this.$createdByName;
 			else if (uid === this.$updatedByID)
-				n = this.$updatedBy;
+				n = this.$updatedByName;
 			_repU[uid] = n;
 		}
 
@@ -1178,18 +1145,15 @@ function F_VALIDATE(disabledHL) {
 		if (RTStateIs(ST_RUN) || RTStateIs(ST_CONTINUE))
 			return;
 
-		var features = [];
-		for (var i in _RT.$HLedObjects) {
+		wmeSDK.Map.removeAllFeaturesFromLayer( { layerName: GL_LAYERNAME } );
+		for (let i in _RT.$HLedObjects) {
 			if (!_RT.$HLedObjects.hasOwnProperty(i)) continue;
-			var obj = _RT.$HLedObjects[i];
+			let obj = _RT.$HLedObjects[i];
 
 			if (obj.$severity)
-				features.push(new OpenLayers.Feature.Vector(
-					obj.$geometry.clone(), { 0: obj.$severity }
-				));
+				wmeSDK.Map.addFeatureToLayer( { feature: { type: 'Feature', id: i, geometry: obj.$geometry, properties: { type: obj.$severity }, },
+                                                layerName: GL_LAYERNAME } );
 		}
-		_RT.$HLlayer.destroyFeatures();
-		_RT.$HLlayer.addFeatures(features);
 	}
 
 	/**
@@ -1199,7 +1163,7 @@ function F_VALIDATE(disabledHL) {
 		if (RTStateIs(ST_RUN) || RTStateIs(ST_CONTINUE))
 			return;
 
-		var objectID = rawObject.getID();
+		var objectID = rawObject.id;
 		var seenObj = _RT.$seen[objectID];
 		var severity = seenObj[I_SEVERITY];
 		var objectCopy = seenObj[I_OBJECTCOPY];
@@ -1218,7 +1182,7 @@ function F_VALIDATE(disabledHL) {
 		/** @struct */
 		var obj = {
 			$severity: filteredSeverity,
-			$geometry: rawObject.getOLGeometry(),
+			$geometry: rawObject.geometry,
 		};
 		_RT.$HLedObjects[objectID] = obj;
 	}
@@ -1316,278 +1280,17 @@ function F_VALIDATE(disabledHL) {
 			} // for all streets
 		} // for all cities
 	}
-	/**
-	 * Update object properties
-	 */
-	function updateObjectProperties(selectedObjects, disabledHL) {
-		if (RTStateIs(ST_RUN) || RTStateIs(ST_CONTINUE))
-			return;
-
-		// remove WV properties
-		var prop = document.getElementById("i" + ID_PROPERTY)
-		var propDis = document.getElementById("i" + ID_PROPERTY_DISABLED)
-
-		var defID = ID_PROPERTY;
-		var defHTML = '';
-		if (disabledHL) {
-			defID = ID_PROPERTY_DISABLED;
-			defHTML = '<div class="direction-message">'
-				+ '<i class="fa fa-info-circle" aria-hidden="true"></i> '
-				+ trS("props.disabled")
-				+ '</div> '
-				;
-			// remove prop
-			if (prop) {
-				prop.parentNode.removeChild(prop);
-			}
-			prop = propDis;
-		}
-		else {
-			// remove propDis
-			if (propDis) {
-				propDis.parentNode.removeChild(propDis);
-			}
-		}
-
-		if (prop)
-			prop.innerHTML = createSafeHtml(defHTML);
-		else {
-			var objectProperties = document.getElementsByClassName("address-edit")[0];
-			if (!objectProperties)
-				objectProperties = document.getElementsByClassName("venue-edit-general")[0];
-
-			if (objectProperties) {
-				var d = document.createElement("div");
-				d.innerHTML = createSafeHtml(defHTML);
-				d.id = "i" + defID;
-				d.style.cssText = "text-transform: none; padding: 5px;"
-				prop = objectProperties.appendChild(d)
-			} // if objectProperties
-		} // if prop
-
-		if (disabledHL)
-			return;
-
-		// check if there are any object selected
-		if (!selectedObjects.length)
-			return;
-
-		// find selected issues
-		var selectedIssues = [];
-		for (var i = 0; i < selectedObjects.length; i++) {
-			var objectID = selectedObjects[i];
-			if (objectID in _RT.$seen) {
-				var objectCopy = _RT.$seen[objectID][I_OBJECTCOPY];
-				if (!objectCopy) continue;
-				// object is selected and highlighted
-				for (var cid in objectCopy.$reportIDs) {
-					if (objectCopy.$reportIDs.hasOwnProperty(cid)) {
-						var check = _RT.$checks[cid];
-						if (check.REPORTONLY)
-							continue;
-
-						selectedIssues.push([check, objectCopy, cid]);
-					}
-				}
-			}
-		} // for all selected objects
-
-		var newProp = '<b style="display:block"><a target="_blank" href="' + PFX_DISCUSS + DISCUSS_HOME + '">WME Validator</a> ' + trS("props.reports") + ':</b>'
-			;
-		if (_REP.$isLimitPerCheck) {
-			newProp += '<div class="c' + CL_RIGHTTIP + ' c' + CL_NOTE + '">'
-				+ '<span><i class="fa fa-info-circle" aria-hidden="true"></i>'
-				+ ' <a class="c' + CL_NOTE + '" href="#">'
-				+ trS("props.limit.title")
-				+ '</a></span>'
-				+ '<div class="c' + CL_RIGHTTIPPOPUP + '">'
-				+ '<i class="fa fa-times-circle fa-lg fa-pull-left" style="margin-top:0.3em" aria-hidden="true"></i>'
-				+ '<div class="c' + CL_RIGHTTIPDESCR + '">'
-				+ trS("props.limit.problem")
-				+ '.</div>'
-				+ '<i class="fa fa-check-square-o fa-lg fa-pull-left" style="color:black;margin-top:0.8em" aria-hidden="true"></i>'
-				+ '<div class="c' + CL_RIGHTTIPDESCR + '">'
-				+ '<p>' + trS("props.limit.solution") + '.</p>'
-				+ '</div></div><br></div>'
-				;
-		} // limit per check
-
-		// exceptions note
-		if (skippedObject) {
-			newProp += '<div class="c' + CL_RIGHTTIP + ' c' + CL_NOTE + '">'
-				+ '<span><i class="fa fa-info-circle" aria-hidden="true"></i>'
-				+ ' <a class="c' + CL_NOTE + '" href="#">'
-				+ trS("props.skipped.title")
-				+ '</a></span>'
-				+ '<div class="c' + CL_RIGHTTIPPOPUP + '">'
-				+ '<i class="fa fa-times-circle fa-lg fa-pull-left" style="margin-top:0.3em" aria-hidden="true"></i>'
-				+ '<div class="c' + CL_RIGHTTIPDESCR + '">'
-				+ trS("props.skipped.problem")
-				+ '.</div>'
-				+ '</div><br></div>'
-				;
-		}
-
-
-		if (!selectedIssues.length) {
-			// update properties
-			if (prop && (_REP.$isLimitPerCheck || skippedObject))
-				prop.innerHTML = createSafeHtml(newProp);
-			return;
-		}
-
-		// sort the issues
-		selectedIssues.sort(function (a, b) { return cmpCheckIDs(a[2], b[2]) });
-
-		// only unique issues
-		var selectedCounters = {};
-		selectedIssues = selectedIssues.filter(function (e, i, arr) {
-			var checkID = e[2];
-			// skip first element
-			if (i && arr[i - 1][2] === checkID) {
-				selectedCounters[checkID]++;
-				return false;
-			}
-			selectedCounters[checkID] = 1;
-			return true;
-		});
-		// create a list of issues
-		selectedIssues.forEach(function (e) {
-			var check = e[0];
-			var objectCopy = e[1];
-			var checkID = e[2];
-			var checkCounter = selectedCounters[checkID];
-			var sevClass = 0;
-			var sevIcon = "";
-			var sevBG = "";
-			var strCountry = _REP.$countries[objectCopy.$countryID];
-			var ccode = "";
-
-			if (strCountry)
-				ccode = _I18n.getCountryCode(strCountry.toUpperCase());
-			else {
-				// try top country
-				ccode = _RT.$cachedTopCCode;
-			}
-			options = trO(check.OPTIONS, ccode);
-
-			switch (check.SEVERITY) {
-				case RS_NOTE:
-					sevClass = CL_NOTE;
-					sevIcon = "info-circle";
-					sevBG = GL_NOTEBGCOLOR;
-					break;
-				case RS_WARNING:
-					sevClass = CL_WARNING;
-					sevIcon = "exclamation-triangle";
-					sevBG = GL_WARNINGBGCOLOR;
-					break;
-				case RS_ERROR:
-					sevClass = CL_ERROR;
-					sevIcon = "times-circle";
-					sevBG = GL_ERRORBGCOLOR;
-					break;
-				case RS_CUSTOM1:
-					sevClass = CL_CUSTOM1;
-					sevIcon = "user";
-					sevBG = GL_CUSTOM1BGCOLOR;
-					break;
-				case RS_CUSTOM2:
-					sevClass = CL_CUSTOM2;
-					sevIcon = "user";
-					sevBG = GL_CUSTOM2BGCOLOR;
-					break;
-			}
-			var shortTitle = exSOS(check.TITLE, options, "titleEN")
-				.replace("WME Color Highlights", "WMECH")
-				.replace("WME Toolbox", "WMETB");
-			newProp += '<div class="c' + CL_RIGHTTIP + ' c' + sevClass + '">'
-				+ '<span><i class="fa fa-' + sevIcon + '" aria-hidden="true"></i>'
-				+ ' <a class="c' + sevClass + '" href="#">'
-				+ shortTitle
-				+ (1 < checkCounter ? ' (' + checkCounter + ')' : '')
-				+ '</a></span>'
-				+ '<div class="c' + CL_RIGHTTIPPOPUP + '">'
-				+ '<i class="fa fa-' + sevIcon + ' fa-lg fa-pull-left" style="margin-top:0.3em" aria-hidden="true"></i>'
-				+ '<div class="c' + CL_RIGHTTIPDESCR + '">'
-				+ '#' + checkID + ' '
-				+ exSOS(check.PROBLEM, options, "problemEN")
-				;
-			var pl = trO(check.PROBLEMLINK, ccode);
-			if (pl) {
-				newProp += ': <a target="_blank" href="'
-					+ pl
-					+ '">'
-					+ trO(check.PROBLEMLINKTEXT, ccode)
-					+ '</a>'
-					;
-			}
-			else
-				newProp += '.';
-
-			newProp += '</div>';
-
-			// show howto
-			if (objectCopy.$isEditable) {
-				newProp += '<i class="fa fa-check-square-o fa-pull-left fa-lg" style="color:black;margin-top:0.8em" aria-hidden="true"></i>'
-					+ '<div class="c' + CL_RIGHTTIPDESCR + '">'
-					;
-				if (check.SOLUTION) {
-					newProp += '<p>' + exSOS(check.SOLUTION, options, "solutionEN");
-
-					var sl = trO(check.SOLUTIONLINK, ccode);
-					if (sl) {
-						newProp += ': <a target="_blank" href="'
-							+ sl
-							+ '">'
-							+ trO(check.SOLUTIONLINKTEXT, ccode)
-							+ '</a>'
-							;
-					}
-					else
-						newProp += '.';
-
-					newProp += '</p>';
-				}
-			}
-			else {
-				newProp += '<i class="fa fa-ban fa-pull-left fa-lg" style="color:black;margin-top:0.8em" aria-hidden="true"></i>'
-					+ '<div class="c' + CL_RIGHTTIPDESCR + '">'
-					+ '<p>' + trS("props.noneditable") + '.</p>';
-				;
-			}
-
-			// show params
-			var cityID = objectCopy.$cityID;
-			var cityParam = _REP.$cityIDs[cityID].$params[checkID];
-			if (cityParam)
-				newProp += '<p>' + cityParam + '</p>';
-			var streetID = objectCopy.$streetID;
-			var streetParam = _REP.$cityIDs[cityID]
-				.$streetIDs[streetID].$params[checkID];
-
-			if (streetParam)
-				newProp += '<p>' + streetParam + '</p>';
-
-			newProp += '</div></div><br></div>'
-				;
-		}); // forEach
-
-		// update properties
-		if (prop)
-			prop.innerHTML = createSafeHtml(newProp);
-	} // updateObjectProperties
 
 	/**
 	 * Match regular expression
 	 */
-	function matchRegExp(checkID, objectID, expandedString, options) {
-		var optRegExp = options[CO_REGEXP];
+	function matchRegExp(checkID, objectID, expandedString, loptions) {
+		var optRegExp = loptions[CO_REGEXP];
 		if (!optRegExp) return false;
-		var optString = options[CO_STRING];
-		var optBool = options[CO_BOOL];
+		var optString = loptions[CO_STRING];
+		var optBool = loptions[CO_BOOL];
 		// debug
-		if (options[CO_NUMBER]
+		if (loptions[CO_NUMBER]
 			&& 0 < _REP.$debugCounter) {
 			var checkTitle = '';
 			if (_RT.$checks[checkID] && _RT.$checks[checkID].TITLE)
@@ -1629,10 +1332,10 @@ function F_VALIDATE(disabledHL) {
 	 * ignoring ignoreSegment
 	 */
 	function checkPublicConnection(seg, ignoreSegment) {
-		var foundPublicConnection = false;
+		let foundPublicConnection = false;
 		if (!seg.$nodeA.$isPartial && seg.$nodeA.$otherSegmentsLen > 0) {
-			for (var i = 0; i < seg.$nodeA.$otherSegmentsLen; i++) {
-				var otherSegment = seg.$nodeA.$otherSegments[i];
+			for (let i = 0; i < seg.$nodeA.$otherSegmentsLen; i++) {
+				let otherSegment = seg.$nodeA.$otherSegments[i];
 				if (ignoreSegment && otherSegment === ignoreSegment)
 					continue;
 				// Remember; ramps are public too, just not endpoint routable.
@@ -1643,8 +1346,8 @@ function F_VALIDATE(disabledHL) {
 			}
 		}
 		if (!seg.$nodeB.$isPartial && seg.$nodeB.$otherSegmentsLen > 0) {
-			for (var i = 0; i < seg.$nodeB.$otherSegmentsLen; i++) {
-				var otherSegment = seg.$nodeB.$otherSegments[i];
+			for (let i = 0; i < seg.$nodeB.$otherSegmentsLen; i++) {
+				let otherSegment = seg.$nodeB.$otherSegments[i];
 				if (ignoreSegment && otherSegment === ignoreSegment)
 					continue;
 				if (otherSegment.$isRoutable || RT_RAMP === otherSegment.$type) {
@@ -1666,20 +1369,34 @@ function F_VALIDATE(disabledHL) {
 		&& _RT.oReportWMECH.CHECKED;
 	var reportToolbox = _UI.pSettings.pScanner.oReportExt.CHECKED
 		&& _RT.oReportToolbox.CHECKED;
-	var currentZoom = WM.getZoom();
+	var currentZoom = wmeSDK.Map.getZoomLevel();
 	var slowChecks = _UI.pSettings.pScanner.oSlowChecks.CHECKED
 		&& 15 < currentZoom;
 	var oExcludeNotes = _UI.pMain.pFilter.oExcludeNotes.CHECKED;
 
+	let sel;
+	try {
+		sel = wmeSDK.Editing.getSelection(); //?.objectType === 'segment'
+	} catch(e) {
+		sel = null;
+		console.warn('VAL getSel trap', e);
+	}
+	if (!sel) {
+		sel = { ids: [] }
+	}
 	var selectedObjects = [];
+	let selectedPlaces = [];
+	if (sel?.objectType == 'segment') { selectedObjects = sel.ids; }
+	if (sel?.objectType == 'venue') { selectedPlaces = sel.ids; }
 	_RT.$HLedObjects = {};
-	for (var segmentKey in WMo.segments.objects) {
-		var rawSegment = WMo.segments.objects[segmentKey];
-		var segmentID = rawSegment.getID();
+	const segs = wmeSDK.DataModel.Segments.getAll();
+	for (let r in segs ) { //segmentKey in WMo.segments.objects) {
+		let rawSegment = segs[r];
+		let segmentID = rawSegment.id;
 
 		// SPECIAL CASE - skip all checks for locked segments (exceptions)
 		// 2014-05-01
-		if (_RT.$topUser.$userLevel <= rawSegment.attributes.lockRank
+/*		if (_RT.$topUser.$userLevel <= rawSegment.attributes.lockRank
 			&& rawSegment.attributes.updatedOn
 			&& 1398902400000 < rawSegment.attributes.updatedOn) {
 			if (rawSegment.selected) {
@@ -1690,14 +1407,16 @@ function F_VALIDATE(disabledHL) {
 			}
 			if (!DEF_DEBUG)
 				continue;
-		}
+		} */
 
 		// skip unrendered features
-		if (rawSegment.layer
+	/*	if (rawSegment.layer
 			&& rawSegment.id in rawSegment.layer.unrenderedFeatures)
-			continue;
+			continue; */
 
-		if ("Delete" === rawSegment.state) continue;
+		if (rawSegment.fromNodeId == null && rawSegment.toNodeId == null) { //("Delete" === rawSegment.state) {
+			continue;
+		}
 
 		var seen = null;
 		// check if the segment was already seen
@@ -1705,10 +1424,11 @@ function F_VALIDATE(disabledHL) {
 			seen = _RT.$seen[segmentID];
 
 		// always re-check selected segments
-		if (rawSegment.selected) {
-			// add selected segment to the array
-			selectedObjects.push(segmentID);
-
+		let isSel = false;
+		for (let i=0; i<selectedObjects.length; i++) {
+			if (selectedObjects[i] == segmentID) { isSel=true; break; }
+		}
+		if (isSel) { //(rawSegment.selected) {
 			// mark segment to revalidate
 			_RT.$revalidate[segmentID] = true;
 			// recheck selected segment if it's not highlighted by WMECH
@@ -1730,8 +1450,8 @@ function F_VALIDATE(disabledHL) {
 		}
 
 		// emulate WMECH_color
-		var segmentGeometry = nW.userscripts.getFeatureElementByDataModel(rawSegment);
-		if (segmentGeometry) { // continue; // this breaks looking for segments when WMECH_color isn't here!
+		var segmentGeometry = rawSegment.geometry; // nW.userscripts.getFeatureElementByDataModel(rawSegment);
+	/*	if (segmentGeometry) { // continue; // this breaks looking for segments when WMECH_color isn't here!
 			// if we have it, else ignore this.
 			var strokeColor = segmentGeometry.getAttribute("stroke").toUpperCase();
 			if (4 === strokeColor.length)
@@ -1740,7 +1460,7 @@ function F_VALIDATE(disabledHL) {
 					+ strokeColor.charAt(3) + strokeColor.charAt(3);
 			if (strokeColor in _RT.$WMECHcolors)
 				rawSegment[GL_WMECHCOLOR] = strokeColor;
-		}
+		} */
 
 		// check if the segment was already seen
 		if (seen) {
@@ -1767,7 +1487,7 @@ function F_VALIDATE(disabledHL) {
 
 		///////////////////////////////////////////////////////////////////
 		// Prepare simple objects
-		var segment = new SimpleOBJECT(segmentID, WMo.segments);
+		var segment = new SimpleOBJECT(rawSegment, 'segment');
 		Object.seal(segment);
 
 		// shortcuts
@@ -1866,14 +1586,14 @@ function F_VALIDATE(disabledHL) {
 			&& RT_RAILROAD !== roadType) {
 			if (nodeA.$otherSegmentsLen
 				&& isLimitOk(118)) {
-				var rawNode = nodeA.$rawNode;
-				var baseAngle = rawNode.getAngleToSegment(rawSegment);
-				for (var i = 0; i < nodeA.$otherSegmentsLen; i++) {
-					var otherSegment = nodeA.$otherSegments[i];
+				let rawNode = nodeA.$rawNode;
+				let baseAngle = rawNode.getAngleToSegment(segment.$baseobj);
+				for (let i = 0; i < nodeA.$otherSegmentsLen; i++) {
+					let otherSegment = nodeA.$otherSegments[i];
 					if (!otherSegment.$rawObject) continue;
 
-					var curAngle = rawNode.getAngleToSegment(otherSegment.$rawObject);
-					var angle = Math.abs(baseAngle - curAngle);
+					let curAngle = rawNode.getAngleToSegment(otherSegment.$baseobj);
+					let angle = Math.abs(baseAngle - curAngle);
 					if (angle > 180) angle = 360 - angle;
 
 					if (2 > angle
@@ -1886,14 +1606,14 @@ function F_VALIDATE(disabledHL) {
 
 			if (nodeB.$otherSegmentsLen
 				&& isLimitOk(119)) {
-				var rawNode = nodeB.$rawNode;
-				var baseAngle = rawNode.getAngleToSegment(rawSegment);
-				for (var i = 0; i < nodeB.$otherSegmentsLen; i++) {
-					var otherSegment = nodeB.$otherSegments[i];
+				let rawNode = nodeB.$rawNode;
+				let baseAngle = rawNode.getAngleToSegment(segment.$baseobj);
+				for (let i = 0; i < nodeB.$otherSegmentsLen; i++) {
+					let otherSegment = nodeB.$otherSegments[i];
 					if (!otherSegment.$rawObject) continue;
 
-					var curAngle = rawNode.getAngleToSegment(otherSegment.$rawObject);
-					var angle = Math.abs(baseAngle - curAngle);
+					let curAngle = rawNode.getAngleToSegment(otherSegment.$baseobj);
+					let angle = Math.abs(baseAngle - curAngle);
 					if (angle > 180) angle = 360 - angle;
 
 					if (2 > angle
@@ -1920,7 +1640,7 @@ function F_VALIDATE(disabledHL) {
 		}
 
 		// SPECIAL CASE - skip all checks for construction zones
-		if (streetLen
+		if (streetLen && isDrivable
 			&& address.isOkFor(101)) {
 			options = getCheckOptions(101, countryCode);
 			if (options[CO_REGEXP].test(street)) {
@@ -1939,11 +1659,11 @@ function F_VALIDATE(disabledHL) {
 
 
 		if (reportToolbox && address.isOkFor(CK_TBFIRST)) {
-			var col = rawSegment[GL_TBCOLOR];
+			let col = rawSegment[GL_TBCOLOR];
 			if (col) {
 				col = col.toUpperCase();
-				for (var i = CK_TBFIRST; i <= CK_TBLAST; i++) {
-					var check = _RT.$checks[i];
+				for (let i = CK_TBFIRST; i <= CK_TBLAST; i++) {
+					let check = _RT.$checks[i];
 					if (check.COLOR === col) {
 						segment.report(i);
 						break;
@@ -1953,10 +1673,10 @@ function F_VALIDATE(disabledHL) {
 		}
 
 		if (reportWMECH && address.isOkFor(CK_WMECHFIRST)) {
-			var col = rawSegment[GL_WMECHCOLOR];
+			let col = rawSegment[GL_WMECHCOLOR];
 			if (col) {
-				for (var i = CK_WMECHFIRST; i <= CK_WMECHLAST; i++) {
-					var check = _RT.$checks[i];
+				for (let i = CK_WMECHFIRST; i <= CK_WMECHLAST; i++) {
+					let check = _RT.$checks[i];
 					if (check && check.COLOR === col) {
 						segment.report(i);
 						break;
@@ -1967,7 +1687,7 @@ function F_VALIDATE(disabledHL) {
 
 		if (alts.length
 			&& address.isOkFor(34)) {
-			for (var i = 0; i < alts.length; i++) {
+			for (let i = 0; i < alts.length; i++) {
 				if (!alts[i].$street) {
 					segment.report(34);
 					break;
@@ -1979,8 +1699,8 @@ function F_VALIDATE(disabledHL) {
 			&& segment.$restrictionsLen
 			&& isLimitOk(38)
 			&& address.isOkFor(38)) {
-			var restrictions = segment.$restrictions;
-			for (var i = 0; i < restrictions.length; i++) {
+			let restrictions = segment.$restrictions;
+			for (let i = 0; i < restrictions.length; i++) {
 				if (restrictions[i].$isInThePast) {
 					segment.report(38);
 					break;
@@ -1992,11 +1712,11 @@ function F_VALIDATE(disabledHL) {
 			&& (nodeA.$restrictionsLen || nodeB.$restrictionsLen)
 			&& isLimitOk(39)
 			&& address.isOkFor(39)) {
-			var restrictions = nodeA.$restrictions.concat(nodeB.$restrictions);
-			for (var i = 0; i < restrictions.length; i++) {
-				var restriction = restrictions[i];
+			let restrictions = nodeA.$restrictions.concat(nodeB.$restrictions);
+			for (let i = 0; i < restrictions.length; i++) {
+				let restriction = restrictions[i];
 				if (restriction.$isInThePast) {
-					var param = '';
+					let param = '';
 					if (restriction.$to.$address
 						&& restriction.$to.$address.$street)
 						param = 'turn to ' + restriction.$to.$address.$street;
@@ -2016,6 +1736,7 @@ function F_VALIDATE(disabledHL) {
 
 		if (RT_RAILROAD === roadType
 			&& 100 > segmentLen
+			&& streetLen > 0
 			&& !isPartial
 			&& !nodeA.$otherSegmentsLen
 			&& !nodeB.$otherSegmentsLen
@@ -2078,7 +1799,7 @@ function F_VALIDATE(disabledHL) {
 			"speedLimitBA": reverseSpeed,
 			"checkSpeedLimit": isDrivable && (reverseSpeedUnverified || forwardSpeedUnverified),
 		};
-		for (var i = CK_MATCHFIRST; i <= CK_MATCHLAST; i++) {
+		for (let i = CK_MATCHFIRST; i <= CK_MATCHLAST; i++) {
 			if (!isLimitOk(i)
 				|| !address.isOkFor(i))
 				continue;
@@ -2137,8 +1858,8 @@ function F_VALIDATE(disabledHL) {
 				&& !hasClosures
 				&& isLimitOk(36)
 				&& address.isOkFor(36)) {
-				var otherSegment = nodeA.$otherSegments[0];
-				var otherNode, nextNode;
+				let otherSegment = nodeA.$otherSegments[0];
+				let otherNode, nextNode;
 				if (otherSegment.$nodeAID === nodeAID) {
 					otherNode = otherSegment.$nodeA;
 					nextNode = otherSegment.$nodeB;
@@ -2179,9 +1900,9 @@ function F_VALIDATE(disabledHL) {
 					&& deepCompare(otherSegment.$alts, alts)
 				) {
 					// check deep for loop
-					var loopFound = false;
-					for (var i = 0; i < nextNode.$otherSegmentsLen; i++) {
-						var thirdSegment = nextNode.$otherSegments[i];
+					let loopFound = false;
+					for (let i = 0; i < nextNode.$otherSegmentsLen; i++) {
+						let thirdSegment = nextNode.$otherSegments[i];
 						if (thirdSegment.$nodeAID === nodeBID
 							|| thirdSegment.$nodeBID === nodeBID
 						) {
@@ -2207,8 +1928,8 @@ function F_VALIDATE(disabledHL) {
 				&& !hasClosures
 				&& isLimitOk(37)
 				&& address.isOkFor(37)) {
-				var otherSegment = nodeB.$otherSegments[0];
-				var otherNode, nextNode;
+				let otherSegment = nodeB.$otherSegments[0];
+				let otherNode, nextNode;
 				if (otherSegment.$nodeAID === nodeBID) {
 					otherNode = otherSegment.$nodeA;
 					nextNode = otherSegment.$nodeB;
@@ -2250,9 +1971,9 @@ function F_VALIDATE(disabledHL) {
 					&& deepCompare(otherSegment.$alts, alts)
 				) {
 					// check deep for loop
-					var loopFound = false;
-					for (var i = 0; i < nextNode.$otherSegmentsLen; i++) {
-						var thirdSegment = nextNode.$otherSegments[i];
+					let loopFound = false;
+					for (let i = 0; i < nextNode.$otherSegmentsLen; i++) {
+						let thirdSegment = nextNode.$otherSegments[i];
 						if (thirdSegment.$nodeAID === nodeAID
 							|| thirdSegment.$nodeBID === nodeAID
 						) {
@@ -2273,7 +1994,7 @@ function F_VALIDATE(disabledHL) {
 		if (cityLen) {
 			// GROUP cutyLen
 			// RegExp city name checks
-			for (var i = CK_CITYNAMEFIRST; i <= CK_CITYNAMELAST; i++) {
+			for (let i = CK_CITYNAMEFIRST; i <= CK_CITYNAMELAST; i++) {
 				if (!address.isOkFor(i) || !isLimitOk(i))
 					continue;
 
@@ -2286,25 +2007,25 @@ function F_VALIDATE(disabledHL) {
 			// GROUP cityLen
 			if (isLimitOk(24)
 				&& address.isOkFor(24)) {
-				var param = trS("city.1");
-				var r = 3 > cityLen ? true : false;
+				let param = trS("city.1");
+				let r = 3 > cityLen ? true : false;
 
-				var cityCounter = _repCC[cityID];
+				let cityCounter = _repCC[cityID];
 
 				// check new city
 				if (1 === cityCounter
 					|| ((cityID in _REP.$incompleteIDs)
 						&& !_REP.$incompleteIDs[cityID].$counterReported)) {
-					for (var i = 0, len = _REP.$unsortedCityIDs.length; i < len; i++) {
-						var cid = _REP.$unsortedCityIDs[i];
+					for (let i = 0, len = _REP.$unsortedCityIDs.length; i < len; i++) {
+						let cid = _REP.$unsortedCityIDs[i];
 						if (cid === cityID) continue;
 
-						var c = _repC[cid];
-						var cLen = c.length;
+						let c = _repC[cid];
+						let cLen = c.length;
 						if (1 > cLen) continue;
 
-						var cityObj = getCityCmpObj(cityID, city, c);
-						var cObj = getCityCmpObj(cid, c, city);
+						let cityObj = getCityCmpObj(cityID, city, c);
+						let cObj = getCityCmpObj(cid, c, city);
 						setCmpObjLimits(cityObj, cObj);
 						setCmpObjLimits(cObj, cityObj);
 
@@ -2319,7 +2040,7 @@ function F_VALIDATE(disabledHL) {
 				// check if city was reported before
 				if (cityID in _REP.$incompleteIDs) {
 					// shortcut
-					var incompleteCity = _REP.$incompleteIDs[cityID];
+					let incompleteCity = _REP.$incompleteIDs[cityID];
 
 					// increase the counter
 					incompleteCity.$counterReported++;
@@ -2347,7 +2068,7 @@ function F_VALIDATE(disabledHL) {
 
 			// GROUP cityLen
 			if (RT_RAILROAD === roadType
-				&& isLimitOk(24)
+				&& isLimitOk(27)
 				&& address.isOkFor(27))
 				segment.report(27);
 
@@ -2368,14 +2089,14 @@ function F_VALIDATE(disabledHL) {
 					// exclude revCons
 					&& (DIR_TWO === direction || DIR_BA === direction)
 					&& isLimitOk(120)) {
-					var rawNode = nodeA.$rawNode;
-					var baseAngle = rawNode.getAngleToSegment(rawSegment);
-					for (var i = 0; i < nodeA.$outConnectionsLen; i++) {
-						var otherSegment = nodeA.$outConnections[i];
+					let rawNode = nodeA.$rawNode;
+					let baseAngle = rawNode.getAngleToSegment(rawSegment);
+					for (let i = 0; i < nodeA.$outConnectionsLen; i++) {
+						let otherSegment = nodeA.$outConnections[i];
 						if (!otherSegment.$rawObject) continue;
 
-						var curAngle = rawNode.getAngleToSegment(otherSegment.$rawObject);
-						var angle = Math.abs(baseAngle - curAngle);
+						let curAngle = rawNode.getAngleToSegment(otherSegment.$rawObject);
+						let angle = Math.abs(baseAngle - curAngle);
 						if (angle > 180) angle = 360 - angle;
 
 						if (30 > angle
@@ -2402,14 +2123,14 @@ function F_VALIDATE(disabledHL) {
 					// exclude revCons
 					&& (DIR_TWO === direction || DIR_AB === direction)
 					&& isLimitOk(121)) {
-					var rawNode = nodeB.$rawNode;
-					var baseAngle = rawNode.getAngleToSegment(rawSegment);
-					for (var i = 0; i < nodeB.$outConnectionsLen; i++) {
-						var otherSegment = nodeB.$outConnections[i];
+					let rawNode = nodeB.$rawNode;
+					let baseAngle = rawNode.getAngleToSegment(rawSegment);
+					for (let i = 0; i < nodeB.$outConnectionsLen; i++) {
+						let otherSegment = nodeB.$outConnections[i];
 						if (!otherSegment.$rawObject) continue;
 
-						var curAngle = rawNode.getAngleToSegment(otherSegment.$rawObject);
-						var angle = Math.abs(baseAngle - curAngle);
+						let curAngle = rawNode.getAngleToSegment(otherSegment.$rawObject);
+						let angle = Math.abs(baseAngle - curAngle);
 						if (angle > 180) angle = 360 - angle;
 
 						if (30 > angle
@@ -2449,8 +2170,8 @@ function F_VALIDATE(disabledHL) {
 								&& DIR_TWO === direction
 								&& nodeA.$otherSegmentsLen
 								&& isLimitOk(46)) {
-								for (var i = 0; i < nodeA.$otherSegmentsLen; i++) {
-									var otherSegment = nodeA.$otherSegments[i];
+								for (let i = 0; i < nodeA.$otherSegmentsLen; i++) {
+									let otherSegment = nodeA.$otherSegments[i];
 									if (!otherSegment.$rawObject) continue;
 
 									// if(one of other segments at node A is drivable
@@ -2480,8 +2201,8 @@ function F_VALIDATE(disabledHL) {
 								&& DIR_TWO === direction
 								&& nodeB.$otherSegmentsLen
 								&& isLimitOk(47)) {
-								for (var i = 0; i < nodeB.$otherSegmentsLen; i++) {
-									var otherSegment = nodeB.$otherSegments[i];
+								for (let i = 0; i < nodeB.$otherSegmentsLen; i++) {
+									let otherSegment = nodeB.$otherSegments[i];
 									if (!otherSegment.$rawObject) continue;
 									// if(one of other segments at node B is drivable
 									// AND in connection is possible (two way or dir to node B))
@@ -2518,8 +2239,8 @@ function F_VALIDATE(disabledHL) {
 								&& DIR_TWO === direction
 								&& nodeA.$otherSegmentsLen
 								&& isLimitOk(102)) {
-								for (var i = 0; i < nodeA.$otherSegmentsLen; i++) {
-									var otherSegment = nodeA.$otherSegments[i];
+								for (let i = 0; i < nodeA.$otherSegmentsLen; i++) {
+									let otherSegment = nodeA.$otherSegments[i];
 									if (!otherSegment.$rawObject) continue;
 									// if(one of other segments at node A is drivable
 									// AND no private
@@ -2549,8 +2270,8 @@ function F_VALIDATE(disabledHL) {
 								&& DIR_TWO === direction
 								&& nodeB.$otherSegmentsLen
 								&& isLimitOk(103)) {
-								for (var i = 0; i < nodeB.$otherSegmentsLen; i++) {
-									var otherSegment = nodeB.$otherSegments[i];
+								for (let i = 0; i < nodeB.$otherSegmentsLen; i++) {
+									let otherSegment = nodeB.$otherSegments[i];
 									if (!otherSegment.$rawObject) continue;
 									// if(one of other segments at node B is drivable
 									// AND ni private
@@ -2585,14 +2306,14 @@ function F_VALIDATE(disabledHL) {
 				&& address.isOkFor(202)) {
 				// Check other segments to be a drivable public segment
 				// Second param is a segment to ignore as a valid public connection
-				var foundPublicConnection = checkPublicConnection(segment, null);
+				let foundPublicConnection = checkPublicConnection(segment, null);
 				if (!foundPublicConnection) {
 					// We might have a isolated segment. Could be a Restricted Gate
 					// See: https://www.waze.com/discuss/t/private-installations/378216#p-2277317-specialty-gate-restricted-gate-30
 					if (nodeA.$otherSegmentsLen == 1 && nodeB.$otherSegmentsLen == 1) {
 						// both sides are connected to just one private segment
-						var nodeASegment = nodeA.$otherSegments[0];
-						var nodeBSegment = nodeB.$otherSegments[0];
+						let nodeASegment = nodeA.$otherSegments[0];
+						let nodeBSegment = nodeB.$otherSegments[0];
 						if (checkPublicConnection(nodeASegment, segment)
 							&& checkPublicConnection(nodeBSegment, segment)) {
 							// the private segments are connected to a routable segment beside the isolated one!
@@ -2653,9 +2374,9 @@ function F_VALIDATE(disabledHL) {
 			// GROUP isDrivable
 			// on named segment, make sure theres a city on primary or alt
 			if (!cityLen && streetLen && RT_RAMP !== roadType && RT_FREEWAY !== roadType && (isLimitOk(54) || isLimitOk(55))) {
-				var noCity = true;
+				let noCity = true;
 				if (alts.length) {
-					for (var i = 0; i < alts.length; i++) {
+					for (let i = 0; i < alts.length; i++) {
 						if (alts[i].$city) {
 							noCity = false;
 							break;
@@ -2733,31 +2454,32 @@ function F_VALIDATE(disabledHL) {
 					&& 5 < segmentLen
 					// only for dead-ends
 					&& !nodeA.$otherSegmentsLen
-					&& nodeA.$rawNode.getOLGeometry().getBounds()
+					&& nodeA.getCenter()
 					&& isLimitOk(107)
 					&& address.isOkFor(107)) {
 					// check if any other segment is close to the node A
-					var IDs = nodeA.$rawNode.attributes.segIDs;
-					const bd = nodeA.$rawNode.getOLGeometry().getBounds();
-					var pt = new OpenLayers.Geometry.Point(bd.left, bd.bottom);
-					for (var segKey in WMo.segments.objects) {
-						var seg = WMo.segments.objects[segKey];
-						if (segmentID === seg.getID()) continue;
-						if (!seg.getOLGeometry()) continue;
+					let IDs = nodeA.rNode.connectedSegmentIds;
+					const c = nodeA.getCenter();
+					const nPt = turf.point( [c.lon, c.lat ] );
+					const segs = wmeSDK.DataModel.Segments.getAll();
+					for (let r in segs ) { //segmentKey in WMo.segments.objects) {
+						let seg = segs[r];
+						if (segmentID === seg.id) { continue; }
+						if (!seg.geometry) continue;
 						// different elevations
-						if (elevation !== seg.attributes.level) continue;
+						if (elevation !== seg.elevationLevel) continue;
 						// only for non-deleted segments
-						if ("Delete" === seg.state) continue;
+						if (seg.fromNodeId == null && seg.toNodeId == null) continue; //("Delete" === seg.state) continue;
 						// only for drivable segments
 						if (RR_TRAIL
-							>= SimpleOBJECT.prototype.getTypeRank(seg.attributes.roadType))
+							>= SimpleOBJECT.prototype.getTypeRank(seg.roadType))
 							continue;
 
 						// check if node A is not connected to the segment
 						// only for dead-ends!
-						if (LIMIT_TOLERANCE > seg.getOLGeometry().distanceTo(pt, null)) {
+						if (LIMIT_TOLERANCE > turf.pointToLineDistance(nPt, seg.geometry, u_meters)) {
 							// other segment is not editable
-							if (!seg.arePropertiesEditable())
+							if (_RT.$topUser.$userLevel <= seg.lockRank)  //(!seg.arePropertiesEditable()) {
 								segment.$forceNonEditable = true;
 							segment.report(107);
 							break;
@@ -2788,8 +2510,8 @@ function F_VALIDATE(disabledHL) {
 					&& !isRoundabout
 					&& isLimitOk(78)
 					&& address.isOkFor(78)) {
-					for (var i = 0; i < nodeA.$otherSegmentsLen; i++) {
-						var otherSegment = nodeA.$otherSegments[i];
+					for (let i = 0; i < nodeA.$otherSegmentsLen; i++) {
+						let otherSegment = nodeA.$otherSegments[i];
 						if (!otherSegment.$rawObject) continue;
 						// same endpoints
 						if (RR_TRAIL < otherSegment.$typeRank
@@ -2914,29 +2636,30 @@ function F_VALIDATE(disabledHL) {
 					&& 5 < segmentLen
 					// only for dead-ends
 					&& !nodeB.$otherSegmentsLen
-					&& nodeB.$rawNode.getOLGeometry().getBounds()
+					&& nodeB.getCenter()
 					&& isLimitOk(108)
 					&& address.isOkFor(108)) {
 					// check if any other segment is close to the node B
-					var IDs = nodeB.$rawNode.attributes.segIDs;
-					const bd = nodeB.$rawNode.getOLGeometry().getBounds();
-					var pt = new OpenLayers.Geometry.Point(bd.left, bd.bottom);
-					for (var segKey in WMo.segments.objects) {
-						var seg = WMo.segments.objects[segKey];
-						if (segmentID === seg.getID()) continue;
-						if (!seg.getOLGeometry()) continue;
+					let IDs = nodeB.rNode.connectedSegmentIds;
+					const c = nodeB.getCenter();
+					const nPt = turf.point( [c.lon, c.lat ] );
+					const segs = wmeSDK.DataModel.Segments.getAll();
+					for (let r in segs ) { //segmentKey in WMo.segments.objects) {
+						let seg = segs[r];
+						if (segmentID === seg.id) continue;
+						if (!seg.geometry) continue;
 						// different elevations
-						if (elevation !== seg.attributes.level) continue;
+						if (elevation !== seg.elevationLevel) continue;
 						// only for non-deleted segments
-						if ("Delete" === seg.state) continue;
+						if (seg.fromNodeId == null && seg.toNodeId == null) continue; //if ("Delete" === seg.state) continue;
 						// only for drivable segments
 						if (RR_TRAIL
-							>= SimpleOBJECT.prototype.getTypeRank(seg.attributes.roadType))
+							>= SimpleOBJECT.prototype.getTypeRank(seg.roadType))
 							continue;
 
-						if (LIMIT_TOLERANCE > seg.getOLGeometry().distanceTo(pt, null)) {
+						if (LIMIT_TOLERANCE > turf.pointToLineDistance(nPt, seg.geometry, u_meters)) {
 							// other segment is not editable
-							if (!seg.arePropertiesEditable())
+							if (_RT.$topUser.$userLevel <= seg.lockRank) // (!seg.arePropertiesEditable())
 								segment.$forceNonEditable = true;
 							segment.report(108);
 							break;
@@ -3085,8 +2808,8 @@ function F_VALIDATE(disabledHL) {
 					&& (nodeB.$otherSegmentsLen || 300 < segmentLen)
 					&& isLimitOk(114)
 					&& address.isOkFor(114)) {
-					for (var i = 0; i < nodeA.$otherSegmentsLen; i++) {
-						var otherSegment = nodeA.$otherSegments[i];
+					for (let i = 0; i < nodeA.$otherSegmentsLen; i++) {
+						let otherSegment = nodeA.$otherSegments[i];
 						if (!otherSegment.$rawObject) continue;
 
 						// if one of other segments at node A is drivable
@@ -3104,8 +2827,8 @@ function F_VALIDATE(disabledHL) {
 					&& (nodeA.$otherSegmentsLen || 300 < segmentLen)
 					&& isLimitOk(115)
 					&& address.isOkFor(115)) {
-					for (var i = 0; i < nodeB.$otherSegmentsLen; i++) {
-						var otherSegment = nodeB.$otherSegments[i];
+					for (let i = 0; i < nodeB.$otherSegmentsLen; i++) {
+						let otherSegment = nodeB.$otherSegments[i];
 						if (!otherSegment.$rawObject) continue;
 
 						// if one of other segments at node B is drivable
@@ -3124,20 +2847,20 @@ function F_VALIDATE(disabledHL) {
 			// GROUP streetLen
 			// Street type-name checks: {check:type}
 			/** @const */
-			var checkIDType = {
+			let checkIDType = {
 				160: RT_FREEWAY, 161: RT_MAJOR, 162: RT_MINOR,
 				163: RT_RAMP, 164: RT_PRIMARY, 165: RT_STREET, 166: RT_PARKING,
 				167: RT_RAILROAD, 169: 0
 			};
 			// mirror checks
 			/** @const */
-			var checkIDID = { 160: 70, 161: 71, 162: 72 };
-			for (var i in checkIDType) {
+			let checkIDID = { 160: 70, 161: 71, 162: 72 };
+			for (let i in checkIDType) {
 				i = +i;
 				if (!isLimitOk(i) || !address.isOkFor(i))
 					continue;
 
-				var rType = checkIDType[i];
+				let rType = checkIDType[i];
 
 				options = getCheckOptions(i, countryCode);
 
@@ -3146,7 +2869,7 @@ function F_VALIDATE(disabledHL) {
 						segment.report(i);
 				}
 				else {
-					var mi = checkIDID[i];
+					let mi = checkIDID[i];
 					if (mi
 						&& address.isOkFor(mi)
 						&& !matchRegExp(i, segmentID, street, options))
@@ -3156,7 +2879,7 @@ function F_VALIDATE(disabledHL) {
 
 			// GROUP streetLen
 			// RegExp street name checks
-			for (var i = CK_STREETNAMEFIRST; i <= CK_STREETNAMELAST; i++) {
+			for (let i = CK_STREETNAMEFIRST; i <= CK_STREETNAMELAST; i++) {
 				if (!isLimitOk(i) || !address.isOkFor(i))
 					continue;
 
@@ -3256,23 +2979,23 @@ function F_VALIDATE(disabledHL) {
 			) {
 				// GROUP isRoundabout.loops
 				// check if roundabout connected to another roundabout
-				var okA = false;
-				var okB = false;
-				var anode, bnode;
+				let okA = false;
+				let okB = false;
+				let anode, bnode;
 				if (DIR_AB === direction)
 					anode = nodeA, bnode = nodeB;
 				else
 					anode = nodeB, bnode = nodeA;
-				for (var i = 0; i < bnode.$outConnectionsLen; i++) {
-					var otherSegment = bnode.$outConnections[i];
+				for (let i = 0; i < bnode.$outConnectionsLen; i++) {
+					let otherSegment = bnode.$outConnections[i];
 					if (otherSegment.$isRoundabout) {
 						okB = true;
 						break;
 					}
 				}
 				if (okB)
-					for (var i = 0; i < anode.$inConnectionsLen; i++) {
-						var otherSegment = anode.$inConnections[i];
+					for (let i = 0; i < anode.$inConnectionsLen; i++) {
+						let otherSegment = anode.$inConnections[i];
 						if (otherSegment.$isRoundabout) {
 							okA = true;
 							break;
@@ -3294,28 +3017,32 @@ function F_VALIDATE(disabledHL) {
 
 	// If places checking enabled...
 	if (_UI.pMain.pFilter.oEnablePlaces.CHECKED) {
-		for (var venueKey in WMo.venues.objects) {
-			// check the venues
-			var rawVenue = WMo.venues.objects[venueKey];
-			var venueID = rawVenue.getID();
+		const vlist = wmeSDK.DataModel.Venues.getAll();
+		for (let i=0; i<vlist.length; i++) {
+			let rawVenue = vlist[i];
+			let venueID = rawVenue.id;
+			const ven = rawVenue;
 			// skip unrendered features
-			if (rawVenue.layer
+		/*	if (rawVenue.layer
 				&& rawVenue.id in rawVenue.layer.unrenderedFeatures)
 				continue;
 
 			if ("Delete" === rawVenue.state) continue;
 			// not in scope of current view.
 			if (rawVenue.outOfScope) continue;
+			*/
 
-			var seen = null;
+			let seen = null;
 			// check if the venue was already seen
 			if (venueID in _RT.$seen)
 				seen = _RT.$seen[venueID];
 
 			// always re-check selected venues
-			if (rawVenue.selected) {
-				// add selected venue to the array
-				selectedObjects.push(venueID);
+			let isSel = false;
+			for (let v=0; v<selectedPlaces.length; v++) {
+				if (selectedPlaces[v] == venueID) { isSel=true; break; }
+			}
+			if (isSel) { //(rawSegment.selected) {
 
 				// mark venue to revalidate
 				_RT.$revalidate[venueID] = true;
@@ -3327,11 +3054,11 @@ function F_VALIDATE(disabledHL) {
 			}
 			else {
 				// recheck the venue to revalidate
-				if (segmentID in _RT.$revalidate) {
+				if (venueID in _RT.$revalidate) {
 					deleteSeenObject(venueID);
 					seen = null;
 					// unmark venue
-					delete _RT.$revalidate[segmentID];
+					delete _RT.$revalidate[venueID];
 				}
 			}
 
@@ -3343,20 +3070,20 @@ function F_VALIDATE(disabledHL) {
 
 			///////////////////////////////////////////////////////////////////
 			// Prepare simple objects
-			var venue = new SimpleOBJECT(venueID, WMo.venues);
+			let venue = new SimpleOBJECT(rawVenue, 'venue');
 			Object.seal(venue);
 
 			// shortcuts
-			var address = venue.$address;
-			var country = address.$country;
-			var countryCode = country ? _I18n.getCountryCode(country.toUpperCase())
+			let address = venue.$address;
+			let country = address.$country;
+			let countryCode = country ? _I18n.getCountryCode(country.toUpperCase())
 				: _RT.$cachedTopCCode;
-			var city = address.$city;
-			var cityLen = city.length;
-			var cityID = address.$cityID;
-			var street = address.$street;
-			var streetLen = street.length;
-			var lock = venue.$lock;
+			let city = address.$city;
+			let cityLen = city.length;
+			let cityID = address.$cityID;
+			let street = address.$street;
+			let streetLen = street.length;
+			let lock = venue.$lock;
 
 			// mark venue as seen
 			_RT.$seen[venueID] = seen = [0, null, false, false,
@@ -3392,8 +3119,7 @@ function F_VALIDATE(disabledHL) {
 			// Check for last update by bots
 			if (isLimitOk(252)) {
 				options = getCheckOptions(252, countryCode);
-				if (options[CO_REGEXP].test(venue.$updatedByID.toString())
-					|| options[CO_REGEXP].test(venue.$updatedBy.toString())
+				if (options[CO_REGEXP].test(venue.$updatedBy.toString())
 					&& address.isOkFor(252))
 					venue.report(252);
 			}
@@ -3405,13 +3131,11 @@ function F_VALIDATE(disabledHL) {
 
 			if (venue.$entryExitPoints && venue.$entryExitPoints.length
 				&& isLimitOk(254)) {
-				var stopPoint = venue.$entryExitPoints[0].getPoint();
-				var spt = new OpenLayers.Geometry.Point(stopPoint.coordinates[0], stopPoint.coordinates[1]);
-				stopPoint = spt.transform(nW.Config.map.projection.remote, nW.Config.map.projection.local);
-				var areaCenter = venue.$geometry.getCentroid();
-				if (areaCenter && areaCenter.equals(stopPoint)
-					&& address.isOkFor(254))
+				var stopPoint = venue.$entryExitPoints[0].point;
+				let areaCenter = turf.centroid(venue.$geometry);
+				if (areaCenter.geometry && turf.booleanEqual(areaCenter.geometry,stopPoint) && address.isOkFor(254)) {
 					venue.report(254);
+				}
 			}
 
 			// Check phone number
@@ -3463,9 +3187,9 @@ function F_VALIDATE(disabledHL) {
 					venue.report(260);
 			}
 
-			if (venue.$rawObject.isParkingLot()) {
-				var catAttr = venue.$categoryAttributes;
-				var parkAttr = catAttr ? catAttr.PARKING_LOT : undefined;
+			if (venue.$isParkingLot) {
+				//var catAttr = venue.$categoryAttributes;
+				let parkAttr = venue.$parkAttr;
 				// parking lot type
 				if ((!parkAttr || !parkAttr.parkingType)
 					&& address.isOkFor(270))
@@ -3490,7 +3214,7 @@ function F_VALIDATE(disabledHL) {
 			}// GROUP isParkingLot
 
 			// GROUP isGasStation
-			if (venue.$rawObject.isGasStation()) {
+			if (venue.$isGasStation) {
 				// check brand in the name
 				if (isLimitOk(275)
 					&& venue.$name.toLowerCase().indexOf(
@@ -3507,8 +3231,280 @@ function F_VALIDATE(disabledHL) {
 		async(F_SHOWREPORT, RF_UPDATEMAXSEVERITY);
 
 	// update object properties
-	updateObjectProperties(selectedObjects, false);
+	updateObjectProperties(sel.ids, false);
 
 	// add HLed segments to the layer
 	addHLedObjects();
 }
+
+function addPanelDetails() {
+  const selection = wmeSDK.Editing.getSelection();
+  if (selection && selection.ids.length > 0 && (selection.objectType == "segment" || selection.objectType == "venue")) {
+      //log('addPanelDetails calling updObjProp');
+      updateObjectProperties(selection.ids, false);
+  }
+}
+
+/**
+ * Update object properties
+ - Note: this pulled out of F_VALIDATE scope so it can be called from mutation observer.
+ */
+function updateObjectProperties(selectedObjects, disabledHL) {
+	if (RTStateIs(ST_RUN) || RTStateIs(ST_CONTINUE))
+		return;
+
+	// remove WV properties
+	var prop = document.getElementById("i" + ID_PROPERTY)
+	var propDis = document.getElementById("i" + ID_PROPERTY_DISABLED)
+	var xoptions;
+
+	var defID = ID_PROPERTY;
+	var defHTML = '';
+	if (disabledHL) {
+		defID = ID_PROPERTY_DISABLED;
+		defHTML = '<div class="direction-message">'
+			+ '<i class="fa fa-info-circle" aria-hidden="true"></i> '
+			+ trS("props.disabled")
+			+ '</div> '
+			;
+		// remove prop
+		if (prop) {
+			prop.parentNode.removeChild(prop);
+		}
+		prop = propDis;
+	}
+	else {
+		// remove propDis
+		if (propDis) {
+			propDis.parentNode.removeChild(propDis);
+		}
+	}
+
+	if (prop)
+		prop.innerHTML = createSafeHtml(defHTML);
+	else {
+		var objectProperties = document.getElementsByClassName("address-edit")[0];
+		if (!objectProperties)
+			objectProperties = document.getElementsByClassName("venue-edit-general")[0];
+
+		if (objectProperties) {
+			var d = document.createElement("div");
+			d.innerHTML = createSafeHtml(defHTML);
+			d.id = "i" + defID;
+			d.style.cssText = "text-transform: none; padding: 5px;"
+			prop = objectProperties.appendChild(d)
+		} // if objectProperties
+	} // if prop
+
+	if (disabledHL)
+		return;
+
+	// check if there are any object selected
+	if (!selectedObjects.length)
+		return;
+
+	// find selected issues
+	var selectedIssues = [];
+	for (var i = 0; i < selectedObjects.length; i++) {
+		var objectID = selectedObjects[i];
+		if (objectID in _RT.$seen) {
+			var objectCopy = _RT.$seen[objectID][I_OBJECTCOPY];
+			if (!objectCopy) continue;
+			// object is selected and highlighted
+			for (var cid in objectCopy.$reportIDs) {
+				if (objectCopy.$reportIDs.hasOwnProperty(cid)) {
+					var check = _RT.$checks[cid];
+					if (check.REPORTONLY)
+						continue;
+
+					selectedIssues.push([check, objectCopy, cid]);
+				}
+			}
+		}
+	} // for all selected objects
+
+	var newProp = '<b style="display:block"><a target="_blank" href="' + PFX_DISCUSS + DISCUSS_HOME + '">WME Validator</a> ' + trS("props.reports") + ':</b>'
+		;
+	if (_REP.$isLimitPerCheck) {
+		newProp += '<div class="c' + CL_RIGHTTIP + ' c' + CL_NOTE + '">'
+			+ '<span><i class="fa fa-info-circle" aria-hidden="true"></i>'
+			+ ' <a class="c' + CL_NOTE + '" href="#">'
+			+ trS("props.limit.title")
+			+ '</a></span>'
+			+ '<div class="c' + CL_RIGHTTIPPOPUP + '">'
+			+ '<i class="fa fa-times-circle fa-lg fa-pull-left" style="margin-top:0.3em" aria-hidden="true"></i>'
+			+ '<div class="c' + CL_RIGHTTIPDESCR + '">'
+			+ trS("props.limit.problem")
+			+ '.</div>'
+			+ '<i class="fa fa-check-square-o fa-lg fa-pull-left" style="color:black;margin-top:0.8em" aria-hidden="true"></i>'
+			+ '<div class="c' + CL_RIGHTTIPDESCR + '">'
+			+ '<p>' + trS("props.limit.solution") + '.</p>'
+			+ '</div></div><br></div>'
+			;
+	} // limit per check
+
+	// exceptions note
+	if (skippedObject) {
+		newProp += '<div class="c' + CL_RIGHTTIP + ' c' + CL_NOTE + '">'
+			+ '<span><i class="fa fa-info-circle" aria-hidden="true"></i>'
+			+ ' <a class="c' + CL_NOTE + '" href="#">'
+			+ trS("props.skipped.title")
+			+ '</a></span>'
+			+ '<div class="c' + CL_RIGHTTIPPOPUP + '">'
+			+ '<i class="fa fa-times-circle fa-lg fa-pull-left" style="margin-top:0.3em" aria-hidden="true"></i>'
+			+ '<div class="c' + CL_RIGHTTIPDESCR + '">'
+			+ trS("props.skipped.problem")
+			+ '.</div>'
+			+ '</div><br></div>'
+			;
+	}
+
+
+	if (!selectedIssues.length) {
+		// update properties
+		if (prop && (_REP.$isLimitPerCheck || skippedObject))
+			prop.innerHTML = createSafeHtml(newProp);
+		return;
+	}
+
+	// sort the issues
+	selectedIssues.sort(function (a, b) { return cmpCheckIDs(a[2], b[2]) });
+
+	// only unique issues
+	var selectedCounters = {};
+	selectedIssues = selectedIssues.filter(function (e, i, arr) {
+		var checkID = e[2];
+		// skip first element
+		if (i && arr[i - 1][2] === checkID) {
+			selectedCounters[checkID]++;
+			return false;
+		}
+		selectedCounters[checkID] = 1;
+		return true;
+	});
+	// create a list of issues
+	selectedIssues.forEach(function (e) {
+		var check = e[0];
+		var objectCopy = e[1];
+		var checkID = e[2];
+		var checkCounter = selectedCounters[checkID];
+		var sevClass = 0;
+		var sevIcon = "";
+		var sevBG = "";
+		var strCountry = _REP.$countries[objectCopy.$countryID];
+		var ccode = "";
+
+		if (strCountry)
+			ccode = _I18n.getCountryCode(strCountry.toUpperCase());
+		else {
+			// try top country
+			ccode = _RT.$cachedTopCCode;
+		}
+		xoptions = trO(check.OPTIONS, ccode);
+
+		switch (check.SEVERITY) {
+			case RS_NOTE:
+				sevClass = CL_NOTE;
+				sevIcon = "info-circle";
+				sevBG = GL_NOTEBGCOLOR;
+				break;
+			case RS_WARNING:
+				sevClass = CL_WARNING;
+				sevIcon = "exclamation-triangle";
+				sevBG = GL_WARNINGBGCOLOR;
+				break;
+			case RS_ERROR:
+				sevClass = CL_ERROR;
+				sevIcon = "times-circle";
+				sevBG = GL_ERRORBGCOLOR;
+				break;
+			case RS_CUSTOM1:
+				sevClass = CL_CUSTOM1;
+				sevIcon = "user";
+				sevBG = GL_CUSTOM1BGCOLOR;
+				break;
+			case RS_CUSTOM2:
+				sevClass = CL_CUSTOM2;
+				sevIcon = "user";
+				sevBG = GL_CUSTOM2BGCOLOR;
+				break;
+		}
+		var shortTitle = exSOS(check.TITLE, xoptions, "titleEN")
+			.replace("WME Color Highlights", "WMECH")
+			.replace("WME Toolbox", "WMETB");
+		newProp += '<div class="c' + CL_RIGHTTIP + ' c' + sevClass + '">'
+			+ '<span><i class="fa fa-' + sevIcon + '" aria-hidden="true"></i>'
+			+ ' <a class="c' + sevClass + '" href="#">'
+			+ shortTitle
+			+ (1 < checkCounter ? ' (' + checkCounter + ')' : '')
+			+ '</a></span>'
+			+ '<div class="c' + CL_RIGHTTIPPOPUP + '">'
+			+ '<i class="fa fa-' + sevIcon + ' fa-lg fa-pull-left" style="margin-top:0.3em" aria-hidden="true"></i>'
+			+ '<div class="c' + CL_RIGHTTIPDESCR + '">'
+			+ '#' + checkID + ' '
+			+ exSOS(check.PROBLEM, xoptions, "problemEN")
+			;
+		var pl = trO(check.PROBLEMLINK, ccode);
+		if (pl) {
+			newProp += ': <a target="_blank" href="'
+				+ pl
+				+ '">'
+				+ trO(check.PROBLEMLINKTEXT, ccode)
+				+ '</a>'
+				;
+		}
+		else
+			newProp += '.';
+
+		newProp += '</div>';
+
+		// show howto
+		if (objectCopy.$isEditable) {
+			newProp += '<i class="fa fa-check-square-o fa-pull-left fa-lg" style="color:black;margin-top:0.8em" aria-hidden="true"></i>'
+				+ '<div class="c' + CL_RIGHTTIPDESCR + '">'
+				;
+			if (check.SOLUTION) {
+				newProp += '<p>' + exSOS(check.SOLUTION, xoptions, "solutionEN");
+
+				var sl = trO(check.SOLUTIONLINK, ccode);
+				if (sl) {
+					newProp += ': <a target="_blank" href="'
+						+ sl
+						+ '">'
+						+ trO(check.SOLUTIONLINKTEXT, ccode)
+						+ '</a>'
+						;
+				}
+				else
+					newProp += '.';
+
+				newProp += '</p>';
+			}
+		}
+		else {
+			newProp += '<i class="fa fa-ban fa-pull-left fa-lg" style="color:black;margin-top:0.8em" aria-hidden="true"></i>'
+				+ '<div class="c' + CL_RIGHTTIPDESCR + '">'
+				+ '<p>' + trS("props.noneditable") + '.</p>';
+			;
+		}
+
+		// show params
+		var cityID = objectCopy.$cityID;
+		var cityParam = _REP.$cityIDs[cityID].$params[checkID];
+		if (cityParam)
+			newProp += '<p>' + cityParam + '</p>';
+		var streetID = objectCopy.$streetID;
+		var streetParam = _REP.$cityIDs[cityID]
+			.$streetIDs[streetID].$params[checkID];
+
+		if (streetParam)
+			newProp += '<p>' + streetParam + '</p>';
+
+		newProp += '</div></div><br></div>'
+			;
+	}); // forEach
+
+	// update properties
+	if (prop)
+		prop.innerHTML = createSafeHtml(newProp);
+} // updateObjectProperties

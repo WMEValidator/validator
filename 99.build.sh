@@ -31,8 +31,7 @@ echo
 cat "${SRC_DIR}/meta/i18n-end.js" >> "${LOC_FILE}"
 
 ${COMPILER} \
-	--language_in ECMASCRIPT_2017 \
-	--language_out ECMASCRIPT_2017 \
+	--language_in ECMASCRIPT_2020 \
 	--js "${SRC_DIR}/src/release.js" \
 	--js "${LOC_FILE}" \
 	--js "${SRC_DIR}/src/helpers.js" \
