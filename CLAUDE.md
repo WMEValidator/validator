@@ -18,7 +18,12 @@ The project uses shell scripts wrapping the Google Closure Compiler (Java). No `
 ./99.build.sh     # Orchestrator — runs all three build variants
 ```
 
-Configuration (compiler path, output dirs) is in `./00.config.sh`. The closure compiler binary must be installed; the repo was last tested with v20230103.
+> **Windows / Git Bash note:** If scripts produce `: not found` errors, strip CRLF line endings with:
+> ```bash
+> sed -i 's/\r//' *.sh
+> ```
+
+Configuration (compiler path, output dirs) is in `./00.config.sh`. The Closure Compiler JAR is **auto-downloaded** from Maven Central on first run — no manual installation needed. The script detects any existing `closure-compiler-*.jar` in the repo root, verifies its MD5 against Maven Central, and re-downloads if missing or corrupt. Always fetches the latest published release.
 
 There are **no automated tests**. Validation is done manually per `doc/RELENG.md`.
 
