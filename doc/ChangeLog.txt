@@ -1,9 +1,10 @@
 Current changes:
 
 v2026.06.13:
-- fixes wazeopedia issue links for waze discuss search links.
-- updates closure-compiler version called from v20230103 to v20260526.
-- adds CLAUDE.md basic init.
+- Updated PFX_PEDIA link for a waze discuss search link (temp fix)
+- Added CLAUDE.md
+- Improved closure compiler retrieval process
+- Added --language_out ECMASCRIPT_2020 in build params
 
 v2026.06.12:
 - DaveAcincy: migrating validator to use the WME SDK.
