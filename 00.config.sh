@@ -35,7 +35,7 @@ if [ -n "${CC_JAR}" ]; then
 	# JAR found — extract version from filename and verify against Maven Central
     CC_VERSION="${CC_JAR#closure-compiler-}"
     CC_VERSION="${CC_VERSION%.jar}"
-    CC_URL="${CC_BASE_URL}/${CC_VERSION}/closure-compiler-${CC_VERSION}.jar"
+    CC_URL="${CC_BASE_URL}/${CC_VERSION}/${CC_JAR}"
     echo "===> Found local ${CC_JAR} — verifying integrity..."
     if ! verify_md5 "${CC_JAR}" "${CC_URL}"; then
         echo "===> Local JAR failed integrity check. Re-downloading..."
@@ -53,7 +53,7 @@ if [ -z "${CC_JAR}" ]; then
         exit 1
     fi
     CC_JAR="closure-compiler-${CC_VERSION}.jar"
-    CC_URL="${CC_BASE_URL}/${CC_VERSION}/closure-compiler-${CC_VERSION}.jar"
+    CC_URL="${CC_BASE_URL}/${CC_VERSION}/${CC_JAR}"
     echo "===> Downloading Closure Compiler ${CC_VERSION}..."
     if ! curl -fSL --max-time 120 -o "${CC_JAR}" "${CC_URL}"; then
         rm -f "${CC_JAR}"
