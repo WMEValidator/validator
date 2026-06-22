@@ -1,5 +1,8 @@
 Current changes:
 
+v2026.06.22:
+- Update Chrome Web Store manifest.
+
 v2026.06.12:
 - DaveAcincy: migrating validator to use the WME SDK.
 - update US and Chile localizations.
