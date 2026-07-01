@@ -23,7 +23,7 @@ The project uses shell scripts wrapping the Google Closure Compiler (Java). No `
 > sed -i 's/\r//' *.sh
 > ```
 
-Configuration (compiler path, output dirs) is in `./00.config.sh`. The Closure Compiler JAR is **auto-downloaded** from Maven Central on first run — no manual installation needed. The script detects any existing `closure-compiler-*.jar` in the repo root, verifies its MD5 against Maven Central, and re-downloads if missing or corrupt. Always fetches the latest published release.
+Configuration (compiler path, output dirs) is in `./00.config.sh`. 
 
 There are **no automated tests**. Validation is done manually per `doc/RELENG.md`.
 
