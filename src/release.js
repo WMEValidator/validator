@@ -26,11 +26,14 @@
  * WV RELEASE INFORMATION
  */
 /** WME Validator version @const */
-var WV_VERSION = "2026.06.22";
+var WV_VERSION = "2026.07.01";
 /** Auto-save password. Increase to reset auto-save config. @const */
 var AS_PASSWORD = "v1";
 /** @const */
-var WV_WHATSNEW = `v2026.06.12:
+var WV_WHATSNEW = `v2026.07.01:
+- miguelovergara: updated issues links from waze forum old links to discuss search.
+
+v2026.06.12:
 - DaveAcincy: migrating validator to use the WME SDK.
 - update US and Chile localizations.
 
