@@ -557,12 +557,12 @@ async function F_LOGIN() {
 			if (labelPL in translation) {
 				let l = translation[labelPL]
 					.replace('W:', PFX_WIKI)
-					.replace('P:', PFX_PEDIA)
+					.replace('P:', PFX_SEARCH)
 					.replace('F:', PFX_FORUM)
 					.replace('D:', PFX_DISCUSS)
 					;
 				check.PROBLEMLINK[ccode] = encodeURI(l);
-				if (-1 !== l.indexOf(PFX_WIKI) || -1 !== l.indexOf(PFX_PEDIA))
+				if (-1 !== l.indexOf(PFX_WIKI) || -1 !== l.indexOf(PFX_SEARCH))
 					check.PROBLEMLINKTEXT[ccode] = trS('report.link.wiki');
 				else
 					if (-1 !== l.indexOf(PFX_FORUM))
@@ -573,12 +573,12 @@ async function F_LOGIN() {
 			if (labelSL in translation) {
 				let l = translation[labelSL]
 					.replace('W:', PFX_WIKI)
-					.replace('P:', PFX_PEDIA)
+					.replace('P:', PFX_SEARCH)
 					.replace('F:', PFX_FORUM)
 					.replace('D:', PFX_DISCUSS)
 					;
 				check.SOLUTIONLINK[ccode] = encodeURI(l);
-				if (-1 !== l.indexOf(PFX_WIKI || -1 !== l.indexOf(PFX_PEDIA)))
+				if (-1 !== l.indexOf(PFX_WIKI || -1 !== l.indexOf(PFX_SEARCH)))
 					check.SOLUTIONLINKTEXT[ccode] = trS('report.link.wiki');
 				else
 					if (-1 !== l.indexOf(PFX_FORUM))

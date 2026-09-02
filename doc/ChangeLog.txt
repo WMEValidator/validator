@@ -1,5 +1,11 @@
 Current changes:
 
+v2026.07.01:
+- Updated PFX_PEDIA link for a waze discuss search link (temp fix)
+- Added CLAUDE.md
+- Improved closure compiler retrieval process
+- Added --language_out ECMASCRIPT_2020 in build params
+
 v2026.06.22:
 - Update Chrome Web Store manifest.
 
